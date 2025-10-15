@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "frycmua",
+	"version": "${version}",
+	"name": "Multiple use actions",
+	"description": "Gives more control over use actions and allows having multiple use actions on a single item",
+	"authors": [
+		"Wookash Fryc"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/frycmua/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.fryc.frycmua.MultipleUseActions"
+		],
+		"client": [
+			"net.fryc.frycmua.MultipleUseActionsClient"
+		]
+	},
+	"mixins": [
+		"frycmua.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

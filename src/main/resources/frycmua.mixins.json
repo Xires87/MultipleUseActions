@@ -1,0 +1,19 @@
+{
+	"required": true,
+	"package": "net.fryc.frycmua.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"ItemMixin",
+		"SimpleRegistryMixin",
+		"PlayerEntityMixin"
+	],
+	"client": [
+		"client/MinecraftClientMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

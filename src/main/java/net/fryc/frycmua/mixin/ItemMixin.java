@@ -1,0 +1,148 @@
+package net.fryc.frycmua.mixin;
+
+import net.fryc.frycmua.MultipleUseActions;
+import net.fryc.frycmua.item.action.*;
+import net.fryc.frycmua.item.action.registry.UseActionRegistry;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.HashMap;
+
+@Mixin(Item.class)
+abstract class ItemMixin implements ItemConvertible, UseAction, HoldsUseActions, UseActionRegistry {
+
+    private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = new HashMap<>();
+    private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = new HashMap<>();
+    private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = new HashMap<>();
+
+    @Shadow
+    public abstract TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand);
+
+    @Shadow
+    public abstract ActionResult useOnBlock(ItemUsageContext context);
+
+    @Shadow
+    public abstract ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand);
+
+
+    @Override
+    public TypedActionResult<ItemStack> muaUseItem(@Nullable Identifier selectedAction, World world, PlayerEntity user, Hand hand) {
+        if(selectedAction != null){
+            ItemUseInstance instance = this.getItemUseActionInstance(selectedAction);
+            if(instance != null){
+                return instance.use().useItem(this.asItem(), world, user, hand);
+            }
+        }
+
+        return this.use(world, user, hand);
+    }
+
+    @Override
+    public ActionResult muaUseItemOnBlock(@Nullable Identifier selectedAction, ItemUsageContext context) {
+        if(selectedAction != null){
+            ItemUseOnBlockInstance instance = this.getItemUseOnBlockActionInstance(selectedAction);
+            if(instance != null){
+                return instance.useOnBlock().useItemOnBlock(context);
+            }
+        }
+
+        return this.useOnBlock(context);
+    }
+
+    @Override
+    public ActionResult muaUseItemOnEntity(@Nullable Identifier selectedAction, ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if(selectedAction != null){
+            ItemUseOnEntityInstance instance = this.getItemUseOnEntityActionInstance(selectedAction);
+            if(instance != null){
+                return instance.useOnEntity().useItemOnEntity(stack, user, entity, hand);
+            }
+        }
+
+        return this.useOnEntity(stack, user, entity, hand);
+    }
+
+    @Override
+    @Nullable
+    public ItemUseInstance getItemUseActionInstance(Identifier id) {
+        return this.availableItemUseActions.get(id);
+    }
+
+    @Override
+    @Nullable
+    public ItemUseOnBlockInstance getItemUseOnBlockActionInstance(Identifier id) {
+        return this.availableItemUseOnBlockActions.get(id);
+    }
+
+    @Override
+    @Nullable
+    public ItemUseOnEntityInstance getItemUseOnEntityActionInstance(Identifier id) {
+        return this.availableItemUseOnEntityActions.get(id);
+    }
+
+    @Override
+    public void addUseAction(Identifier id, ItemUseInstance useInstance) {
+        if(this.availableItemUseActions.containsKey(id)){
+            Class<?> clazz = this.availableItemUseActions.get(id).classLevel();
+            if(!shouldOverrideUseInstance(clazz, useInstance.classLevel())){
+                this.informAboutIgnoredUseAction(id, useInstance.classLevel());
+
+                return;
+            }
+        }
+
+        this.availableItemUseActions.put(id, useInstance);
+    }
+
+    @Override
+    public void addUseOnBlockAction(Identifier id, ItemUseOnBlockInstance useInstance) {
+        if(this.availableItemUseOnBlockActions.containsKey(id)){
+            Class<?> clazz = this.availableItemUseOnBlockActions.get(id).classLevel();
+            if(!shouldOverrideUseInstance(clazz, useInstance.classLevel())){
+                this.informAboutIgnoredUseAction(id, useInstance.classLevel());
+
+                return;
+            }
+        }
+
+        this.availableItemUseOnBlockActions.put(id, useInstance);
+    }
+
+    @Override
+    public void addUseOnEntityAction(Identifier id, ItemUseOnEntityInstance useInstance) {
+        if(this.availableItemUseOnEntityActions.containsKey(id)){
+            Class<?> clazz = this.availableItemUseOnEntityActions.get(id).classLevel();
+            if(!shouldOverrideUseInstance(clazz, useInstance.classLevel())){
+                this.informAboutIgnoredUseAction(id, useInstance.classLevel());
+
+                return;
+            }
+        }
+
+        this.availableItemUseOnEntityActions.put(id, useInstance);
+    }
+
+    private boolean shouldOverrideUseInstance(Class<?> presentUseInstanceClass, Class<?> newUseInstanceClass) {
+        return presentUseInstanceClass != newUseInstanceClass && presentUseInstanceClass.isAssignableFrom(newUseInstanceClass);
+    }
+
+    private void informAboutIgnoredUseAction(Identifier id, Class<?> clazz) {
+        MultipleUseActions.LOGGER.warn(
+                "Due to existing use action, the following use action for {} has not been added: {}, with class level: {}",
+                this.asItem().getClass().getName(),
+                id.toString(),
+                clazz.getName()
+        );
+    }
+}
