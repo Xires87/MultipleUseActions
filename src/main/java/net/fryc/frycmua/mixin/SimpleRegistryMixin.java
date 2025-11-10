@@ -15,30 +15,32 @@ abstract class SimpleRegistryMixin {
 
     @Inject(method = "freeze()Lnet/minecraft/registry/Registry;", at = @At("TAIL"))
     private void addRegisteredUseActionsToItems(CallbackInfoReturnable<Registry<?>> ret) {
-        Registries.ITEM.forEach(item -> {
-            UseActionRegistries.REGISTERED_USE_ACTIONS.forEach((key, value) -> {
-                value.stream().filter(useInstance -> {
-                    return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
-                }).forEach(useInstance -> {
-                    ((UseActionRegistry) item).addUseAction(key, useInstance);
+        if(this.equals(Registries.ITEM)){
+            Registries.ITEM.forEach(item -> {
+                UseActionRegistries.REGISTERED_USE_ACTIONS.forEach((key, value) -> {
+                    value.stream().filter(useInstance -> {
+                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                    }).forEach(useInstance -> {
+                        ((UseActionRegistry) item).addUseAction(key, useInstance);
+                    });
                 });
-            });
 
-            UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.forEach((key, value) -> {
-                value.stream().filter(useInstance -> {
-                    return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && item.getClass().isAssignableFrom(useInstance.classLevel()));
-                }).forEach(useInstance -> {
-                    ((UseActionRegistry) item).addUseOnBlockAction(key, useInstance);
+                UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.forEach((key, value) -> {
+                    value.stream().filter(useInstance -> {
+                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                    }).forEach(useInstance -> {
+                        ((UseActionRegistry) item).addUseOnBlockAction(key, useInstance);
+                    });
                 });
-            });
 
-            UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.forEach((key, value) -> {
-                value.stream().filter(useInstance -> {
-                    return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && item.getClass().isAssignableFrom(useInstance.classLevel()));
-                }).forEach(useInstance -> {
-                    ((UseActionRegistry) item).addUseOnEntityAction(key, useInstance);
+                UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.forEach((key, value) -> {
+                    value.stream().filter(useInstance -> {
+                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                    }).forEach(useInstance -> {
+                        ((UseActionRegistry) item).addUseOnEntityAction(key, useInstance);
+                    });
                 });
             });
-        });
+        }
     }
 }
