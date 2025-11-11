@@ -5,10 +5,13 @@
 	"mixins": [
 		"ItemMixin",
 		"SimpleRegistryMixin",
-		"PlayerEntityMixin"
+		"PlayerEntityMixin",
+		"ServerPlayerInteractionManagerMixin"
 	],
 	"client": [
-		"client/MinecraftClientMixin"
+		"client/MinecraftClientMixin",
+		"client/ClientPlayerInteractionManagerMixin",
+		"client/ClientPlayerEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -19,7 +19,7 @@ abstract class SimpleRegistryMixin {
             Registries.ITEM.forEach(item -> {
                 UseActionRegistries.REGISTERED_USE_ACTIONS.forEach((key, value) -> {
                     value.stream().filter(useInstance -> {
-                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                        return useInstance.getClassLevel() == item.getClass() || (useInstance.isAllowSubclasses() && useInstance.getClassLevel().isAssignableFrom(item.getClass()));
                     }).forEach(useInstance -> {
                         ((UseActionRegistry) item).addUseAction(key, useInstance);
                     });

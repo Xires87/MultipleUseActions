@@ -2,12 +2,14 @@ package net.fryc.frycmua;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fryc.frycmua.item.action.DefaultUseActions;
 import net.fryc.frycmua.item.action.ItemUseInstance;
 import net.fryc.frycmua.item.action.registry.UseActionRegistries;
 import net.fryc.frycmua.network.ModPackets;
 import net.minecraft.item.BowItem;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

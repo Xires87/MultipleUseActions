@@ -1,10 +1,11 @@
 package net.fryc.frycmua.screen;
 
-import net.fryc.frycmua.item.action.SelectsUseAction;
+import net.fryc.frycmua.util.interfaces.SelectsUseAction;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -21,6 +22,7 @@ public class ActionManagerScreen extends Screen {
             if(this.client != null){
                 if(this.client.player != null){
                     ((SelectsUseAction) this.client.player).setSelectedUseAction(Identifier.ofVanilla("bow_pull"));
+                    btn.active = false;
                 }
             }
 
@@ -33,6 +35,7 @@ public class ActionManagerScreen extends Screen {
         // It's recommended to use the fixed height of 20 to prevent rendering issues with the button
         // textures.
 
+
         // Register the button widget.
         this.addDrawableChild(buttonWidget);
 
@@ -41,6 +44,13 @@ public class ActionManagerScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+
+        ItemStack stack = this.client.player.getInventory().getStack(this.client.player.getInventory().selectedSlot);
+        if(!stack.isEmpty()){
+            context.drawItem(stack, 0, 0);
+
+        }
+
 
         // Minecraft doesn't have a "label" widget, so we'll have to draw our own text.
         // We'll subtract the font height from the Y position to make the text appear above the button.

@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action;
+package net.fryc.frycmua.util.interfaces;
 
 import net.minecraft.util.Identifier;
 

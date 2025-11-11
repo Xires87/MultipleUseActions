@@ -6,11 +6,14 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class DefaultUseActions {
+
+    public static final Identifier USE_DEFAULT = Identifier.ofVanilla("default");
 
     public static final ItemUseInstance BOW_PULL = new ItemUseInstance(
             BowItem.class,
@@ -20,7 +23,8 @@ public class DefaultUseActions {
             DefaultUseActions::bowPullOnStoppedUsingItem,
             DefaultUseActions::bowPullFinishUsingItem,
             DefaultUseActions::bowPullGetMaxItemUseTime,
-            DefaultUseActions::bowPullGetItemUseAction
+            DefaultUseActions::bowPullGetItemUseAction,
+            (player, hand) -> !player.getProjectileType(player.getStackInHand(hand)).isEmpty()
     );
 
     private static TypedActionResult<ItemStack> bowPullUseItem(Item item, World world, PlayerEntity user, Hand hand) {
