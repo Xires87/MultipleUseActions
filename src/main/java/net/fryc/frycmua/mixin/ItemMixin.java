@@ -32,7 +32,8 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     private static <T> HashMap<Identifier, T> initHashMapWithDefaultValue(){
         HashMap<Identifier, T> map = new HashMap<>();
-        map.put(DefaultUseActions.USE_DEFAULT, null);
+        map.put(DefaultUseActions.USE_DEFAULT, null);// TODO musze z tym defaultem cos zrobic bo nie ma sensu to obecne do actionPriority (tylko mixed dziala)
+        // TODO chyba najlepiej bedzie 3 osobne defaulty zrobic bo ktos moze ustawic wyzszy priorytet np na entity a na blok nizszy i wtedy np zinteractuje creepera ale na bloku juz uzyje itemu
         return map;
     }
 
@@ -148,9 +149,9 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
     @Override
     public void addUseOnBlockAction(Identifier id, ItemUseOnBlockInstance useInstance) {
         if(this.availableItemUseOnBlockActions.containsKey(id)){
-            Class<?> clazz = this.availableItemUseOnBlockActions.get(id).classLevel();
-            if(!shouldOverrideUseInstance(clazz, useInstance.classLevel())){
-                this.informAboutIgnoredUseAction(id, useInstance.classLevel());
+            Class<?> clazz = this.availableItemUseOnBlockActions.get(id).getClassLevel();
+            if(!shouldOverrideUseInstance(clazz, useInstance.getClassLevel())){
+                this.informAboutIgnoredUseAction(id, useInstance.getClassLevel());
 
                 return;
             }
@@ -162,9 +163,9 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
     @Override
     public void addUseOnEntityAction(Identifier id, ItemUseOnEntityInstance useInstance) {
         if(this.availableItemUseOnEntityActions.containsKey(id)){
-            Class<?> clazz = this.availableItemUseOnEntityActions.get(id).classLevel();
-            if(!shouldOverrideUseInstance(clazz, useInstance.classLevel())){
-                this.informAboutIgnoredUseAction(id, useInstance.classLevel());
+            Class<?> clazz = this.availableItemUseOnEntityActions.get(id).getClassLevel();
+            if(!shouldOverrideUseInstance(clazz, useInstance.getClassLevel())){
+                this.informAboutIgnoredUseAction(id, useInstance.getClassLevel());
 
                 return;
             }

@@ -27,7 +27,7 @@ abstract class SimpleRegistryMixin {
 
                 UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.forEach((key, value) -> {
                     value.stream().filter(useInstance -> {
-                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                        return useInstance.getClassLevel() == item.getClass() || (useInstance.isAllowSubclasses() && useInstance.getClassLevel().isAssignableFrom(item.getClass()));
                     }).forEach(useInstance -> {
                         ((UseActionRegistry) item).addUseOnBlockAction(key, useInstance);
                     });
@@ -35,7 +35,7 @@ abstract class SimpleRegistryMixin {
 
                 UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.forEach((key, value) -> {
                     value.stream().filter(useInstance -> {
-                        return useInstance.classLevel() == item.getClass() || (useInstance.allowSubclasses() && useInstance.classLevel().isAssignableFrom(item.getClass()));
+                        return useInstance.getClassLevel() == item.getClass() || (useInstance.isAllowSubclasses() && useInstance.getClassLevel().isAssignableFrom(item.getClass()));
                     }).forEach(useInstance -> {
                         ((UseActionRegistry) item).addUseOnEntityAction(key, useInstance);
                     });

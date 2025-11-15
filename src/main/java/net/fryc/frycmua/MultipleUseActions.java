@@ -26,7 +26,7 @@ public class MultipleUseActions implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-// TODO chyba bede na playerze zapisywal identifier wybranej akcji i przed wywolaniem interactItem bede sprawdzal ja a po wykonaniu akcji bede resetowal wybrana akcje
+
 		LOGGER.info("Hello Fabric world!");
 
 		ModPackets.registerC2SPackets();
