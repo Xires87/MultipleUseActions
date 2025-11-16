@@ -15,12 +15,14 @@ public class ActionManager {
 
     private List<Identifier> availableActions = List.of();
     private final ClientPlayerEntity player;
-    private final ActionPriority actionPriority;
+    private final KeyBinding keybinding;
+    private ActionPriority actionPriority;
     private ItemStack mainHandStack = ItemStack.EMPTY;
     private ItemStack offHandStack = ItemStack.EMPTY;
 // TODO keybindy chyba tak rozwiaze ze bedzie opcja dodawania nowych keybindow jsonem i action managery beda przypisane do konkretnego keybindu
 
     public ActionManager(KeyBinding keybinding, ActionPriority priority, ClientPlayerEntity player){
+        this.keybinding = keybinding;
         this.actionPriority = priority;
         this.player = player;
     }
@@ -49,6 +51,10 @@ public class ActionManager {
 
     public List<Identifier> getAvailableActions(){
         return this.availableActions;
+    }
+
+    public void setActionPriority(ActionPriority priority){
+        this.actionPriority = priority;
     }
 
 }

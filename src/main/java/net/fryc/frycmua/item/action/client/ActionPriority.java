@@ -13,6 +13,12 @@ import java.util.List;
 
 public enum ActionPriority {
 
+    DEFAULT {
+        @Override
+        List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+            return List.of();
+        }
+    },
     BLOCK_OR_ENTITY {
         @Override
         List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {

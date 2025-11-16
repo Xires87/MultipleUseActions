@@ -8,6 +8,7 @@ public class UseActionHelper {
     public static boolean shouldUseSelectedUseAction(Identifier selectedAction){
         return !selectedAction.toString().equals(DefaultUseActions.USE_DEFAULT.toString()) &&
                 !selectedAction.toString().equals(DefaultUseActions.USE_ON_BLOCK_DEFAULT.toString()) &&
-                !selectedAction.toString().equals(DefaultUseActions.USE_ON_ENTITY_DEFAULT.toString());
+                !selectedAction.toString().equals(DefaultUseActions.USE_ON_ENTITY_DEFAULT.toString()) &&
+                !selectedAction.toString().equals(DefaultUseActions.DEFAULT.toString());
     }
 }

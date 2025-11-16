@@ -1,11 +1,18 @@
 package net.fryc.frycmua.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.fabricmc.fabric.api.item.v1.FabricItemStack;
 import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.interfaces.ExecutesUseActions;
 import net.fryc.frycmua.util.interfaces.SelectsUseAction;
+import net.minecraft.component.ComponentHolder;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -13,19 +20,66 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
-abstract class ItemStackMixin {
+abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Shadow
     public abstract Item getItem();
 
 
     @Inject(method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;", at = @At("RETURN"), cancellable = true)
-    private void replaceVanillaUseWithMuaUseOnItemStack(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> ret) {
+    private void replaceVanillaUseWithMuaUse_ItemStack(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> ret) {
         if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) user).getSelectedUseAction())){
             ret.setReturnValue(((ExecutesUseActions) this.getItem()).muaUseItem(((SelectsUseAction) user).getSelectedUseAction(), world, user, hand));
+        }
+    }
+
+    @WrapOperation(
+            method = "useOnBlock(Lnet/minecraft/item/ItemUsageContext;)Lnet/minecraft/util/ActionResult;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;useOnBlock(Lnet/minecraft/item/ItemUsageContext;)Lnet/minecraft/util/ActionResult;")
+    )
+    private ActionResult replaceVanillaUseWithMuaUseOnBlock_ItemStack(Item instance, ItemUsageContext context, Operation<ActionResult> original) {
+        if(context.getPlayer() != null){
+            if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) context.getPlayer()).getSelectedUseAction())){
+                return ((ExecutesUseActions) instance).muaUseItemOnBlock(((SelectsUseAction) context.getPlayer()).getSelectedUseAction(), context);
+            }
+        }
+
+        return original.call(instance, context);
+    }
+
+    @Inject(
+            method = "useOnEntity(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/ActionResult;",
+            at = @At("RETURN"),
+            cancellable = true
+    )
+    private void replaceVanillaUseOnEntityWithMuaUseOnEntity_ItemStack(PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> ret) {
+        if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) user).getSelectedUseAction())){
+            ret.setReturnValue(((ExecutesUseActions) this.getItem()).muaUseItemOnEntity(
+                    ((SelectsUseAction) user).getSelectedUseAction(),
+                    ((ItemStack)(Object)this),
+                    user,
+                    entity,
+                    hand
+            ));
+        }
+    }
+
+// TODO przed tamtym zeby wpuscic kogos jakby chcial do heada zinjectowac
+    @Inject(method = "onStoppedUsing(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/item/Item;onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
+            shift = At.Shift.BEFORE
+    ), cancellable = true)
+    private void replaceVanillaOnStoppedUsingWithMuaOnStoppedUsing_ItemStack(World world, LivingEntity user, int remainingUseTicks, CallbackInfo info) {
+        if(user instanceof PlayerEntity){
+            if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) user).getSelectedUseAction())){
+                //((ExecutesUseActions) this.getItem()).muaOnStoppedUsing();
+                //info.cancel();
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 
 public class DefaultUseActions {
 
+    public static final Identifier DEFAULT = Identifier.ofVanilla("default");
     public static final Identifier USE_DEFAULT = Identifier.ofVanilla("use_default");
     public static final Identifier USE_ON_BLOCK_DEFAULT = Identifier.ofVanilla("use_on_block_default");
     public static final Identifier USE_ON_ENTITY_DEFAULT = Identifier.ofVanilla("use_on_entity_default");
