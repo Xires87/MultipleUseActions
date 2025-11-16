@@ -68,7 +68,7 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
         }
     }
 
-// TODO przed tamtym zeby wpuscic kogos jakby chcial do heada zinjectowac
+    // TODO zrobic te wszystkie wymagane injecty i zapisac przy setCurrentHand czego sie uzywa zeby bylo wiadomo jakie finishUsing odpalic
     @Inject(method = "onStoppedUsing(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/item/Item;onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
@@ -76,6 +76,8 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
     ), cancellable = true)
     private void replaceVanillaOnStoppedUsingWithMuaOnStoppedUsing_ItemStack(World world, LivingEntity user, int remainingUseTicks, CallbackInfo info) {
         if(user instanceof PlayerEntity){
+            // TODO tutaj raczej powinienem sprawdzac zapisana akcje a nie wybrana
+            // TODO moge po prostu UseInstanca zapisywac
             if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) user).getSelectedUseAction())){
                 //((ExecutesUseActions) this.getItem()).muaOnStoppedUsing();
                 //info.cancel();

@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action.registry;
+package net.fryc.frycmua.util.interfaces;
 
 import net.fryc.frycmua.item.action.ItemUseInstance;
 import net.fryc.frycmua.item.action.ItemUseOnBlockInstance;

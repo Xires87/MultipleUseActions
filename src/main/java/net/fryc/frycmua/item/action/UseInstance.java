@@ -1,25 +1,32 @@
 package net.fryc.frycmua.item.action;
 
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.UseAction;
+import net.minecraft.world.World;
 
 public abstract class UseInstance {
 
     private final Class<?> classLevel;
     private final boolean allowSubclasses;
-    private final UseActionRegistries.ItemTickUsage tickUsage;
-    private final UseActionRegistries.ItemOnStoppedUsing onStoppedUsing;
-    private final UseActionRegistries.ItemFinishUsing finishUsing;
-    private final UseActionRegistries.ItemMaxUseTime maxUseTime;
-    private final UseActionRegistries.ItemUseAction useAction;
+    private final ItemTickUsage tickUsage;
+    private final ItemOnStoppedUsing onStoppedUsing;
+    private final ItemFinishUsing finishUsing;
+    private final ItemMaxUseTime maxUseTime;
+    private final ItemUseAction useAction;
 
     public UseInstance(
             Class<?> classLevel,
             boolean allowSubclasses,
-            UseActionRegistries.ItemTickUsage tickUsage,
-            UseActionRegistries.ItemOnStoppedUsing onStoppedUsing,
-            UseActionRegistries.ItemFinishUsing finishUsing,
-            UseActionRegistries.ItemMaxUseTime maxUseTime,
-            UseActionRegistries.ItemUseAction useAction
+            ItemTickUsage tickUsage,
+            ItemOnStoppedUsing onStoppedUsing,
+            ItemFinishUsing finishUsing,
+            ItemMaxUseTime maxUseTime,
+            ItemUseAction useAction
     ){
         this.classLevel = classLevel;
         this.allowSubclasses = allowSubclasses;
@@ -39,23 +46,49 @@ public abstract class UseInstance {
         return this.allowSubclasses;
     }
 
-    public UseActionRegistries.ItemTickUsage getTickUsage() {
+    public ItemTickUsage getTickUsage() {
         return this.tickUsage;
     }
 
-    public UseActionRegistries.ItemOnStoppedUsing getOnStoppedUsing() {
+    public ItemOnStoppedUsing getOnStoppedUsing() {
         return this.onStoppedUsing;
     }
 
-    public UseActionRegistries.ItemFinishUsing getFinishUsing() {
+    public ItemFinishUsing getFinishUsing() {
         return this.finishUsing;
     }
 
-    public UseActionRegistries.ItemMaxUseTime getMaxUseTime() {
+    public ItemMaxUseTime getMaxUseTime() {
         return this.maxUseTime;
     }
 
-    public UseActionRegistries.ItemUseAction getUseAction() {
+    public ItemUseAction getUseAction() {
         return this.useAction;
+    }
+
+
+    @FunctionalInterface
+    public interface ItemFinishUsing {
+        ItemStack finishUsingItem(ItemStack stack, World world, LivingEntity user);
+    }
+
+    @FunctionalInterface
+    public interface ItemOnStoppedUsing {
+        void onStoppedUsingItem(ItemStack stack, World world, LivingEntity user, int remainingUseTicks);
+    }
+
+    @FunctionalInterface
+    public interface ItemTickUsage {
+        void itemUsageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks);
+    }
+
+    @FunctionalInterface
+    public interface ItemMaxUseTime {
+        int getMaxItemUseTime(ItemStack stack, LivingEntity user);
+    }
+
+    @FunctionalInterface
+    public interface ItemUseAction {
+        UseAction getItemUseAction(ItemStack stack);
     }
 }
