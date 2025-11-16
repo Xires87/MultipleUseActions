@@ -23,7 +23,7 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
 
             List<Identifier> list = new ArrayList<>(set);
-            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority));
+            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             set.clear();
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
@@ -33,7 +33,7 @@ public enum ActionPriority {
             });
 
             List<Identifier> list2 = new ArrayList<>(set);
-            list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority));
+            list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             list.addAll(list2);
 
@@ -48,7 +48,7 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
 
             List<Identifier> list = new ArrayList<>(set);
-            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority));
+            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             set.clear();
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnEntityActionIds());
@@ -60,7 +60,7 @@ public enum ActionPriority {
             });
 
             List<Identifier> list2 = new ArrayList<>(set);
-            list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority));
+            list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             list.addAll(list2);
 
@@ -79,7 +79,7 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
 
             List<Identifier> list = new ArrayList<>(set);
-            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority));
+            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             return List.copyOf(list);
         }

@@ -4,9 +4,9 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ItemMixin",
+		"ItemStackMixin",
 		"SimpleRegistryMixin",
-		"PlayerEntityMixin",
-		"ServerPlayerInteractionManagerMixin"
+		"PlayerEntityMixin"
 	],
 	"client": [
 		"client/MinecraftClientMixin",

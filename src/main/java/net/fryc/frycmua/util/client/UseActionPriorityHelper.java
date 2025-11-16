@@ -15,12 +15,15 @@ public class UseActionPriorityHelper {
             return MultipleUseActionsClient.USE_ACTION_PRIORITIES.get(id);
         }
 
-        return 0;
+        return 1;
     }
 
     public static void initUseActionPriorities() {
         // TODO odczyt i zapis do pliku (i nie wiem jak z tym defaultem zrobic, czy 3 defaulty czy 1 ktory oddaje sterowanie vanilli
-        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_DEFAULT, 50);
-        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(Identifier.ofVanilla("bow_pull"), 20);// TODO priority jest odwrotnie niz chcialem (luk tera ma wiekszy priorytet)
+        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_ON_ENTITY_DEFAULT, 12);
+        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_ON_BLOCK_DEFAULT, 11);
+        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_DEFAULT, 10);
+
+        MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(Identifier.ofVanilla("bow_pull"), 21);
     }
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.*;
 import net.fryc.frycmua.item.action.registry.UseActionRegistry;
+import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.interfaces.HoldsUseActions;
 import net.fryc.frycmua.util.interfaces.ExecutesUseActions;
 import net.minecraft.entity.LivingEntity;
@@ -17,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -26,13 +28,13 @@ import java.util.Set;
 @Mixin(Item.class)
 abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUseActions, UseActionRegistry {
 
-    private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = initHashMapWithDefaultValue();
-    private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = initHashMapWithDefaultValue();
-    private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = initHashMapWithDefaultValue();
+    private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = initHashMapWithDefaultValue(DefaultUseActions.USE_DEFAULT);
+    private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = initHashMapWithDefaultValue(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
+    private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = initHashMapWithDefaultValue(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
 
-    private static <T> HashMap<Identifier, T> initHashMapWithDefaultValue(){
+    private static <T> HashMap<Identifier, T> initHashMapWithDefaultValue(Identifier id){
         HashMap<Identifier, T> map = new HashMap<>();
-        map.put(DefaultUseActions.USE_DEFAULT, null);// TODO musze z tym defaultem cos zrobic bo nie ma sensu to obecne do actionPriority (tylko mixed dziala)
+        map.put(id, null);
         // TODO chyba najlepiej bedzie 3 osobne defaulty zrobic bo ktos moze ustawic wyzszy priorytet np na entity a na blok nizszy i wtedy np zinteractuje creepera ale na bloku juz uzyje itemu
         return map;
     }
@@ -49,7 +51,8 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public TypedActionResult<ItemStack> muaUseItem(Identifier selectedAction, World world, PlayerEntity user, Hand hand) {
-        if(shouldUseSelectedUseAction(selectedAction)){
+        // redundant
+        if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
             UseInstance instance = this.getUseInstance(selectedAction);
             if(instance != null){
                 if(instance instanceof ItemUseInstance useInstance){
@@ -63,7 +66,8 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public ActionResult muaUseItemOnBlock(Identifier selectedAction, ItemUsageContext context) {
-        if(shouldUseSelectedUseAction(selectedAction)){
+        // redundant
+        if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
             /*
             ItemUseOnBlockInstance instance = this.getItemUseOnBlockActionInstance(selectedAction);
             if(instance != null){
@@ -78,7 +82,8 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public ActionResult muaUseItemOnEntity(Identifier selectedAction, ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if(shouldUseSelectedUseAction(selectedAction)){
+        // redundant
+        if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
             /*
             ItemUseOnEntityInstance instance = this.getItemUseOnEntityActionInstance(selectedAction);
             if(instance != null){
@@ -110,8 +115,19 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
      */
 
     @Override
+    @Nullable
     public UseInstance getUseInstance(Identifier id) {
-        return this.availableItemUseActions.get(id);
+        if(this.availableItemUseActions.containsKey(id)){
+            return this.availableItemUseActions.get(id);
+        }
+        if(this.availableItemUseOnEntityActions.containsKey(id)){
+            return this.availableItemUseOnEntityActions.get(id);
+        }
+        if(this.availableItemUseOnBlockActions.containsKey(id)){
+            return this.availableItemUseOnBlockActions.get(id);
+        }
+
+        return null;
     }
 
     @Override
@@ -187,7 +203,4 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
         );
     }
 
-    private static boolean shouldUseSelectedUseAction(Identifier selectedAction){
-        return !selectedAction.toString().equals(DefaultUseActions.USE_DEFAULT.toString());
-    }
 }

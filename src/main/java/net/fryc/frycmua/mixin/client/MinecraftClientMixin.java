@@ -1,9 +1,7 @@
 package net.fryc.frycmua.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.item.action.ItemUseInstance;
-import net.fryc.frycmua.item.action.UseInstance;
+import net.fryc.frycmua.item.action.*;
 import net.fryc.frycmua.util.interfaces.HoldsActionManager;
 import net.fryc.frycmua.util.interfaces.HoldsUseActions;
 import net.fryc.frycmua.util.interfaces.SelectsUseAction;
@@ -42,7 +40,6 @@ abstract class MinecraftClientMixin {
                     return null;
                 }
             }
-            // TODO sprawdzanie czy powinno z vanilli korzystac czy z mojego
             // TODO to trzeba bedzie w wiele miejsc zinjectowac, nie tylko tutaj (interactItem, interactBlock itd.)
             // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
         }
@@ -59,17 +56,16 @@ abstract class MinecraftClientMixin {
     private boolean controlItemUse(boolean original) {
         if(!original){
             for(Identifier id : ((HoldsActionManager) this.player).getActionManager().getAvailableActions()){
-                // TODO musze tutaj odpalic wlasne interactItem dla wybranej akcji
                 if(id.toString().equals(DefaultUseActions.USE_DEFAULT.toString())){
                     ((SelectsUseAction) this.player).setSelectedUseAction(id);
                     break;
                 }
 
-                Hand hand = Hand.MAIN_HAND;
+                Hand hand = Hand.MAIN_HAND;// TODO wybieranie priorytetowej reki
                 UseInstance instance = ((HoldsUseActions) this.player.getMainHandStack().getItem()).getUseInstance(id);
                 if(instance == null){
                     instance = ((HoldsUseActions) this.player.getOffHandStack().getItem()).getUseInstance(id);
-                    hand = Hand.OFF_HAND;
+                    hand = hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
                 }
 
                 // checking for use
@@ -78,13 +74,33 @@ abstract class MinecraftClientMixin {
                         ((SelectsUseAction) this.player).setSelectedUseAction(id);
                         this.interactionManager.interactItem(this.player, hand);
 
-                        return true;
+                        return true;// TODO musze returnowac tylko w przypoadku jak action result jest success albo fail, na passie musze leciec dalej petla
                     }
                 }
+                else if(instance instanceof ItemUseOnBlockInstance useInstance){
+                    // TODO do przerobienia tu
+                    /*
+                    if(useInstance.isAvailable().test(this.player, hand)){
+                        ((SelectsUseAction) this.player).setSelectedUseAction(id);
+                        this.interactionManager.interactBlock(this.player, hand);
 
-                // TODO checking for use on block
-                // TODO checking for use on entity
-                // TODO tymczasowo reszte tu dac (ale musze najpierw inheritance zrobic bo tamte nie extenduja bo recordami sa)
+                        return true;
+                    }
+
+                     */
+                }
+                else if(instance instanceof ItemUseOnEntityInstance useInstance){
+                    // TODO tu tez do przerobienia
+                    /*
+                    if(useInstance.isAvailable().test(this.player, hand)){
+                        ((SelectsUseAction) this.player).setSelectedUseAction(id);
+                        this.interactionManager.interactEntity(this.player, hand);
+
+                        return true;
+                    }
+
+                     */
+                }
             }
         }
 
