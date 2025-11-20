@@ -3,7 +3,7 @@ package net.fryc.frycmua.mixin.client;
 import com.mojang.authlib.GameProfile;
 import net.fryc.frycmua.item.action.client.ActionManager;
 import net.fryc.frycmua.item.action.client.ActionPriority;
-import net.fryc.frycmua.util.interfaces.HoldsActionManager;
+import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

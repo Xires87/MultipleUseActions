@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces;
+package net.fryc.frycmua.util.interfaces.item;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+// for Item
 public interface ExecutesUseActions {
 // TODO jeszcze finishUsing musze tu wsadzic i cos tam na tick usage i maxusetime itd
     TypedActionResult<ItemStack> muaUseItem(Identifier selectedAction, World world, PlayerEntity user, Hand hand);

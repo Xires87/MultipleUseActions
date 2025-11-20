@@ -1,7 +1,7 @@
 package net.fryc.frycmua.mixin;
 
 import net.fryc.frycmua.item.action.registry.UseActionRegistries;
-import net.fryc.frycmua.util.interfaces.UseActionRegistry;
+import net.fryc.frycmua.util.interfaces.item.UseActionRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.SimpleRegistry;

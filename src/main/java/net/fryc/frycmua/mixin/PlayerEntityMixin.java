@@ -2,7 +2,7 @@ package net.fryc.frycmua.mixin;
 
 
 import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.util.interfaces.SelectsUseAction;
+import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;

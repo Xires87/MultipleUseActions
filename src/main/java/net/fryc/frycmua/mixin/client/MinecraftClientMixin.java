@@ -1,17 +1,25 @@
 package net.fryc.frycmua.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.*;
-import net.fryc.frycmua.util.interfaces.HoldsActionManager;
-import net.fryc.frycmua.util.interfaces.HoldsUseActions;
-import net.fryc.frycmua.util.interfaces.SelectsUseAction;
+import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
+import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
+import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,28 +40,15 @@ abstract class MinecraftClientMixin {
     @Shadow
     public @Final GameRenderer gameRenderer;
 
-/*
-    @ModifyExpressionValue(
-            method = "doItemUse()V",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;crosshairTarget:Lnet/minecraft/util/hit/HitResult;", opcode = Opcodes.GETFIELD, ordinal = 1)
-    )
-    private HitResult controlItemUse(HitResult original) {
-        if(original != null){
-            ClientPlayerEntity player = MinecraftClient.getInstance().player;
-            if(player != null) {
-                if(!((SelectsUseAction) player).getSelectedUseAction().toString().equals(DefaultUseActions.USE_DEFAULT.toString())) {
-                    // TODO dziala (po kliknieciu przycisku nie mozna interactowac z blokami, tylko uzywa luku)
-                    return null;
-                }
-            }
-            // TODO to trzeba bedzie w wiele miejsc zinjectowac, nie tylko tutaj (interactItem, interactBlock itd.)
-            // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
-        }
+    @Shadow
+    @Nullable
+    public HitResult crosshairTarget;
 
-        return original;
-    }
+    @Shadow
+    @Nullable
+    public ClientWorld world;
 
- */
+
 
     @ModifyExpressionValue(
             method = "doItemUse()V",
@@ -61,6 +56,10 @@ abstract class MinecraftClientMixin {
     )
     private boolean controlItemUse(boolean original) {
         if(!original){
+            if (this.crosshairTarget == null) {
+                MultipleUseActions.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
+            }
+
             for(Identifier id : ((HoldsActionManager) this.player).getActionManager().getAvailableActions()){
                 if(id.toString().equals(DefaultUseActions.USE_DEFAULT.toString())){
                     ((SelectsUseAction) this.player).setSelectedUseAction(id);// TODO rozroznianie defaultowych akcji (block i entity powinno puszczac, use powinno odpalac)
@@ -68,11 +67,17 @@ abstract class MinecraftClientMixin {
                 }
 
                 Hand hand = Hand.MAIN_HAND;// TODO wybieranie priorytetowej reki
-                UseInstance instance = ((HoldsUseActions) this.player.getMainHandStack().getItem()).getUseInstance(id);
-                if(instance == null){
-                    instance = ((HoldsUseActions) this.player.getOffHandStack().getItem()).getUseInstance(id);
+                ItemStack stack = this.player.getStackInHand(hand);
+
+                if (!canUseItem(stack, this.world, id)) {
                     hand = hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+                    stack = this.player.getStackInHand(hand);
+                    if(!canUseItem(stack, this.world, id)){
+                        return false;
+                    }
                 }
+
+                UseInstance instance = ((HoldsUseActions) stack.getItem()).getUseInstance(id);
 
                 // checking for use
                 if(instance instanceof ItemUseInstance useInstance){
@@ -92,34 +97,64 @@ abstract class MinecraftClientMixin {
                     }
                 }
                 else if(instance instanceof ItemUseOnBlockInstance useInstance){
-                    // TODO do przerobienia tu
-                    /*
-                    if(useInstance.isAvailable().test(this.player, hand)){
-                        ((SelectsUseAction) this.player).setSelectedUseAction(id);
-                        this.interactionManager.interactBlock(this.player, hand);
+                    if(this.crosshairTarget.getType() == HitResult.Type.BLOCK){
+                        // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
+                        BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
+                        if(useInstance.isAvailable().test(this.player, blockHitResult, hand)){
+                            ((SelectsUseAction) this.player).setSelectedUseAction(id);
+                            int i = stack.getCount();
+                            ActionResult actionResult2 = this.interactionManager.interactBlock(this.player, hand, blockHitResult);
+                            if (actionResult2.isAccepted()) {
+                                if (actionResult2.shouldSwingHand()) {
+                                    this.player.swingHand(hand);
+                                    if (!stack.isEmpty() && (stack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
+                                        this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+                                    }
+                                }
 
-                        return true;
+                                return true;
+                            }
+
+                            if (actionResult2 == ActionResult.FAIL) {
+                                return true;
+                            }
+                        }
                     }
-
-                     */
                 }
                 else if(instance instanceof ItemUseOnEntityInstance useInstance){
-                    // TODO tu tez do przerobienia
-                    /*
-                    if(useInstance.isAvailable().test(this.player, hand)){
-                        ((SelectsUseAction) this.player).setSelectedUseAction(id);
-                        this.interactionManager.interactEntityAtLocation(this.player, hand);
+                    if(this.crosshairTarget.getType() == HitResult.Type.ENTITY){
+                        EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
+                        Entity entity = entityHitResult.getEntity();
+                        if(useInstance.isAvailable().test(this.player, entity, entityHitResult, hand)){
+                            ((SelectsUseAction) this.player).setSelectedUseAction(id);
+                            if (!this.world.getWorldBorder().contains(entity.getBlockPos())) {
+                                return true;
+                            }
 
-                        return true;
+                            ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
+                            if (!actionResult.isAccepted()) {
+                                actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
+                            }
+
+                            if (actionResult.isAccepted()) {
+                                if (actionResult.shouldSwingHand()) {
+                                    this.player.swingHand(hand);
+                                }
+
+                                return true;
+                            }
+                        }
                     }
-
-                     */
                 }
             }
         }
 
         ((SelectsUseAction) this.player).setSelectedUseAction(DefaultUseActions.DEFAULT);
         return original;
+    }
+
+    private static boolean canUseItem(ItemStack stack, World world, Identifier useInstanceId){
+        return stack.isItemEnabled(world.getEnabledFeatures()) && ((HoldsUseActions) stack.getItem()).getUseInstance(useInstanceId) != null;
     }
 
 }

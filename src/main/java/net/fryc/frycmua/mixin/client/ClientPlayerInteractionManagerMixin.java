@@ -2,7 +2,7 @@ package net.fryc.frycmua.mixin.client;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fryc.frycmua.network.payload.SelectUseActionPayload;
-import net.fryc.frycmua.util.interfaces.SelectsUseAction;
+import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.Entity;

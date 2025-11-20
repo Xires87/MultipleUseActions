@@ -1,6 +1,6 @@
 package net.fryc.frycmua.screen;
 
-import net.fryc.frycmua.util.interfaces.SelectsUseAction;
+import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;

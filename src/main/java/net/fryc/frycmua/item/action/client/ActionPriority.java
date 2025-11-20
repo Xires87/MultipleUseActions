@@ -2,7 +2,7 @@ package net.fryc.frycmua.item.action.client;
 
 import net.fryc.frycmua.item.action.DefaultUseActions;
 import net.fryc.frycmua.util.client.UseActionPriorityHelper;
-import net.fryc.frycmua.util.interfaces.HoldsUseActions;
+import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
