@@ -21,36 +21,36 @@ public class DefaultUseActions {
     public static final ItemUseInstance BOW_PULL = new ItemUseInstance(
             BowItem.class,
             true,
-            DefaultUseActions::bowPullUseItem,
-            DefaultUseActions::bowPullItemUsageTick,
-            DefaultUseActions::bowPullOnStoppedUsingItem,
-            DefaultUseActions::bowPullFinishUsingItem,
-            DefaultUseActions::bowPullGetMaxItemUseTime,
-            DefaultUseActions::bowPullGetItemUseAction,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
             (player, hand) -> !player.getProjectileType(player.getStackInHand(hand)).isEmpty()
     );
 
-    private static TypedActionResult<ItemStack> bowPullUseItem(Item item, World world, PlayerEntity user, Hand hand) {
+    private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
         return item.use(world, user, hand);
     }
 
-    private static ItemStack bowPullFinishUsingItem(ItemStack stack, World world, LivingEntity user) {
+    private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {
         return stack.finishUsing(world, user);
     }
 
-    private static void bowPullOnStoppedUsingItem(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+    private static void defaultOnStoppedUsingItem(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         stack.onStoppedUsing(world, user, remainingUseTicks);
     }
 
-    private static void bowPullItemUsageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    private static void defaultItemUsageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         stack.usageTick(world, user, remainingUseTicks);
     }
 
-    private static int bowPullGetMaxItemUseTime(ItemStack stack, LivingEntity user) {
+    private static int defaultGetMaxItemUseTime(ItemStack stack, LivingEntity user) {
         return stack.getMaxUseTime(user);
     }
 
-    private static UseAction bowPullGetItemUseAction(ItemStack stack) {
+    private static UseAction defaultGetItemUseAction(ItemStack stack) {
         return stack.getUseAction();
     }
 }
