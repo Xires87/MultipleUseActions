@@ -15,7 +15,7 @@ public class ActionManager {
 
     private List<Identifier> availableActions = List.of();
     private final ClientPlayerEntity player;
-    private final KeyBinding keybinding;
+    public final KeyBinding keybinding;
     private ActionPriority actionPriority;
     private ItemStack mainHandStack = ItemStack.EMPTY;
     private ItemStack offHandStack = ItemStack.EMPTY;

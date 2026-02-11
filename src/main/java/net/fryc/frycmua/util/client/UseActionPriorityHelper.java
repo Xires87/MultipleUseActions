@@ -20,6 +20,7 @@ public class UseActionPriorityHelper {
 
     public static void initUseActionPriorities() {
         // TODO odczyt i zapis do pliku (i nie wiem jak z tym defaultem zrobic, czy 3 defaulty czy 1 ktory oddaje sterowanie vanilli
+        // TODO chyba zrobie 4 defaulty: 3 te na use i 1 nazwane default ktore bedzie oddawalo stery minecraftowi
         MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_ON_ENTITY_DEFAULT, 12);
         MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_ON_BLOCK_DEFAULT, 11);
         MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(DefaultUseActions.USE_DEFAULT, 10);

@@ -3,12 +3,14 @@ package net.fryc.frycmua.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.*;
+import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
 import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -25,6 +27,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.Optional;
 
 @Mixin(MinecraftClient.class)
 abstract class MinecraftClientMixin {
@@ -48,6 +52,60 @@ abstract class MinecraftClientMixin {
     @Nullable
     public ClientWorld world;
 
+    //targeted useKey.wasPressed():
+    //
+    //            while(this.options.useKey.wasPressed()) {
+    //            }
+    @ModifyExpressionValue(
+            method = "handleInputEvents()V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 11)
+    )
+    private boolean useKeyOrMuaKeyPressed_11thWasPressed(boolean original) {
+        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().anyMatch(KeyBinding::wasPressed);
+    }
+
+    //targeted useKey.wasPressed():
+    //
+    //            while(this.options.useKey.wasPressed()) {
+    //                this.doItemUse();
+    //            }
+    @ModifyExpressionValue(
+            method = "handleInputEvents()V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 14)
+    )
+    private boolean useKeyOrMuaKeyPressed_14thWasPressed(boolean original) {
+        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().filter(KeyBinding::wasPressed).findFirst();
+
+        return this.tryToUpdateCurrentActionManager(original ? MinecraftClient.getInstance().options.useKey : pressedKey.orElse(null));
+    }
+
+    //targeted useKey.isPressed():
+    //
+    //        if (!this.options.useKey.isPressed()) {
+    //            this.interactionManager.stopUsingItem(this.player);
+    //        }
+    @ModifyExpressionValue(
+            method = "handleInputEvents()V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z", ordinal = 2)
+    )
+    private boolean useKeyOrMuaKeyPressed_2thIsPressed(boolean original) {
+        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().anyMatch(KeyBinding::isPressed);
+    }
+
+    //targeted useKey.isPressed():
+    //
+    //        if (this.options.useKey.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
+    //            this.doItemUse();
+    //        }
+    @ModifyExpressionValue(
+            method = "handleInputEvents()V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z", ordinal = 3)
+    )
+    private boolean useKeyOrMuaKeyPressed_3thIsPressed(boolean original) {
+        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().filter(KeyBinding::isPressed).findFirst();
+
+        return this.tryToUpdateCurrentActionManager(original ? MinecraftClient.getInstance().options.useKey : pressedKey.orElse(null));
+    }
 
 
     @ModifyExpressionValue(
@@ -55,14 +113,26 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isRiding()Z")
     )
     private boolean controlItemUse(boolean original) {
+        /*
+        if(MinecraftClient.getInstance().options.useKey.equals(((HoldsActionManager) this.player).getCurrentActionManager().keybinding)){
+            MultipleUseActions.LOGGER.warn("Wybrano domyslnego action managera");
+        }
+        else {
+            ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
+                if(value.equals(((HoldsActionManager) this.player).getCurrentActionManager().keybinding)){
+                    MultipleUseActions.LOGGER.warn("Wybrano action manager z kebindem: " + key);
+                }
+            });
+        }
+         */
         if(!original){
             if (this.crosshairTarget == null) {
                 MultipleUseActions.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
             }
 
-            for(Identifier id : ((HoldsActionManager) this.player).getActionManager().getAvailableActions()){
-                if(id.toString().equals(DefaultUseActions.USE_DEFAULT.toString())){
-                    ((SelectsUseAction) this.player).setSelectedUseAction(id);// TODO rozroznianie defaultowych akcji (block i entity powinno puszczac, use powinno odpalac)
+            for(Identifier id : ((HoldsActionManager) this.player).getCurrentActionManager().getAvailableActions()){
+                if(id.toString().equals(DefaultUseActions.DEFAULT.toString())){
+                    //((SelectsUseAction) this.player).setSelectedUseAction(id);// TODO rozroznianie defaultowych akcji (block i entity powinno puszczac, use powinno odpalac)
                     break;
                 }
 
@@ -155,6 +225,16 @@ abstract class MinecraftClientMixin {
 
     private static boolean canUseItem(ItemStack stack, World world, Identifier useInstanceId){
         return stack.isItemEnabled(world.getEnabledFeatures()) && ((HoldsUseActions) stack.getItem()).getUseInstance(useInstanceId) != null;
+    }
+
+    private boolean tryToUpdateCurrentActionManager(@Nullable KeyBinding pressedKey){
+        if(pressedKey != null) {
+            ((HoldsActionManager) this.player).setCurrentActionManager(((HoldsActionManager) this.player).getActionManager(pressedKey));
+
+            return true;
+        }
+
+        return false;
     }
 
 }
