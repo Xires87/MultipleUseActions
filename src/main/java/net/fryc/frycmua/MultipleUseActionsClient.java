@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class MultipleUseActionsClient implements ClientModInitializer {
 
+	// TODO priorytety powinny chyba byc niestatyczne w action managerze (zeby dla kazdego keybindu mogl byc inny priorytet)
 	public static final Map<Identifier, Integer> USE_ACTION_PRIORITIES = new HashMap<>();
 
 	@Override

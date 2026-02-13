@@ -1,6 +1,7 @@
 package net.fryc.frycmua.item.action.client;
 
 import net.fryc.frycmua.item.action.DefaultUseActions;
+import net.fryc.frycmua.item.action.registry.UseActionRegistries;
 import net.fryc.frycmua.util.client.UseActionPriorityHelper;
 import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
 import net.minecraft.item.ItemStack;
@@ -14,14 +15,20 @@ import java.util.List;
 public enum ActionPriority {
 
     DEFAULT {
+        // TODO nie bedzie use action default tylko ten typ wlasnie i on sie jak vanilla bedzie zachowywac
         @Override
-        List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+            return List.of();
+        }
+
+        @Override
+        public List<Identifier> getAllOrderedUseActions() {
             return List.of();
         }
     },
     BLOCK_OR_ENTITY {
         @Override
-        List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
             HashSet<Identifier> set = new HashSet<>();
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnEntityActionIds());
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnEntityActionIds());
@@ -44,11 +51,16 @@ public enum ActionPriority {
             list.addAll(list2);
 
             return List.copyOf(list);
+        }
+
+        @Override
+        public List<Identifier> getAllOrderedUseActions() {
+            return List.of();
         }
     },
     USE {
         @Override
-        List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
             HashSet<Identifier> set = new HashSet<>();
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
@@ -72,10 +84,15 @@ public enum ActionPriority {
 
             return List.copyOf(list);
         }
+
+        @Override
+        public List<Identifier> getAllOrderedUseActions() {
+            return List.of();
+        }
     },
     MIXED {
         @Override
-        List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
+        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack) {
             HashSet<Identifier> set = new HashSet<>();
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
@@ -85,11 +102,28 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
 
             List<Identifier> list = new ArrayList<>(set);
+            list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
+
+            return List.copyOf(list);
+        }
+
+        @Override
+        public List<Identifier> getAllOrderedUseActions() {
+            ArrayList<Identifier> list = new ArrayList<>();
+            list.add(DefaultUseActions.USE_DEFAULT);
+            list.add(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
+            list.add(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
+            list.addAll(UseActionRegistries.REGISTERED_USE_ACTIONS.keySet());
+            list.addAll(UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.keySet());
+            list.addAll(UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.keySet());
+
             list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             return List.copyOf(list);
         }
     };
 
-    abstract List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack);
+    public abstract List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack);
+
+    public abstract List<Identifier> getAllOrderedUseActions();
 }

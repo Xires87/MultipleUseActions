@@ -125,13 +125,16 @@ abstract class MinecraftClientMixin {
             });
         }
          */
-        if(!original){
+        if(!((HoldsActionManager) this.player).getCurrentActionManager().shouldUseVanillaSystem() && !original){
             if (this.crosshairTarget == null) {
                 MultipleUseActions.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
             }
 
             for(Identifier id : ((HoldsActionManager) this.player).getCurrentActionManager().getAvailableActions()){
-                if(id.toString().equals(DefaultUseActions.DEFAULT.toString())){
+                if(id.toString().equals(DefaultUseActions.DEFAULT.toString()) ||
+                        id.toString().equals(DefaultUseActions.USE_DEFAULT.toString()) ||
+                        id.toString().equals(DefaultUseActions.USE_ON_ENTITY_DEFAULT.toString()) ||
+                        id.toString().equals(DefaultUseActions.USE_ON_BLOCK_DEFAULT.toString())){
                     //((SelectsUseAction) this.player).setSelectedUseAction(id);// TODO rozroznianie defaultowych akcji (block i entity powinno puszczac, use powinno odpalac)
                     break;
                 }

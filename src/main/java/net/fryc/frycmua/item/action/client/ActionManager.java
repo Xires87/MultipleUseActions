@@ -29,12 +29,17 @@ public class ActionManager {
 
     public void updateAvailableActions(){
         if(this.shouldUpdateAvailableActions()){
-            this.mainHandStack = player.getMainHandStack();
-            this.offHandStack = player.getOffHandStack();
-            this.availableActions = this.actionPriority.getOrderedUseActions(this.mainHandStack, this.offHandStack);
-            this.availableActions.forEach(el -> {
-                MultipleUseActions.LOGGER.warn(el.toString());
-            });
+            this.forceUpdateAvailableActions();
+        }
+    }
+
+    public void forceUpdateAvailableActions() {
+        this.mainHandStack = player.getMainHandStack();
+        this.offHandStack = player.getOffHandStack();
+        this.availableActions = this.actionPriority.getOrderedUseActions(this.mainHandStack, this.offHandStack);
+        this.availableActions.forEach(el -> {
+            MultipleUseActions.LOGGER.warn(el.toString());
+        });
             /*
             ((HoldsUseActions) first.getItem()).getAllActionsIds().stream().filter(id -> {
 // TODO nie ma sensu wedlug rak robic (jak beda 2 takie same to bedzie sie prawa odpalala i tyle)
@@ -42,11 +47,10 @@ public class ActionManager {
             })
 
              */
-        }
     }
 
     public boolean shouldUpdateAvailableActions(){
-        return /* TODO this.availableActions.isEmpty() || */this.mainHandStack != this.player.getMainHandStack() || this.offHandStack != this.player.getOffHandStack();
+        return this.mainHandStack != this.player.getMainHandStack() || this.offHandStack != this.player.getOffHandStack();
     }
 
     public List<Identifier> getAvailableActions(){
@@ -55,6 +59,10 @@ public class ActionManager {
 
     public void setActionPriority(ActionPriority priority){
         this.actionPriority = priority;
+    }
+
+    public boolean shouldUseVanillaSystem(){
+        return this.actionPriority.equals(ActionPriority.DEFAULT);
     }
 
 }
