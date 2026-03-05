@@ -3,6 +3,7 @@ package net.fryc.frycmua.mixin.client;
 import com.mojang.authlib.GameProfile;
 import net.fryc.frycmua.item.action.client.ActionManager;
 import net.fryc.frycmua.item.action.client.ActionPriority;
+import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
@@ -35,11 +36,11 @@ abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implem
 
     @Inject(method = "<init>(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/network/ClientPlayNetworkHandler;Lnet/minecraft/stat/StatHandler;Lnet/minecraft/client/recipebook/ClientRecipeBook;ZZ)V", at = @At("TAIL"))
     private void initActionManager(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting, CallbackInfo info){
-        ActionManager defaultManager = new ActionManager(client.options.useKey, ActionPriority.MIXED, ((ClientPlayerEntity)(Object)this));
+        ActionManager defaultManager = new ActionManager(client.options.useKey, new PriorityManager(ActionPriority.DEFAULT), ((ClientPlayerEntity)(Object)this));
         this.currentActionManager = defaultManager;
         this.actionManagers.put(client.options.useKey, defaultManager);
-        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().forEach(key -> {
-            this.actionManagers.put(key, new ActionManager(key, ActionPriority.MIXED, ((ClientPlayerEntity)(Object)this)));
+        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, pManager) -> {
+            this.actionManagers.put(key, new ActionManager(key, pManager, ((ClientPlayerEntity)(Object)this)));
         });
     }
 

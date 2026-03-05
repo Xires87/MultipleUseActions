@@ -1,0 +1,104 @@
+package net.fryc.frycmua.item.action.client;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Environment(EnvType.CLIENT)
+public class PriorityManager {
+
+    private final ArrayList<PriorityManager.Entry> entries;
+    private ActionPriority actionPriority;
+
+
+    public PriorityManager(ActionPriority actionPriority) {
+        this(actionPriority, new ArrayList<>());
+    }
+
+    public PriorityManager(ActionPriority actionPriority, ArrayList<PriorityManager.Entry> entries) {
+        this.actionPriority = actionPriority;
+        this.entries = new ArrayList<>(this.actionPriority.addOtherUseActions(entries));
+    }
+
+// TODO chyba z tym przesuwaniem na odwrot zrobilem i bede musial odwrocic ale nie wiem jeszcze
+    public void moveUp(PriorityManager.Entry entry) {
+        if(this.canMoveUp(entry)){
+            this.move(entry, 1);
+        }
+    }
+
+    public boolean canMoveUp(PriorityManager.Entry entry) {
+        if(!this.entries.contains(entry)) return false;
+
+        return this.entries.indexOf(entry) < this.entries.size() - 1;
+    }
+
+    public void moveDown(PriorityManager.Entry entry) {
+        if(this.canMoveDown(entry)){
+            this.move(entry, -1);
+        }
+    }
+
+    public boolean canMoveDown(PriorityManager.Entry entry) {
+        if(!this.entries.contains(entry)) return false;
+
+        return this.entries.indexOf(entry) > 0;
+    }
+
+    public void move(PriorityManager.Entry entry, int distance) {
+        int i = this.entries.indexOf(entry);
+        this.entries.remove(i);
+        this.entries.add(i + distance, entry);
+    }
+
+    public List<Identifier> getOrderedAvailableUseActions(ItemStack mainHandStack, ItemStack offHandStack) {
+        return this.getActionPriority().getOrderedUseActions(mainHandStack, offHandStack, this.getEntries());
+    }
+
+    public List<PriorityManager.Entry> getEntries() {
+        return List.copyOf(this.entries);
+    }
+
+    public ActionPriority getActionPriority() {
+        return this.actionPriority;
+    }
+
+    public void setActionPriority(ActionPriority priority){
+        this.actionPriority = priority;
+    }
+
+    @Nullable
+    public PriorityManager.Entry getEntryById(Identifier id) {
+        return this.entries.stream().filter(entry -> entry.getActionId().equals(id)).findFirst().orElse(null);
+    }
+
+
+    @Environment(EnvType.CLIENT)
+    public static class Entry {
+
+        private boolean active;
+        private final Identifier actionId;
+
+        public Entry(Identifier actionId, boolean active) {
+            this.actionId = actionId;
+            this.active = active;
+        }
+
+        public Identifier getActionId() {
+            return this.actionId;
+        }
+
+        public boolean isActive() {
+            return this.active;
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
+        }
+    }
+}

@@ -1,22 +1,18 @@
 package net.fryc.frycmua;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fryc.frycmua.keybind.ModKeybinds;
-import net.fryc.frycmua.util.client.UseActionPriorityHelper;
-import net.minecraft.util.Identifier;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.fryc.frycmua.util.client.FileHelper;
 
 public class MultipleUseActionsClient implements ClientModInitializer {
-
-	// TODO priorytety powinny chyba byc niestatyczne w action managerze (zeby dla kazdego keybindu mogl byc inny priorytet)
-	public static final Map<Identifier, Integer> USE_ACTION_PRIORITIES = new HashMap<>();
 
 	@Override
 	public void onInitializeClient() {
 		ModKeybinds.register();
 
-		UseActionPriorityHelper.initUseActionPriorities();
+		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
+			FileHelper.saveAdditionalUseKeysEntries();
+		});
 	}
 }

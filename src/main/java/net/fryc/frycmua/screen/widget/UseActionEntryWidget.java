@@ -2,9 +2,7 @@ package net.fryc.frycmua.screen.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.MultipleUseActionsClient;
 import net.fryc.frycmua.screen.ActionManagerScreen;
-import net.fryc.frycmua.util.client.UseActionPriorityHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -86,7 +84,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 if (d <= (double)32.0F) {
                     if(this.canBeHigherInList(i)){
                         if (d > (double)16.0F && e < (double)16.0F) {
-                            MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) + 1);
+                            //MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) + 1);
                             this.parent.screen.reorderAllChildren();
                             this.parent.children().stream().filter(child -> child.actionId.toString().equals(this.actionId.toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
@@ -98,7 +96,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
                     if(this.canBeLowerInList(i)){
                         if (d > (double)16.0F && e > (double)16.0F) {
-                            MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) - 1);
+                            //MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) - 1);
                             this.parent.screen.reorderAllChildren();
                             this.parent.children().stream().filter(child -> child.actionId.toString().equals(this.actionId.toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);

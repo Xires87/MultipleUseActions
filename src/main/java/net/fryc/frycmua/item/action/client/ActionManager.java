@@ -15,15 +15,15 @@ public class ActionManager {
 
     private List<Identifier> availableActions = List.of();
     private final ClientPlayerEntity player;
-    public final KeyBinding keybinding;
-    private ActionPriority actionPriority;
+    private final KeyBinding keybinding;
+    private final PriorityManager priorityManager;
     private ItemStack mainHandStack = ItemStack.EMPTY;
     private ItemStack offHandStack = ItemStack.EMPTY;
 
 
-    public ActionManager(KeyBinding keybinding, ActionPriority priority, ClientPlayerEntity player){
+    public ActionManager(KeyBinding keybinding, PriorityManager priorityManager, ClientPlayerEntity player){
         this.keybinding = keybinding;
-        this.actionPriority = priority;
+        this.priorityManager = priorityManager;
         this.player = player;
     }
 
@@ -36,7 +36,7 @@ public class ActionManager {
     public void forceUpdateAvailableActions() {
         this.mainHandStack = player.getMainHandStack();
         this.offHandStack = player.getOffHandStack();
-        this.availableActions = this.actionPriority.getOrderedUseActions(this.mainHandStack, this.offHandStack);
+        this.availableActions = this.getPriorityManager().getOrderedAvailableUseActions(this.mainHandStack, this.offHandStack);
         this.availableActions.forEach(el -> {
             MultipleUseActions.LOGGER.warn(el.toString());
         });
@@ -57,12 +57,16 @@ public class ActionManager {
         return this.availableActions;
     }
 
-    public void setActionPriority(ActionPriority priority){
-        this.actionPriority = priority;
+    public boolean shouldUseVanillaSystem(){
+        return this.getPriorityManager().getActionPriority().equals(ActionPriority.DEFAULT);
     }
 
-    public boolean shouldUseVanillaSystem(){
-        return this.actionPriority.equals(ActionPriority.DEFAULT);
+    public KeyBinding getKeyBinding() {
+        return this.keybinding;
+    }
+
+    public PriorityManager getPriorityManager() {
+        return this.priorityManager;
     }
 
 }

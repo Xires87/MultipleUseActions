@@ -61,7 +61,7 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 11)
     )
     private boolean useKeyOrMuaKeyPressed_11thWasPressed(boolean original) {
-        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().anyMatch(KeyBinding::wasPressed);
+        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.keySet().stream().anyMatch(KeyBinding::wasPressed);
     }
 
     //targeted useKey.wasPressed():
@@ -74,7 +74,7 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 14)
     )
     private boolean useKeyOrMuaKeyPressed_14thWasPressed(boolean original) {
-        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().filter(KeyBinding::wasPressed).findFirst();
+        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.keySet().stream().filter(KeyBinding::wasPressed).findFirst();
 
         return this.tryToUpdateCurrentActionManager(original ? MinecraftClient.getInstance().options.useKey : pressedKey.orElse(null));
     }
@@ -89,7 +89,7 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z", ordinal = 2)
     )
     private boolean useKeyOrMuaKeyPressed_2thIsPressed(boolean original) {
-        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().anyMatch(KeyBinding::isPressed);
+        return original || ModKeybinds.MUA_ADDITIONAL_USE_KEYS.keySet().stream().anyMatch(KeyBinding::isPressed);
     }
 
     //targeted useKey.isPressed():
@@ -102,7 +102,7 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z", ordinal = 3)
     )
     private boolean useKeyOrMuaKeyPressed_3thIsPressed(boolean original) {
-        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().stream().filter(KeyBinding::isPressed).findFirst();
+        Optional<KeyBinding> pressedKey = ModKeybinds.MUA_ADDITIONAL_USE_KEYS.keySet().stream().filter(KeyBinding::isPressed).findFirst();
 
         return this.tryToUpdateCurrentActionManager(original ? MinecraftClient.getInstance().options.useKey : pressedKey.orElse(null));
     }

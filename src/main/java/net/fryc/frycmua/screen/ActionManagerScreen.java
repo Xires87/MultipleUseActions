@@ -111,7 +111,7 @@ public class ActionManagerScreen extends Screen {
     }
 
     public void addAllChildren() {
-        ActionPriority.MIXED.getAllOrderedUseActions().forEach(id -> {
+        ActionPriority.MIXED.getAllPartiallyOrderedUseActions().forEach(id -> {
             this.widget.children().add(new UseActionEntryWidget.UseActionEntry(this.client, this.widget, id));
         });
     }
