@@ -27,8 +27,6 @@ public class MultipleUseActions implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
-
 		ModPackets.registerC2SPackets();
 
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("bow_pull"), DefaultUseActions.BOW_PULL);

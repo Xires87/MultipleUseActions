@@ -3,67 +3,63 @@ package net.fryc.frycmua.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fryc.frycmua.item.action.client.ActionManager;
-import net.fryc.frycmua.item.action.client.ActionPriority;
+import net.fryc.frycmua.item.action.client.PriorityManager;
+import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.screen.widget.UseActionEntryWidget;
 import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class ActionManagerScreen extends Screen {
 
     private UseActionEntryWidget widget;
+    private PriorityManager selectedPriorityManager;
+    private List<ButtonWidget> buttons = new ArrayList<>();
 
     public ActionManagerScreen(Text title) {
         super(title);
+        this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
     }
 
 
     @Override
     protected void init() {
-        /*
-        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Hello World"), (btn) -> {
-            if(this.client != null){
-                if(this.client.player != null){
-                    //((SelectsUseAction) this.client.player).setSelectedUseAction(Identifier.ofVanilla("bow_pull"));
-                    btn.active = false;
-                }
-            }
+        // TODO dodac scrollowanie jak sie nie mieszcza guziki na ekranie
+        this.buttons = new ArrayList<>();
+        Text useKeyText = Text.translatable(this.client.options.useKey.getTranslationKey());
+        ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {
+            this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
+            this.buttons.forEach(btn2 -> btn2.active = true);
+            btn.active = false;
+            this.reorderAllChildren();
+        }).position(20, 20).size(this.textRenderer.getWidth(useKeyText) + 5, 20).build();
+        useKeyButton.active = false;
+        this.addDrawableChild(useKeyButton);
+        this.buttons.add(useKeyButton);
 
-            // When the button is clicked, we can display a toast to the screen.
-            this.client.getToastManager().add(
-                    SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Hello World!"), Text.of("This is a toast."))
-            );
-        }).dimensions(40, 40, 120, 20).build();
-
-
-        // x, y, width, height
-        // It's recommended to use the fixed height of 20 to prevent rendering issues with the button
-        // textures.
-
-
-        // Register the button widget.
-        //this.addDrawableChild(buttonWidget);
-
-
-        int i = 0;
-        for(ActionManager manager : ((HoldsActionManager) this.client.player).getAllActionManagers()){
-            ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable(manager.keybinding.getTranslationKey()), (btn) -> {
-                
-
+        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
+            Text text = Text.translatable(key.getTranslationKey());
+            int lastButtonXWithWidth = this.buttons.isEmpty() ? 0 : this.buttons.getLast().getX() + this.buttons.getLast().getWidth();
+            ButtonWidget buttonWidget = ButtonWidget.builder(text, (btn) -> {
+                this.selectedPriorityManager = value;
+                this.buttons.forEach(btn2 -> btn2.active = true);
                 btn.active = false;
-            }).position(120 + i, 40).build();
-            this.addDrawableChild(buttonWidget);
+                this.reorderAllChildren();
+            }).position(15 + lastButtonXWithWidth + 5, 20).size(this.textRenderer.getWidth(text) + 5, 20).build();
 
-            i += 5 + buttonWidget.getWidth();
-        }
-*/
+            this.addDrawableChild(buttonWidget);
+            this.buttons.add(buttonWidget);
+        });
+
         this.widget = new UseActionEntryWidget(this.client, this, this.width / 2, (this.height / 4) * 3, this.height / 4, this.width / 2, 40);
         this.addDrawableChild(this.widget);
         this.addAllChildren();
-
-
     }
 
     @Override
@@ -76,8 +72,6 @@ public class ActionManagerScreen extends Screen {
             context.drawItem(stack, 0, 0);
 
         }
-
-
 
         ((HoldsActionManager) this.client.player).getAllActionManagers().forEach(manager -> {
             int i = 0;
@@ -111,8 +105,16 @@ public class ActionManagerScreen extends Screen {
     }
 
     public void addAllChildren() {
-        ActionPriority.MIXED.getAllPartiallyOrderedUseActions().forEach(id -> {
-            this.widget.children().add(new UseActionEntryWidget.UseActionEntry(this.client, this.widget, id));
+        this.getSelectedPriorityManager().getEntries().forEach(entry -> {
+            this.widget.children().add(new UseActionEntryWidget.UseActionEntry(this.client, this.widget, entry));
         });
+    }
+
+    public PriorityManager getSelectedPriorityManager() {
+        return this.selectedPriorityManager;
+    }
+
+    public void setSelectedPriorityManager(PriorityManager priorityManager) {
+        this.selectedPriorityManager = priorityManager;
     }
 }

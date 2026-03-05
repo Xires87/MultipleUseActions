@@ -2,6 +2,7 @@ package net.fryc.frycmua.screen.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.screen.ActionManagerScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -37,18 +38,18 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         private final MinecraftClient client;
         private final UseActionEntryWidget parent;
-        private final Identifier actionId;
+        private final PriorityManager.Entry action;
 
 
-        public UseActionEntry(MinecraftClient client, UseActionEntryWidget parent, Identifier actionId) {
+        public UseActionEntry(MinecraftClient client, UseActionEntryWidget parent, PriorityManager.Entry action) {
             this.client = client;
             this.parent = parent;
-            this.actionId = actionId;
+            this.action = action;
         }
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawText(this.client.textRenderer, this.actionId.toString(), x, y, 0xFFFFFFFF, true);
+            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x, y, 0xFFFFFFFF, true);
 
             int j = mouseX - x;
             int k = mouseY - y;
@@ -84,9 +85,9 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 if (d <= (double)32.0F) {
                     if(this.canBeHigherInList(i)){
                         if (d > (double)16.0F && e < (double)16.0F) {
-                            //MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) + 1);
+                            this.parent.screen.getSelectedPriorityManager().moveUp(this.action);
                             this.parent.screen.reorderAllChildren();
-                            this.parent.children().stream().filter(child -> child.actionId.toString().equals(this.actionId.toString())).findFirst().ifPresent(action -> {
+                            this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
 
@@ -96,9 +97,9 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
                     if(this.canBeLowerInList(i)){
                         if (d > (double)16.0F && e > (double)16.0F) {
-                            //MultipleUseActionsClient.USE_ACTION_PRIORITIES.put(this.actionId, UseActionPriorityHelper.getUseActionPriority(actionId) - 1);
+                            this.parent.screen.getSelectedPriorityManager().moveDown(this.action);
                             this.parent.screen.reorderAllChildren();
-                            this.parent.children().stream().filter(child -> child.actionId.toString().equals(this.actionId.toString())).findFirst().ifPresent(action -> {
+                            this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
 

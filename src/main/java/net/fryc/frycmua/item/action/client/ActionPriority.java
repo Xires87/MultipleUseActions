@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public enum ActionPriority {
-// TODO sortowanie jest teraz bez sensu musze to jakos inaczej zrobic (mozliwe ze nie bedzie sortowania)
+
     DEFAULT {
         // TODO nie bedzie use action default tylko ten typ wlasnie i on sie jak vanilla bedzie zachowywac
         @Override
@@ -58,7 +58,7 @@ public enum ActionPriority {
 
         @Override
         public List<Identifier> getAllPartiallyOrderedUseActions() {
-            return List.of();
+            return List.of();// TODO zrobic sortowanie dla pozostaluch typow priorytetow
         }
 
         @Override
@@ -114,12 +114,9 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnBlockActionIds());
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
 
-            //List<Identifier> list = new ArrayList<>(set);// TODO tutaj chyba inaczej bedzie z priority managerem
-            //list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
             List<Identifier> list = new ArrayList<>(
                     managerActions.stream().filter(PriorityManager.Entry::isActive).map(PriorityManager.Entry::getActionId).toList()
             ).stream().filter(set::contains).toList();
-
 
             return List.copyOf(list);
         }
@@ -133,8 +130,6 @@ public enum ActionPriority {
             list.addAll(UseActionRegistries.REGISTERED_USE_ACTIONS.keySet());
             list.addAll(UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.keySet());
             list.addAll(UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.keySet());
-
-            //list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
 
             return List.copyOf(list);
         }

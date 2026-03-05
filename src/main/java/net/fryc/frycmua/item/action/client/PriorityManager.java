@@ -2,6 +2,7 @@ package net.fryc.frycmua.item.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.util.client.FileHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,8 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class PriorityManager {
+
+    public static final PriorityManager DEFAULT_PRIORITY_MANAGER = FileHelper.getMainPriorityManager();
 
     private final ArrayList<PriorityManager.Entry> entries;
     private ActionPriority actionPriority;
@@ -25,26 +28,26 @@ public class PriorityManager {
         this.entries = new ArrayList<>(this.actionPriority.addOtherUseActions(entries));
     }
 
-// TODO chyba z tym przesuwaniem na odwrot zrobilem i bede musial odwrocic ale nie wiem jeszcze
-    public void moveUp(PriorityManager.Entry entry) {
-        if(this.canMoveUp(entry)){
+
+    public void moveDown(PriorityManager.Entry entry) {
+        if(this.canMoveDown(entry)){
             this.move(entry, 1);
         }
     }
 
-    public boolean canMoveUp(PriorityManager.Entry entry) {
+    public boolean canMoveDown(PriorityManager.Entry entry) {
         if(!this.entries.contains(entry)) return false;
 
         return this.entries.indexOf(entry) < this.entries.size() - 1;
     }
 
-    public void moveDown(PriorityManager.Entry entry) {
-        if(this.canMoveDown(entry)){
+    public void moveUp(PriorityManager.Entry entry) {
+        if(this.canMoveUp(entry)){
             this.move(entry, -1);
         }
     }
 
-    public boolean canMoveDown(PriorityManager.Entry entry) {
+    public boolean canMoveUp(PriorityManager.Entry entry) {
         if(!this.entries.contains(entry)) return false;
 
         return this.entries.indexOf(entry) > 0;

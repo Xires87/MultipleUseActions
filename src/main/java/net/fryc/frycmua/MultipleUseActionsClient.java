@@ -13,6 +13,7 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
 			FileHelper.saveAdditionalUseKeysEntries();
+			FileHelper.saveMainPriorityManager();
 		});
 	}
 }

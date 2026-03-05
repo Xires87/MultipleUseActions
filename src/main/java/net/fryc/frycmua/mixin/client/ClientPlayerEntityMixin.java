@@ -36,7 +36,7 @@ abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implem
 
     @Inject(method = "<init>(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/network/ClientPlayNetworkHandler;Lnet/minecraft/stat/StatHandler;Lnet/minecraft/client/recipebook/ClientRecipeBook;ZZ)V", at = @At("TAIL"))
     private void initActionManager(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting, CallbackInfo info){
-        ActionManager defaultManager = new ActionManager(client.options.useKey, new PriorityManager(ActionPriority.DEFAULT), ((ClientPlayerEntity)(Object)this));
+        ActionManager defaultManager = new ActionManager(client.options.useKey, PriorityManager.DEFAULT_PRIORITY_MANAGER, ((ClientPlayerEntity)(Object)this));
         this.currentActionManager = defaultManager;
         this.actionManagers.put(client.options.useKey, defaultManager);
         ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, pManager) -> {

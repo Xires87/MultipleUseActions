@@ -37,6 +37,7 @@ public class ActionManager {
         this.mainHandStack = player.getMainHandStack();
         this.offHandStack = player.getOffHandStack();
         this.availableActions = this.getPriorityManager().getOrderedAvailableUseActions(this.mainHandStack, this.offHandStack);
+        // TODO usunac tego loggera jak skoncze testowac
         this.availableActions.forEach(el -> {
             MultipleUseActions.LOGGER.warn(el.toString());
         });
