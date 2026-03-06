@@ -2,6 +2,7 @@ package net.fryc.frycmua.screen.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.screen.ActionManagerScreen;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,14 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier MOVE_UP_TEXTURE = Identifier.ofVanilla("transferable_list/move_up");
     private static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("transferable_list/move_down_highlighted");
     private static final Identifier MOVE_DOWN_TEXTURE = Identifier.ofVanilla("transferable_list/move_down");
+    private static final Identifier LOCKED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/locked");
+    private static final Identifier LOCKED_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/locked_highlighted");
+    private static final Identifier UNLOCKED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/unlocked");
+    private static final Identifier UNLOCKED_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/unlocked_highlighted");
+    private static final Identifier INACTIVE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/inactive");
+    private static final Identifier INACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/inactive_highlighted");
+    private static final Identifier ACTIVE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active");
+    private static final Identifier ACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active_highlighted");
 
     private final ActionManagerScreen screen;
 
@@ -56,7 +65,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
             if(this.equals(this.parent.getSelectedOrNull())){
                 if(this.canBeHigherInList()){
-                    if (j < 32 && j > 16 && k < 16) {
+                    if (j < 32 && j > 16 && k < 16 && k > 0) {
                         context.drawGuiTexture(MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
                     }
                     else {
@@ -65,12 +74,36 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 }
 
                 if(this.canBeLowerInList()){
-                    if (j < 32 && j > 16 && k > 16) {
+                    if (j < 32 && j > 16 && k > 16 && k < 32) {
                         context.drawGuiTexture(MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
                     }
                     else {
                         context.drawGuiTexture(MOVE_DOWN_TEXTURE, x, y, 32, 32);
                     }
+                }
+
+                j = x + entryWidth - mouseX;
+
+                if (j <= 24 && j >= 8 && k < 17 && k > 0) {
+                    context.drawGuiTexture(this.action.isActive() ? ACTIVE_HIGHLIGHTED_TEXTURE : INACTIVE_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y, 16, 16);
+                }
+                else {
+                    context.drawGuiTexture(this.action.isActive() ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, x + entryWidth - 24, y, 16, 16);
+                }
+
+                if (j <= 24 && j >= 8 && k > 17 && k < 33) {
+                    context.drawGuiTexture(this.action.isLocked() ? LOCKED_HIGHLIGHTED_TEXTURE : UNLOCKED_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
+                }
+                else {
+                    context.drawGuiTexture(this.action.isLocked() ? LOCKED_TEXTURE : UNLOCKED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
+                }
+            }
+            else {
+                if(!this.action.isActive()) {
+                    context.drawGuiTexture(INACTIVE_TEXTURE, x + entryWidth - 24, y, 16, 16);
+                }
+                else if(this.action.isLocked()) {
+                    context.drawGuiTexture(LOCKED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
                 }
             }
         }
@@ -82,6 +115,9 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 int i = this.parent.children().indexOf(this);
                 double d = mouseX - (double)this.parent.getRowLeft();
                 double e = mouseY - (double)this.parent.getRowTop(i);
+                //MultipleUseActions.LOGGER.warn("X: " + mouseX);
+                //MultipleUseActions.LOGGER.warn("Y: " + mouseY);
+                //MultipleUseActions.LOGGER.warn("RowRight: " + this.parent.getRowRight());
                 if (d <= (double)32.0F) {
                     if(this.canBeHigherInList(i)){
                         if (d > (double)16.0F && e < (double)16.0F) {
@@ -104,6 +140,18 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                             });
 
                             return true;
+                        }
+                    }
+                }
+                else {
+                    d = (double)this.parent.getRowRight() - mouseX;
+                    //MultipleUseActions.LOGGER.warn("D: " + d);
+                    if(d >= 8 && d <= 24) {
+                        if(e < 17) {
+                            this.action.setActive(!this.action.isActive());
+                        }
+                        else if(e > 17) {
+                            this.action.setLocked(!this.action.isLocked());
                         }
                     }
                 }

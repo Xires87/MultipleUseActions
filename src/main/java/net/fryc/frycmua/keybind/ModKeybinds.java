@@ -36,19 +36,6 @@ public class ModKeybinds {
                 }
             }
         });
-
-        /*
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            for(KeyBinding key : MUA_ADDITIONAL_USE_KEYS.keySet()){
-                if(key.isPressed()){
-                    //MultipleUseActions.LOGGER.warn("Mua key is pressed!");
-
-                    break;
-                }
-            }
-        });
-
-         */
     }
 
     public static void register() {
@@ -67,23 +54,6 @@ public class ModKeybinds {
                     KEY_CATEGORY_FRYCMUA
             )), manager);
         });
-
-        // TODO tutaj odczyt z pliku w configu zeby te keybindy zrobic zamiast recznego dodadwania
-        /*
-        MUA_ADDITIONAL_USE_KEYS.put(KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.frycmua.key_additional_use_key_1",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_UNKNOWN,
-                KEY_CATEGORY_FRYCMUA
-        )), );
-        MUA_ADDITIONAL_USE_KEYS.put(KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.frycmua.key_additional_use_key_2",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_UNKNOWN,
-                KEY_CATEGORY_FRYCMUA
-        )), );
-
-         */
 
         registerKeyInputs();
     }

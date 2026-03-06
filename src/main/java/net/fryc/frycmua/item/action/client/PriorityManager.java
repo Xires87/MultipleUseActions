@@ -85,11 +85,21 @@ public class PriorityManager {
     public static class Entry {
 
         private boolean active;
+        private boolean locked;
         private final Identifier actionId;
 
-        public Entry(Identifier actionId, boolean active) {
+        public Entry(Identifier actionId, boolean active, boolean locked) {
             this.actionId = actionId;
             this.active = active;
+            this.locked = locked;
+        }
+
+        public Entry(Identifier actionId, boolean active) {
+            this(actionId, active, false);
+        }
+
+        public Entry(Identifier actionId) {
+            this(actionId, false, false);
         }
 
         public Identifier getActionId() {
@@ -102,6 +112,14 @@ public class PriorityManager {
 
         public void setActive(boolean active) {
             this.active = active;
+        }
+
+        public boolean isLocked() {
+            return this.locked;
+        }
+
+        public void setLocked(boolean locked) {
+            this.locked = locked;
         }
     }
 }
