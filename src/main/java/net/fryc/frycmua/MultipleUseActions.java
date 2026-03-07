@@ -30,5 +30,7 @@ public class MultipleUseActions implements ModInitializer {
 		ModPackets.registerC2SPackets();
 
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("bow_pull"), DefaultUseActions.BOW_PULL);
+		UseActionRegistries.registerUseAction(Identifier.ofVanilla("crossbow_reload"), DefaultUseActions.CROSSBOW_RELOAD);
+		UseActionRegistries.registerUseAction(Identifier.ofVanilla("crossbow_shoot"), DefaultUseActions.CROSSBOW_SHOOT);
 	}
 }

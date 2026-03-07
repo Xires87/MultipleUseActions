@@ -58,7 +58,8 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x, y, 0xFFFFFFFF, true);
+            context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, 32, 32);
+            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
 
             int j = mouseX - x;
             int k = mouseY - y;
@@ -115,9 +116,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 int i = this.parent.children().indexOf(this);
                 double d = mouseX - (double)this.parent.getRowLeft();
                 double e = mouseY - (double)this.parent.getRowTop(i);
-                //MultipleUseActions.LOGGER.warn("X: " + mouseX);
-                //MultipleUseActions.LOGGER.warn("Y: " + mouseY);
-                //MultipleUseActions.LOGGER.warn("RowRight: " + this.parent.getRowRight());
+
                 if (d <= (double)32.0F) {
                     if(this.canBeHigherInList(i)){
                         if (d > (double)16.0F && e < (double)16.0F) {
@@ -145,13 +144,17 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 }
                 else {
                     d = (double)this.parent.getRowRight() - mouseX;
-                    //MultipleUseActions.LOGGER.warn("D: " + d);
+
                     if(d >= 8 && d <= 24) {
                         if(e < 17) {
                             this.action.setActive(!this.action.isActive());
+
+                            return true;
                         }
                         else if(e > 17) {
                             this.action.setLocked(!this.action.isLocked());
+
+                            return true;
                         }
                     }
                 }

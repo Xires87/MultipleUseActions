@@ -114,11 +114,17 @@ public enum ActionPriority {
             set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnBlockActionIds());
             set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
 
-            List<Identifier> list = new ArrayList<>(
-                    managerActions.stream().filter(PriorityManager.Entry::isActive).map(PriorityManager.Entry::getActionId).toList()
-            ).stream().filter(set::contains).toList();
+            List<PriorityManager.Entry> list = managerActions.stream().filter(PriorityManager.Entry::isActive).filter(entry -> {
+                return set.contains(entry.getActionId());
+            }).toList();
 
-            return List.copyOf(list);
+            List<Identifier> finalList = new ArrayList<>();
+            for(PriorityManager.Entry entry : list) {
+                finalList.add(entry.getActionId());
+                if(entry.isLocked()) break;
+            }
+
+            return List.copyOf(finalList);
         }
 
         @Override

@@ -3,6 +3,7 @@ package net.fryc.frycmua.item.action;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -11,12 +12,16 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
+import java.util.Set;
+
 public class DefaultUseActions {
 
     public static final Identifier DEFAULT = Identifier.ofVanilla("default");
     public static final Identifier USE_DEFAULT = Identifier.ofVanilla("use_default");
     public static final Identifier USE_ON_BLOCK_DEFAULT = Identifier.ofVanilla("use_on_block_default");
     public static final Identifier USE_ON_ENTITY_DEFAULT = Identifier.ofVanilla("use_on_entity_default");
+
+    public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT);
 
     public static final ItemUseInstance BOW_PULL = new ItemUseInstance(
             BowItem.class,
@@ -28,6 +33,32 @@ public class DefaultUseActions {
             DefaultUseActions::defaultGetMaxItemUseTime,
             DefaultUseActions::defaultGetItemUseAction,
             (player, hand) -> !player.getProjectileType(player.getStackInHand(hand)).isEmpty()
+    );
+
+    public static final ItemUseInstance CROSSBOW_RELOAD = new ItemUseInstance(
+            CrossbowItem.class,
+            true,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            (player, hand) -> {
+                return !player.getProjectileType(player.getStackInHand(hand)).isEmpty() && !CrossbowItem.isCharged(player.getStackInHand(hand));
+            }
+    );
+
+    public static final ItemUseInstance CROSSBOW_SHOOT = new ItemUseInstance(
+            CrossbowItem.class,
+            true,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            (player, hand) -> CrossbowItem.isCharged(player.getStackInHand(hand))
     );
 
     private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
