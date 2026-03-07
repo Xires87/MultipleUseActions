@@ -39,7 +39,7 @@ public class ActionManagerScreen extends Screen {
             btn.active = false;
             this.reorderAllChildren();
         }).position(20, 20).size(this.textRenderer.getWidth(useKeyText) + 5, 20).build();
-        useKeyButton.active = false;
+        useKeyButton.active = !this.selectedPriorityManager.equals(PriorityManager.DEFAULT_PRIORITY_MANAGER);
         this.addDrawableChild(useKeyButton);
         this.buttons.add(useKeyButton);
 
@@ -53,6 +53,7 @@ public class ActionManagerScreen extends Screen {
                 this.reorderAllChildren();
             }).position(15 + lastButtonXWithWidth + 5, 20).size(this.textRenderer.getWidth(text) + 5, 20).build();
 
+            buttonWidget.active = !this.selectedPriorityManager.equals(value);
             this.addDrawableChild(buttonWidget);
             this.buttons.add(buttonWidget);
         });
