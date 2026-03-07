@@ -113,18 +113,6 @@ abstract class MinecraftClientMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;isRiding()Z")
     )
     private boolean controlItemUse(boolean original) {
-        /*
-        if(MinecraftClient.getInstance().options.useKey.equals(((HoldsActionManager) this.player).getCurrentActionManager().keybinding)){
-            MultipleUseActions.LOGGER.warn("Wybrano domyslnego action managera");
-        }
-        else {
-            ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
-                if(value.equals(((HoldsActionManager) this.player).getCurrentActionManager().keybinding)){
-                    MultipleUseActions.LOGGER.warn("Wybrano action manager z kebindem: " + key);
-                }
-            });
-        }
-         */
         if(!((HoldsActionManager) this.player).getCurrentActionManager().shouldUseVanillaSystem() && !original){
             if (this.crosshairTarget == null) {
                 MultipleUseActions.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
@@ -143,62 +131,69 @@ abstract class MinecraftClientMixin {
                     UseInstance instance = ((HoldsUseActions) stack.getItem()).getUseInstance(id);
 
                     // checking for use
-                    if(instance == null) {
-                        if(id.equals(DefaultUseActions.USE_DEFAULT)) {
-                            if(this.performUseAction(id, hand)) {
-                                return true;
+                    switch (instance) {
+                        case null -> {
+                            if(id.equals(DefaultUseActions.USE_DEFAULT)) {
+                                if(this.performUseAction(id, hand)) {
+                                    return true;
+                                }
+                            }
+                            else if(id.equals(DefaultUseActions.USE_ON_BLOCK_DEFAULT)) {
+                                if(this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+                                    BlockHitResult blockHitResult = (BlockHitResult) this.crosshairTarget;
+
+                                    if(this.performUseOnBlockAction(id, hand, blockHitResult, stack)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            else if(id.equals(DefaultUseActions.USE_ON_ENTITY_DEFAULT)) {
+                                if(this.crosshairTarget.getType() == HitResult.Type.ENTITY) {
+                                    EntityHitResult entityHitResult = (EntityHitResult) this.crosshairTarget;
+                                    Entity entity = entityHitResult.getEntity();
+
+                                    if(performUseOnEntityAction(id, hand, entityHitResult, entity)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                            else {
+                                ((SelectsUseAction) this.player).setSelectedUseAction(DefaultUseActions.DEFAULT);
+                                return false;
                             }
                         }
-                        else if(id.equals(DefaultUseActions.USE_ON_BLOCK_DEFAULT)) {
-                            if(this.crosshairTarget.getType() == HitResult.Type.BLOCK){
-                                BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
-                                if(this.performUseOnBlockAction(id, hand, blockHitResult, stack)) {
+                        case ItemUseInstance useInstance -> {
+                            if(useInstance.isAvailable().test(this.player, hand)) {
+                                if(this.performUseAction(id, hand)) {
                                     return true;
                                 }
                             }
                         }
-                        else if(id.equals(DefaultUseActions.USE_ON_ENTITY_DEFAULT)) {
-                            if(this.crosshairTarget.getType() == HitResult.Type.ENTITY){
-                                EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
+                        case ItemUseOnBlockInstance useInstance -> {
+                            if(this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+                                // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
+                                BlockHitResult blockHitResult = (BlockHitResult) this.crosshairTarget;
+
+                                if(useInstance.isAvailable().test(this.player, blockHitResult, hand)) {
+                                    if(this.performUseOnBlockAction(id, hand, blockHitResult, stack)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        case ItemUseOnEntityInstance useInstance -> {
+                            if(this.crosshairTarget.getType() == HitResult.Type.ENTITY) {
+                                EntityHitResult entityHitResult = (EntityHitResult) this.crosshairTarget;
                                 Entity entity = entityHitResult.getEntity();
-                                if(performUseOnEntityAction(id, hand, entityHitResult, entity)) {
-                                    return true;
+
+                                if(useInstance.isAvailable().test(this.player, entity, entityHitResult, hand)) {
+                                    if(performUseOnEntityAction(id, hand, entityHitResult, entity)) {
+                                        return true;
+                                    }
                                 }
                             }
                         }
-                        else {
-                            ((SelectsUseAction) this.player).setSelectedUseAction(DefaultUseActions.DEFAULT);
-                            return false;
-                        }
-                    }
-                    else if(instance instanceof ItemUseInstance useInstance){
-                        if(useInstance.isAvailable().test(this.player, hand)){
-                            if(this.performUseAction(id, hand)) {
-                                return true;
-                            }
-                        }
-                    }
-                    else if(instance instanceof ItemUseOnBlockInstance useInstance){
-                        if(this.crosshairTarget.getType() == HitResult.Type.BLOCK){
-                            // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
-                            BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
-                            if(useInstance.isAvailable().test(this.player, blockHitResult, hand)){
-                                if(this.performUseOnBlockAction(id, hand, blockHitResult, stack)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    else if(instance instanceof ItemUseOnEntityInstance useInstance){
-                        if(this.crosshairTarget.getType() == HitResult.Type.ENTITY){
-                            EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
-                            Entity entity = entityHitResult.getEntity();
-                            if(useInstance.isAvailable().test(this.player, entity, entityHitResult, hand)){
-                                if(performUseOnEntityAction(id, hand, entityHitResult, entity)) {
-                                    return true;
-                                }
-                            }
-                        }
+                        default -> {}
                     }
                 }
             }
@@ -255,7 +250,7 @@ abstract class MinecraftClientMixin {
 
             return true;
         }
-
+        // TODO nie mam pewnosci co do faila czy powinno puszczac czy moze zablokowac
         return actionResult2 == ActionResult.FAIL;
     }
 
