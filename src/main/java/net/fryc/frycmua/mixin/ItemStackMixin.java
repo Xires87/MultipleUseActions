@@ -7,6 +7,7 @@ import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.interfaces.item.ExecutesUseActions;
 import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.component.ComponentHolder;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -15,7 +16,9 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +31,10 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Shadow
     public abstract Item getItem();
+
+    @Shadow
+    @Nullable
+    private Entity holder;
 
 
     @Inject(method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;", at = @At("RETURN"), cancellable = true)
@@ -68,21 +75,66 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
         }
     }
 
-    // TODO zrobic te wszystkie wymagane injecty i zapisac przy setCurrentHand czego sie uzywa zeby bylo wiadomo jakie finishUsing odpalic
     @Inject(method = "onStoppedUsing(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/item/Item;onStoppedUsing(Lnet/minecraft/item/ItemStack;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             shift = At.Shift.BEFORE
     ), cancellable = true)
     private void replaceVanillaOnStoppedUsingWithMuaOnStoppedUsing_ItemStack(World world, LivingEntity user, int remainingUseTicks, CallbackInfo info) {
-        if(user instanceof PlayerEntity){
-            // TODO tutaj raczej powinienem sprawdzac zapisana akcje a nie wybrana
-            // TODO moge po prostu UseInstanca zapisywac
-            if(UseActionHelper.shouldUseSelectedUseAction(((SelectsUseAction) user).getSelectedUseAction())){
-                //((ExecutesUseActions) this.getItem()).muaOnStoppedUsing();
-                //info.cancel();
+            if(((SelectsUseAction) user).getActiveUseInstance() != null){
+                ((SelectsUseAction) user).getActiveUseInstance().getOnStoppedUsing().onStoppedUsingItem(((ItemStack)(Object) this), world, user, remainingUseTicks);
+
+                info.cancel();
+            }
+    }
+
+    @Inject(method = "getMaxUseTime(Lnet/minecraft/entity/LivingEntity;)I", at = @At("RETURN"), cancellable = true)
+    private void replaceVanillaGetMaxUseTimeWithMuaGetMaxUseTime_ItemStack(LivingEntity user, CallbackInfoReturnable<Integer> ret) {
+        if(((SelectsUseAction) user).getActiveUseInstance() != null){
+            ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getMaxUseTime().getMaxItemUseTime(((ItemStack)(Object) this), user));
+        }
+    }
+
+    @Inject(method = "finishUsing(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;)Lnet/minecraft/item/ItemStack;", at = @At("RETURN"), cancellable = true)
+    private void replaceVanillaFinishUsingWIthMuaFinishUsing_ItemStack(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> ret) {
+        if(((SelectsUseAction) user).getActiveUseInstance() != null){
+            ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getFinishUsing().finishUsingItem(((ItemStack)(Object) this), world, user));
+        }
+    }
+
+
+    @Inject(method = "usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/item/Item;usageTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;I)V",
+            shift = At.Shift.BEFORE
+    ), cancellable = true)
+    private void replaceVanillaUsageTickUsingWithMuaUsageTick_ItemStack(World world, LivingEntity user, int remainingUseTicks, CallbackInfo info) {
+        if(((SelectsUseAction) user).getActiveUseInstance() != null){
+            ((SelectsUseAction) user).getActiveUseInstance().getTickUsage().itemUsageTick(world, user, ((ItemStack)(Object) this), remainingUseTicks);
+
+            info.cancel();
+        }
+    }
+
+    @Inject(method = "getUseAction()Lnet/minecraft/util/UseAction;", at = @At("RETURN"), cancellable = true)
+    private void replaceVanillaGetUseActionWithMuaGetUseAction_ItemStack(CallbackInfoReturnable<UseAction> ret) {
+        if(this.holder != null){
+            if(this.holder instanceof LivingEntity user) {
+                if(((SelectsUseAction) user).getActiveUseInstance() != null){
+                    ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getUseAction().getItemUseAction(((ItemStack)(Object) this)));
+                }
             }
         }
     }
 
+    @Inject(method = "isUsedOnRelease()Z", at = @At("RETURN"), cancellable = true)
+    private void replaceVanillaIsUsedOnReleaseWithMuaIsUsedOnRelease_ItemStack(CallbackInfoReturnable<Boolean> ret) {
+        if(this.holder != null){
+            if(this.holder instanceof LivingEntity user) {
+                if(((SelectsUseAction) user).getActiveUseInstance() != null){
+                    ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getUseOnRelease().isItemUsedOnRelease(((ItemStack)(Object) this)));
+                }
+            }
+        }
+    }
 }

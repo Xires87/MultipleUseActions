@@ -35,7 +35,7 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
     private static <T> HashMap<Identifier, T> initHashMapWithDefaultValue(Identifier id){
         HashMap<Identifier, T> map = new HashMap<>();
         map.put(id, null);
-        // TODO chyba najlepiej bedzie 3 osobne defaulty zrobic bo ktos moze ustawic wyzszy priorytet np na entity a na blok nizszy i wtedy np zinteractuje creepera ale na bloku juz uzyje itemu
+
         return map;
     }
 
@@ -51,7 +51,6 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public TypedActionResult<ItemStack> muaUseItem(Identifier selectedAction, World world, PlayerEntity user, Hand hand) {
-        // redundant
         if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
             UseInstance instance = this.getUseInstance(selectedAction);
             if(instance != null){
@@ -66,15 +65,13 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public ActionResult muaUseItemOnBlock(Identifier selectedAction, ItemUsageContext context) {
-        // redundant
         if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
-            /*
-            ItemUseOnBlockInstance instance = this.getItemUseOnBlockActionInstance(selectedAction);
+            UseInstance instance = this.getUseInstance(selectedAction);
             if(instance != null){
-                return instance.useOnBlock().useItemOnBlock(context);
+                if(instance instanceof ItemUseOnBlockInstance useOnBlockInstance) {
+                    return useOnBlockInstance.getUseOnBlock().useItemOnBlock(context);
+                }
             }
-
-             */
         }
 
         return this.useOnBlock(context);
@@ -82,15 +79,13 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
 
     @Override
     public ActionResult muaUseItemOnEntity(Identifier selectedAction, ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        // redundant
         if(UseActionHelper.shouldUseSelectedUseAction(selectedAction)){
-            /*
-            ItemUseOnEntityInstance instance = this.getItemUseOnEntityActionInstance(selectedAction);
+            UseInstance instance = this.getUseInstance(selectedAction);
             if(instance != null){
-                return instance.useOnEntity().useItemOnEntity(stack, user, entity, hand);
+                if(instance instanceof ItemUseOnEntityInstance useOnEntityInstance) {
+                    return useOnEntityInstance.getUseOnEntity().useItemOnEntity(stack, user, entity, hand);
+                }
             }
-
-             */
         }
 
         return this.useOnEntity(stack, user, entity, hand);

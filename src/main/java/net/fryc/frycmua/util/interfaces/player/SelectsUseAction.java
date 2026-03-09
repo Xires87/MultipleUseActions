@@ -1,11 +1,17 @@
 package net.fryc.frycmua.util.interfaces.player;
 
+import net.fryc.frycmua.item.action.UseInstance;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
-// for PlayerEntity
+// for LivingEntity
 public interface SelectsUseAction {
 
     Identifier getSelectedUseAction();
 
     void setSelectedUseAction(Identifier id);
+
+    @Nullable UseInstance getActiveUseInstance();
+
+    void setActiveUseInstance(@Nullable UseInstance useInstance);
 }

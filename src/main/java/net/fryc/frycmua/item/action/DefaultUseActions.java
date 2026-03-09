@@ -32,6 +32,7 @@ public class DefaultUseActions {
             DefaultUseActions::defaultFinishUsingItem,
             DefaultUseActions::defaultGetMaxItemUseTime,
             DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
             (player, hand) -> !player.getProjectileType(player.getStackInHand(hand)).isEmpty()
     );
 
@@ -44,6 +45,7 @@ public class DefaultUseActions {
             DefaultUseActions::defaultFinishUsingItem,
             DefaultUseActions::defaultGetMaxItemUseTime,
             DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
             (player, hand) -> {
                 return !player.getProjectileType(player.getStackInHand(hand)).isEmpty() && !CrossbowItem.isCharged(player.getStackInHand(hand));
             }
@@ -58,6 +60,7 @@ public class DefaultUseActions {
             DefaultUseActions::defaultFinishUsingItem,
             DefaultUseActions::defaultGetMaxItemUseTime,
             DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
             (player, hand) -> CrossbowItem.isCharged(player.getStackInHand(hand))
     );
 
@@ -66,22 +69,27 @@ public class DefaultUseActions {
     }
 
     private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {
-        return stack.finishUsing(world, user);
+        return stack.getItem().finishUsing(stack, world, user);
     }
 
     private static void defaultOnStoppedUsingItem(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        stack.onStoppedUsing(world, user, remainingUseTicks);
+        stack.getItem().onStoppedUsing(stack, world, user, remainingUseTicks);
     }
 
     private static void defaultItemUsageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        stack.usageTick(world, user, remainingUseTicks);
+        stack.getItem().usageTick(world, user, stack, remainingUseTicks);
     }
 
     private static int defaultGetMaxItemUseTime(ItemStack stack, LivingEntity user) {
-        return stack.getMaxUseTime(user);
+        return stack.getItem().getMaxUseTime(stack, user);// TODO posprawdzac loggerami czy wszystko jest zsynchronizowane
     }
 
     private static UseAction defaultGetItemUseAction(ItemStack stack) {
-        return stack.getUseAction();
+        //return stack.getItem().getUseAction(stack);
+        return UseAction.BRUSH;// TODO nie dziala to
+    }
+
+    private static boolean defaultIsUsedOnRelease(ItemStack stack) {
+        return stack.getItem().isUsedOnRelease(stack);
     }
 }
