@@ -25,12 +25,15 @@ public class ActionManagerScreen extends Screen {
     public ActionManagerScreen(Text title) {
         super(title);
         this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
+        PriorityManager.DEFAULT_PRIORITY_MANAGER.validate();
+        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().forEach(PriorityManager::validate);
     }
 
 
     @Override
     protected void init() {
         // TODO dodac scrollowanie jak sie nie mieszcza guziki na ekranie
+        // TODO dodac guzik dodajacy pozostale akcje i usuwajacy nieistniejace
         this.buttons = new ArrayList<>();
         Text useKeyText = Text.translatable(this.client.options.useKey.getTranslationKey());
         ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {

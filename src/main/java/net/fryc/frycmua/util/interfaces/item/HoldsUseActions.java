@@ -17,5 +17,4 @@ public interface HoldsUseActions {
 
     Set<Identifier> getAllUseOnEntityActionIds();
 
-    // TODO dodac tu te reszte z UseActionRegistries
 }

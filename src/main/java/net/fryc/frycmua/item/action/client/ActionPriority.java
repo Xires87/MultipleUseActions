@@ -1,5 +1,7 @@
 package net.fryc.frycmua.item.action.client;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fryc.frycmua.item.action.DefaultUseActions;
 import net.fryc.frycmua.item.action.registry.UseActionRegistries;
 import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
@@ -10,10 +12,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public enum ActionPriority {
 
     DEFAULT {
-        // TODO nie bedzie use action default tylko ten typ wlasnie i on sie jak vanilla bedzie zachowywac
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
             return List.of();
@@ -29,36 +31,16 @@ public enum ActionPriority {
             return existingActions;
         }
     },
+    /*
     BLOCK_OR_ENTITY {
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
-            HashSet<Identifier> set = new HashSet<>();
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnBlockActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
-
-            List<Identifier> list = new ArrayList<>(set);
-            //list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
-
-            set.clear();
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
-            set.removeIf(id -> {
-                return id.toString().equals(DefaultUseActions.USE_DEFAULT.toString());
-            });
-
-            List<Identifier> list2 = new ArrayList<>(set);
-            //list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
-
-            list.addAll(list2);
-
-            return List.copyOf(list);
+            return List.of();
         }
 
         @Override
         public List<Identifier> getAllPartiallyOrderedUseActions() {
-            return List.of();// TODO zrobic sortowanie dla pozostaluch typow priorytetow
+            return List.of();
         }
 
         @Override
@@ -69,28 +51,7 @@ public enum ActionPriority {
     USE {
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
-            HashSet<Identifier> set = new HashSet<>();
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
-
-            List<Identifier> list = new ArrayList<>(set);
-            //list.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
-
-            set.clear();
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnBlockActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
-            set.removeIf(id -> {
-                return id.toString().equals(DefaultUseActions.USE_DEFAULT.toString());
-            });
-
-            List<Identifier> list2 = new ArrayList<>(set);
-            //list2.sort(Comparator.comparingInt(UseActionPriorityHelper::getUseActionPriority).reversed());
-
-            list.addAll(list2);
-
-            return List.copyOf(list);
+            return List.of();
         }
 
         @Override
@@ -103,6 +64,8 @@ public enum ActionPriority {
             return List.of();
         }
     },
+
+     */
     MIXED {
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {

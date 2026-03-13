@@ -171,7 +171,6 @@ abstract class MinecraftClientMixin {
                         }
                         case ItemUseOnBlockInstance useInstance -> {
                             if(this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
-                                // TODO jesli chodzi o interakcje z blokami to bedzie do wyboru: useOnBlock, interactWithBlock i interactWithBlockUsingItem
                                 BlockHitResult blockHitResult = (BlockHitResult) this.crosshairTarget;
 
                                 if(useInstance.isAvailable().test(this.player, blockHitResult, hand)) {

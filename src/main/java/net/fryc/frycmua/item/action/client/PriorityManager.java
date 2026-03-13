@@ -2,12 +2,14 @@ package net.fryc.frycmua.item.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.client.FileHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
@@ -16,6 +18,7 @@ public class PriorityManager {
     public static final PriorityManager DEFAULT_PRIORITY_MANAGER = FileHelper.getMainPriorityManager();
 
     private final ArrayList<PriorityManager.Entry> entries;
+    private final HashSet<Identifier> unknownEntries;
     private ActionPriority actionPriority;
 
 
@@ -25,6 +28,7 @@ public class PriorityManager {
 
     public PriorityManager(ActionPriority actionPriority, ArrayList<PriorityManager.Entry> entries) {
         this.actionPriority = actionPriority;
+        this.unknownEntries = new HashSet<>();
         this.entries = new ArrayList<>(this.actionPriority.addOtherUseActions(entries));
     }
 
@@ -59,12 +63,28 @@ public class PriorityManager {
         this.entries.add(i + distance, entry);
     }
 
+    public void validate() {
+        this.unknownEntries.clear();
+        this.entries.stream().filter(entry -> !UseActionHelper.useActionExists(entry.getActionId())).forEach(entry -> {
+            this.unknownEntries.add(entry.getActionId());
+        });
+    }
+
+    public void addOtherUseActions() {
+        this.entries.addAll(this.actionPriority.addOtherUseActions(this.entries));
+        this.validate();
+    }
+
     public List<Identifier> getOrderedAvailableUseActions(ItemStack mainHandStack, ItemStack offHandStack) {
-        return this.getActionPriority().getOrderedUseActions(mainHandStack, offHandStack, this.getEntries());
+        return this.getActionPriority().getOrderedUseActions(mainHandStack, offHandStack, this.getEntries().stream().filter(this::isEntryValid).toList());
     }
 
     public List<PriorityManager.Entry> getEntries() {
         return List.copyOf(this.entries);
+    }
+
+    public List<Identifier> getUnknownEntries() {
+        return List.copyOf(this.unknownEntries);
     }
 
     public ActionPriority getActionPriority() {
@@ -73,6 +93,10 @@ public class PriorityManager {
 
     public void setActionPriority(ActionPriority priority){
         this.actionPriority = priority;
+    }
+
+    public boolean isEntryValid(PriorityManager.Entry entry) {
+        return !this.unknownEntries.contains(entry.getActionId());
     }
 
     @Nullable

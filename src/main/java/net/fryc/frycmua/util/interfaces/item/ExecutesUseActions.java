@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 // for Item
 public interface ExecutesUseActions {
-// TODO jeszcze finishUsing musze tu wsadzic i cos tam na tick usage i maxusetime itd
+
     TypedActionResult<ItemStack> muaUseItem(Identifier selectedAction, World world, PlayerEntity user, Hand hand);
 
     ActionResult muaUseItemOnBlock(Identifier selectedAction, ItemUsageContext context);

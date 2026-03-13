@@ -10,6 +10,8 @@ import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
+import net.fryc.frycmua.util.client.json.IdentifierAdapter;
+import net.minecraft.util.Identifier;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 @Environment(EnvType.CLIENT)
 public class FileHelper {
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Identifier.class, new IdentifierAdapter()).setPrettyPrinting().create();
     private static final String CONFIG_PATH = FabricLoader.getInstance().getConfigDir().toString() + "/" + MultipleUseActions.MOD_ID;
     private static final String ADDITIONAL_USE_KEYS_PATH = CONFIG_PATH + "/client/additional_use_keys.json";
     private static final String MAIN_USE_KEY_PATH = CONFIG_PATH + "/client/main_use_key.json";

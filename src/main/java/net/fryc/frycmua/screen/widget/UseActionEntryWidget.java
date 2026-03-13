@@ -26,6 +26,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier INACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/inactive_highlighted");
     private static final Identifier ACTIVE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active");
     private static final Identifier ACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active_highlighted");
+    private static final Identifier ERROR_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/error");
 
     private final ActionManagerScreen screen;
 
@@ -59,6 +60,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, 32, 32);
+            this.drawWarningIfNotValid(context, x, y);
             context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
 
             int j = mouseX - x;
@@ -166,6 +168,12 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             }
 
             return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        private void drawWarningIfNotValid(DrawContext context, int x, int y) {
+            if(!this.parent.screen.getSelectedPriorityManager().isEntryValid(this.action)) {
+                context.drawGuiTexture(ERROR_TEXTURE, x + 1, y + 1, 32, 32);
+            }
         }
 
         public boolean canBeHigherInList(int index) {

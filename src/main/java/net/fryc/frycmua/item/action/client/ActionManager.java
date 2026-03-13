@@ -25,6 +25,7 @@ public class ActionManager {
         this.keybinding = keybinding;
         this.priorityManager = priorityManager;
         this.player = player;
+        this.priorityManager.validate();
     }
 
     public void updateAvailableActions(){
@@ -41,13 +42,6 @@ public class ActionManager {
         this.availableActions.forEach(el -> {
             MultipleUseActions.LOGGER.warn(el.toString());
         });
-            /*
-            ((HoldsUseActions) first.getItem()).getAllActionsIds().stream().filter(id -> {
-// TODO nie ma sensu wedlug rak robic (jak beda 2 takie same to bedzie sie prawa odpalala i tyle)
-                return ((HoldsUseActions) first.getItem()).getItemUseActionInstance();// TODO musze w ktoryms miejscu przefiltrowac zeby tylko dostepne akcje byly (niekoniecznie tutaj)
-            })
-
-             */
     }
 
     public boolean shouldUpdateAvailableActions(){
