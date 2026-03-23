@@ -28,6 +28,11 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier ACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active_highlighted");
     private static final Identifier ERROR_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/error");
 
+    private static final int SMALL_TEXTURE_WIDTH = 16;
+    private static final int SMALL_TEXTURE_HEIGHT = 16;
+    private static final int TEXTURE_WIDTH = 32;
+    private static final int TEXTURE_HEIGHT = 32;
+
     private final ActionManagerScreen screen;
 
 
@@ -59,54 +64,28 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, 32, 32);
+            context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             this.drawWarningIfNotValid(context, x, y);
             context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
 
             int j = mouseX - x;
             int k = mouseY - y;
-
+            // TODO dodac tooltipa do oznaczenia mowiacego ze akcja nie istnieje, jest ignorowana i moze to byc literowka lub pozostalosc po updatach lub innych modach
             if(this.equals(this.parent.getSelectedOrNull())){
-                if(this.canBeHigherInList()){
-                    if (j < 32 && j > 16 && k < 16 && k > 0) {
-                        context.drawGuiTexture(MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
-                    }
-                    else {
-                        context.drawGuiTexture(MOVE_UP_TEXTURE, x, y, 32, 32);
-                    }
-                }
-
-                if(this.canBeLowerInList()){
-                    if (j < 32 && j > 16 && k > 16 && k < 32) {
-                        context.drawGuiTexture(MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
-                    }
-                    else {
-                        context.drawGuiTexture(MOVE_DOWN_TEXTURE, x, y, 32, 32);
-                    }
-                }
+                this.drawMoveUpTexture(context, x, y, j, k);
+                this.drawMoveDownTexture(context, x, y, j, k);
 
                 j = x + entryWidth - mouseX;
 
-                if (j <= 24 && j >= 8 && k < 17 && k > 0) {
-                    context.drawGuiTexture(this.action.isActive() ? ACTIVE_HIGHLIGHTED_TEXTURE : INACTIVE_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y, 16, 16);
-                }
-                else {
-                    context.drawGuiTexture(this.action.isActive() ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, x + entryWidth - 24, y, 16, 16);
-                }
-
-                if (j <= 24 && j >= 8 && k > 17 && k < 33) {
-                    context.drawGuiTexture(this.action.isLocked() ? LOCKED_HIGHLIGHTED_TEXTURE : UNLOCKED_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
-                }
-                else {
-                    context.drawGuiTexture(this.action.isLocked() ? LOCKED_TEXTURE : UNLOCKED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
-                }
+                this.drawActiveTexture(context, x, y, j, k, entryWidth);
+                this.drawLockedTexture(context, x, y, j, k, entryWidth);
             }
             else {
                 if(!this.action.isActive()) {
-                    context.drawGuiTexture(INACTIVE_TEXTURE, x + entryWidth - 24, y, 16, 16);
+                    context.drawGuiTexture(INACTIVE_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
                 }
                 else if(this.action.isLocked()) {
-                    context.drawGuiTexture(LOCKED_TEXTURE, x + entryWidth - 24, y + 18, 16, 16);
+                    context.drawGuiTexture(LOCKED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
                 }
             }
         }
@@ -172,7 +151,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         private void drawWarningIfNotValid(DrawContext context, int x, int y) {
             if(!this.parent.screen.getSelectedPriorityManager().isEntryValid(this.action)) {
-                context.drawGuiTexture(ERROR_TEXTURE, x + 1, y + 1, 32, 32);
+                context.drawGuiTexture(ERROR_TEXTURE, x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             }
         }
 
@@ -190,6 +169,46 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         public boolean canBeLowerInList() {
             return this.canBeLowerInList(this.parent.children().indexOf(this));
+        }
+
+        private void drawMoveUpTexture(DrawContext context, int x, int y, int j, int k) {
+            if(this.canBeHigherInList()){
+                if (j < 32 && j > 16 && k < 16 && k > 0) {
+                    context.drawGuiTexture(MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                }
+                else {
+                    context.drawGuiTexture(MOVE_UP_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                }
+            }
+        }
+
+        private void drawMoveDownTexture(DrawContext context, int x, int y, int j, int k) {
+            if(this.canBeLowerInList()){
+                if (j < 32 && j > 16 && k > 16 && k < 32) {
+                    context.drawGuiTexture(MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                }
+                else {
+                    context.drawGuiTexture(MOVE_DOWN_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                }
+            }
+        }
+
+        private void drawActiveTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
+            if (j <= 24 && j >= 8 && k < 17 && k > 0) {
+                context.drawGuiTexture(this.action.isActive() ? ACTIVE_HIGHLIGHTED_TEXTURE : INACTIVE_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            }
+            else {
+                context.drawGuiTexture(this.action.isActive() ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            }
+        }
+
+        private void drawLockedTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
+            if (j <= 24 && j >= 8 && k > 17 && k < 33) {
+                context.drawGuiTexture(this.action.isLocked() ? LOCKED_HIGHLIGHTED_TEXTURE : UNLOCKED_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            }
+            else {
+                context.drawGuiTexture(this.action.isLocked() ? LOCKED_TEXTURE : UNLOCKED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            }
         }
     }
 }
