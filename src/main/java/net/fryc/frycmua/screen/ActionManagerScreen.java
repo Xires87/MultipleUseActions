@@ -22,6 +22,9 @@ import java.util.List;
 public class ActionManagerScreen extends Screen {
 
     private static final String ACTION_PRIORITY_TRANSLATION_KEY = "text.frycmua.action_priority";
+    private static final String DEFAULT_BEHAVIOUR_TRANSLATION_KEY = "text.frycmua.default_behaviour";
+    private static final String SWITCH_PRIORITY_TRANSLATION_KEY = "text.frycmua.switch_priority";
+    private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
 
     private UseActionEntryWidget widget;
     private PriorityManager selectedPriorityManager;
@@ -43,7 +46,12 @@ public class ActionManagerScreen extends Screen {
         this.keybindChoiceButtons.clear();
         this.cyclingButtons.clear();
 
-        Text useKeyText = Text.translatable(this.client.options.useKey.getTranslationKey());
+        Text useKeyText = Text.literal(
+                Text.translatable(this.client.options.useKey.getTranslationKey()).getString() +
+                        " (" +
+                        this.client.options.useKey.getBoundKeyLocalizedText().getString() +
+                        ")"
+        );
         ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {
             this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
             this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
@@ -56,7 +64,12 @@ public class ActionManagerScreen extends Screen {
         this.keybindChoiceButtons.add(useKeyButton);
 
         ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
-            Text text = Text.translatable(key.getTranslationKey());
+            Text text = Text.literal(
+                    Text.translatable(key.getTranslationKey()).getString() +
+                            " (" +
+                            key.getBoundKeyLocalizedText().getString() +
+                            ")"
+            );
             int lastButtonXWithWidth = this.keybindChoiceButtons.isEmpty() ? 0 : this.keybindChoiceButtons.getLast().getX() + this.keybindChoiceButtons.getLast().getWidth();
             ButtonWidget buttonWidget = ButtonWidget.builder(text, (btn) -> {
                 this.selectedPriorityManager = value;
@@ -76,7 +89,7 @@ public class ActionManagerScreen extends Screen {
         this.addAllChildren();
 
         CyclingButtonWidget<ActionPriority> actionPriorityButton =
-                CyclingButtonWidget.<ActionPriority>builder((actionPriority) -> Text.of(actionPriority.toString()))
+                CyclingButtonWidget.<ActionPriority>builder((actionPriority) -> Text.translatable(actionPriority.getTranslationKey()))
                         .values(ActionPriority.values())
                         .initially(this.selectedPriorityManager.getActionPriority())
                         .build(40, this.height / 2, this.width / 5 + 5, 20, Text.translatable(ACTION_PRIORITY_TRANSLATION_KEY), (btn, actionPriority) -> {
@@ -95,7 +108,13 @@ public class ActionManagerScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-
+        if(this.isActionPriorityDefault()) {
+            context.drawTextWrapped(this.textRenderer, Text.translatable(DEFAULT_BEHAVIOUR_TRANSLATION_KEY), this.widget.getX() + this.widget.getWidth() / 6, this.height / 3, (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF);
+            context.drawTextWrapped(this.textRenderer, Text.translatable(SWITCH_PRIORITY_TRANSLATION_KEY), this.widget.getX() + this.widget.getWidth() / 6, this.height / 3 + 30, (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF);
+        }
+        else if(this.getSelectedPriorityManager().getEntries().isEmpty()) {
+            context.drawTextWrapped(this.textRenderer, Text.translatable(ENTRIES_EMPTY_TRANSLATION_KEY), this.widget.getX() + this.widget.getWidth() / 6, this.height / 3, (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF);
+        }
         /*
         ItemStack stack = this.client.player.getInventory().getStack(this.client.player.getInventory().selectedSlot);
         if(!stack.isEmpty()){
@@ -135,7 +154,7 @@ public class ActionManagerScreen extends Screen {
     }
 // TODO switchable beda mogly byc wszystkie ale bedzie jeden keybind ktory bedzie zmienial je wszystkie (wiec bedzie mozna miec kilka zestawow do uzywania)
     public void addAllChildren() {
-        if(!this.getSelectedPriorityManager().getActionPriority().equals(ActionPriority.DEFAULT) /*|| this.getSelectedPriorityManager().isSwitchable()*/) {
+        if(!this.isActionPriorityDefault() /*|| this.getSelectedPriorityManager().isSwitchable()*/) {
             this.getSelectedPriorityManager().getEntries().forEach(entry -> {
                 this.widget.children().add(new UseActionEntryWidget.UseActionEntry(this.client, this.widget, entry));
             });
@@ -146,11 +165,7 @@ public class ActionManagerScreen extends Screen {
         return this.selectedPriorityManager;
     }
 
-    public void setSelectedPriorityManager(PriorityManager priorityManager) {
-        this.selectedPriorityManager = priorityManager;
-    }
-
-    private ActionPriority getNextActionPriority(ActionPriority current) {
-        return current.ordinal() + 1 < ActionPriority.values().length ? ActionPriority.values()[current.ordinal() + 1] : ActionPriority.values()[0];
+    private boolean isActionPriorityDefault() {
+        return this.selectedPriorityManager.getActionPriority().equals(ActionPriority.DEFAULT);
     }
 }

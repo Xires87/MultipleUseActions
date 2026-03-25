@@ -30,42 +30,12 @@ public enum ActionPriority {
         public List<PriorityManager.Entry> addOtherUseActions(List<PriorityManager.Entry> existingActions) {
             return existingActions;
         }
-    },
-    /*
-    BLOCK_OR_ENTITY {
-        @Override
-        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
-            return List.of();
-        }
 
         @Override
-        public List<Identifier> getAllPartiallyOrderedUseActions() {
-            return List.of();
-        }
-
-        @Override
-        public List<PriorityManager.Entry> addOtherUseActions(List<PriorityManager.Entry> existingActions) {
-            return List.of();
+        public String getTranslationKey() {
+            return "text.frycmua.action_priority.default";
         }
     },
-    USE {
-        @Override
-        public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
-            return List.of();
-        }
-
-        @Override
-        public List<Identifier> getAllPartiallyOrderedUseActions() {
-            return List.of();
-        }
-
-        @Override
-        public List<PriorityManager.Entry> addOtherUseActions(List<PriorityManager.Entry> existingActions) {
-            return List.of();
-        }
-    },
-
-     */
     MIXED {
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
@@ -114,6 +84,11 @@ public enum ActionPriority {
 
             return newList;
         }
+
+        @Override
+        public String getTranslationKey() {
+            return "text.frycmua.action_priority.mixed";
+        }
     };
 
     public abstract List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions);
@@ -121,4 +96,6 @@ public enum ActionPriority {
     public abstract List<Identifier> getAllPartiallyOrderedUseActions();
 
     public abstract List<PriorityManager.Entry> addOtherUseActions(List<PriorityManager.Entry> existingActions);
+
+    public abstract String getTranslationKey();
 }

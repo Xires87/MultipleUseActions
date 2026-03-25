@@ -1,5 +1,10 @@
 {
   "text.frycmua.action_priority": "Action priority",
+  "text.frycmua.action_priority.default": "Default",
+  "text.frycmua.action_priority.mixed": "Mixed",
+  "text.frycmua.default_behaviour": "This keybind acts the same as minecraft's default use key",
+  "text.frycmua.switch_priority": "Switch action priority to 'Mixed' to start managing action priorities",
+  "text.frycmua.entries_empty": "The list is empty! Press 'Add missing entries' or add them manually via json file",
 
   "key.category.frycmua.key_category_frycmua": "Multiple use actions",
   "key.frycmua.key_open_action_manager_screen": "Open action manager screen",
