@@ -11,7 +11,8 @@
 	"client": [
 		"client/MinecraftClientMixin",
 		"client/ClientPlayerInteractionManagerMixin",
-		"client/ClientPlayerEntityMixin"
+		"client/ClientPlayerEntityMixin",
+		"client/CyclingButtonWidgetMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
