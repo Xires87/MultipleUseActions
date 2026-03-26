@@ -9,7 +9,6 @@ import net.fryc.frycmua.screen.ActionManagerScreen;
 import net.fryc.frycmua.util.client.FileHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
@@ -31,9 +30,7 @@ public class ModKeybinds {
     public static void registerKeyInputs() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if(actionManagerScreenKey.wasPressed()){
-                if(client.currentScreen == null){
-                    client.setScreen(new ActionManagerScreen(Text.empty()));
-                }
+                client.setScreen(new ActionManagerScreen(client.currentScreen));
             }
         });
     }

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -32,9 +33,11 @@ public class ActionManagerScreen extends Screen {
     private PriorityManager selectedPriorityManager;
     private final List<ButtonWidget> keybindChoiceButtons = new ArrayList<>();
     private final List<CyclingButtonWidget<?>> cyclingButtons = new ArrayList<>();
+    private final Screen parent;
 
-    public ActionManagerScreen(Text title) {
-        super(title);
+    public ActionManagerScreen(Screen parent) {
+        super(Text.empty());
+        this.parent = parent;
         this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
         PriorityManager.DEFAULT_PRIORITY_MANAGER.validate();
         ModKeybinds.MUA_ADDITIONAL_USE_KEYS.values().forEach(PriorityManager::validate);
@@ -64,7 +67,7 @@ public class ActionManagerScreen extends Screen {
         useKeyButton.active = !this.selectedPriorityManager.equals(PriorityManager.DEFAULT_PRIORITY_MANAGER);
         this.addDrawableChild(useKeyButton);
         this.keybindChoiceButtons.add(useKeyButton);
-
+        // TODO jest cos takiego jak grid widget, musze tego uzyc
         ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
             Text text = Text.literal(
                     Text.translatable(key.getTranslationKey()).getString() +
@@ -86,7 +89,7 @@ public class ActionManagerScreen extends Screen {
             this.keybindChoiceButtons.add(buttonWidget);
         });
 
-        this.widget = new UseActionEntryWidget(this.client, this, this.width / 2, (this.height / 4) * 3, this.height / 4, this.width / 2, 40);
+        this.widget = new UseActionEntryWidget(this.client, this, this.width / 2, (this.height / 4) * 3 - 50, this.height / 4, this.width / 2, 40);
         this.addDrawableChild(this.widget);
         this.addAllChildren();
 
@@ -123,6 +126,13 @@ public class ActionManagerScreen extends Screen {
             }
         }).position(40, this.height / 2 + 60).size(this.width / 5 + 5, 20).build();
         this.addDrawableChild(delUnknownActionsBtn);
+
+        this.addDrawableChild(
+                ButtonWidget.builder(ScreenTexts.DONE, btn -> this.close())
+                        .position(this.width / 2 - 100, this.height - 28)
+                        .size(200, 20)
+                        .build()
+        );
     }
 
     @Override
@@ -165,7 +175,12 @@ public class ActionManagerScreen extends Screen {
             ((HoldsActionManager) this.client.player).getAllActionManagers().forEach(ActionManager::forceUpdateAvailableActions);
         }
 
-        super.close();
+        if (this.parent != null) {
+            this.client.setScreen(this.parent);
+        }
+        else {
+            super.close();
+        }
     }
 
     public void reorderAllChildren() {
