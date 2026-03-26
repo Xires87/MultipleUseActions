@@ -2,6 +2,7 @@ package net.fryc.frycmua.item.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.client.FileHelper;
 import net.minecraft.item.ItemStack;
@@ -65,14 +66,30 @@ public class PriorityManager {
 
     public void validate() {
         this.unknownEntries.clear();
+        this.entries.removeIf(entry -> {
+            if(entry.getActionId() == null) {
+                MultipleUseActions.LOGGER.error("Found use action without identifier. Removing...");
+
+                return true;
+            }
+
+            return false;
+        });
         this.entries.stream().filter(entry -> !UseActionHelper.useActionExists(entry.getActionId())).forEach(entry -> {
             this.unknownEntries.add(entry.getActionId());
         });
     }
 
     public void addOtherUseActions() {
-        this.entries.addAll(this.actionPriority.addOtherUseActions(this.entries));
+        List<PriorityManager.Entry> newList = this.actionPriority.addOtherUseActions(this.entries);
+        this.entries.clear();
+        this.entries.addAll(newList);
         this.validate();
+    }
+
+    public void deleteInvalidActions() {
+        this.entries.removeIf(entry -> this.unknownEntries.contains(entry.getActionId()));
+        this.unknownEntries.clear();
     }
 
     public List<Identifier> getOrderedAvailableUseActions(ItemStack mainHandStack, ItemStack offHandStack) {
