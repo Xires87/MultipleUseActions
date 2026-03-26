@@ -4,9 +4,11 @@
   "text.frycmua.action_priority.mixed": "Mixed",
   "text.frycmua.default_behaviour": "This keybind acts the same as minecraft's default use key",
   "text.frycmua.switch_priority": "Switch action priority to 'Mixed' to start managing action priorities",
-  "text.frycmua.entries_empty": "The list is empty! Press 'Add missing entries' or add them manually via json file",
+  "text.frycmua.entries_empty": "The list is empty! Press 'Add missing actions' or add them manually via json file",
   "text.frycmua.add_missing_actions": "Add missing actions",
   "text.frycmua.delete_unknown_actions": "Delete unknown actions",
+  "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
+  "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
 
   "key.category.frycmua.key_category_frycmua": "Multiple use actions",
   "key.frycmua.key_open_action_manager_screen": "Open action manager screen",

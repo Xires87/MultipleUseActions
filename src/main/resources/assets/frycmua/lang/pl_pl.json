@@ -4,9 +4,11 @@
   "text.frycmua.action_priority.mixed": "Mieszany",
   "text.frycmua.default_behaviour": "Ten klawisz zachowuje się tak samo jak domyślny klawisz użycia minecrafta",
   "text.frycmua.switch_priority": "Zmień priorytet akcji na 'Mieszany' by zacząć zarządzać priorytetami akcji",
-  "text.frycmua.entries_empty": "Lista jest pusta! Naciśnij 'Dodaj brakujące wpisy' lub dodaj je ręcznie przez plik json",
+  "text.frycmua.entries_empty": "Lista jest pusta! Naciśnij 'Dodaj brakujące akcje' lub dodaj je ręcznie przez plik json",
   "text.frycmua.add_missing_actions": "Dodaj brakujące akcje",
   "text.frycmua.delete_unknown_actions": "Usuń nieznane akcje",
+  "text.frycmua.invalid_action_tooltip": "Ta akcja nie istnieje i z tego powodu nie działa.",
+  "text.frycmua.invalid_action_tooltip.may_be_leftover": "To może być pozostałość po aktualizacji/usunięciu moda.",
 
   "key.category.frycmua.key_category_frycmua": "Multiple use actions",
   "key.frycmua.key_open_action_manager_screen": "Otwórz okno menadżera akcji",

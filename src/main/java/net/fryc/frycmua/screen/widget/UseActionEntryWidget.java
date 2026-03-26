@@ -9,7 +9,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.UseActionEntry> {
@@ -32,6 +35,9 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final int SMALL_TEXTURE_HEIGHT = 16;
     private static final int TEXTURE_WIDTH = 32;
     private static final int TEXTURE_HEIGHT = 32;
+
+    private static final String INVALID_ACTION_TOOLTIP_1 = "text.frycmua.invalid_action_tooltip.does_not_exist";
+    private static final String INVALID_ACTION_TOOLTIP_2 = "text.frycmua.invalid_action_tooltip.may_be_leftover";
 
     private final ActionManagerScreen screen;
 
@@ -64,13 +70,13 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-            this.drawWarningIfNotValid(context, x, y);
-            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
-
             int j = mouseX - x;
             int k = mouseY - y;
-            // TODO dodac tooltipa do oznaczenia mowiacego ze akcja nie istnieje, jest ignorowana i moze to byc literowka lub pozostalosc po updatach lub innych modach
+
+            context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            this.drawWarningIfNotValid(context, x, y, j, k);
+            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
+
             if(this.equals(this.parent.getSelectedOrNull())){
                 this.drawMoveUpTexture(context, x, y, j, k);
                 this.drawMoveDownTexture(context, x, y, j, k);
@@ -149,9 +155,17 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             return super.mouseClicked(mouseX, mouseY, button);
         }
 
-        private void drawWarningIfNotValid(DrawContext context, int x, int y) {
+        private void drawWarningIfNotValid(DrawContext context, int x, int y, int j, int k) {
             if(!this.parent.screen.getSelectedPriorityManager().isEntryValid(this.action)) {
                 context.drawGuiTexture(ERROR_TEXTURE, x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+
+                if (j < 16 && j > 0 && k < 32 && k > 0) {
+                    context.drawTooltip(this.client.textRenderer, List.of(
+                            Text.translatable(INVALID_ACTION_TOOLTIP_1),
+                            Text.translatable(INVALID_ACTION_TOOLTIP_2)
+                    ), x + 8 + j + this.client.textRenderer.getWidth(Text.translatable(INVALID_ACTION_TOOLTIP_1)), y + k + 24);
+                    //context.drawTextWithBackground(this.client.textRenderer, text, x, y, this.client.textRenderer.getWidth(text), 0xFFFFFFFF);
+                }
             }
         }
 
