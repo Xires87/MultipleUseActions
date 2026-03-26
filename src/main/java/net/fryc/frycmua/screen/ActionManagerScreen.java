@@ -25,6 +25,8 @@ public class ActionManagerScreen extends Screen {
     private static final String DEFAULT_BEHAVIOUR_TRANSLATION_KEY = "text.frycmua.default_behaviour";
     private static final String SWITCH_PRIORITY_TRANSLATION_KEY = "text.frycmua.switch_priority";
     private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
+    private static final String ADD_MISSING_ACTIONS_TRANSLATION_KEY = "text.frycmua.add_missing_actions";
+    private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
 
     private UseActionEntryWidget widget;
     private PriorityManager selectedPriorityManager;
@@ -102,6 +104,25 @@ public class ActionManagerScreen extends Screen {
         });
         this.addDrawableChild(actionPriorityButton);
         this.cyclingButtons.add(actionPriorityButton);
+
+        // TODO guzik do zmieniania czy switchable
+
+
+        ButtonWidget addMissingActionsBtn = ButtonWidget.builder(Text.translatable(ADD_MISSING_ACTIONS_TRANSLATION_KEY), (btn) -> {
+            if(!this.isActionPriorityDefault()) {
+                this.selectedPriorityManager.addOtherUseActions();
+                this.reorderAllChildren();
+            }
+        }).position(40, this.height / 2 + 30).size(this.width / 5 + 5, 20).build();
+        this.addDrawableChild(addMissingActionsBtn);
+
+        ButtonWidget delUnknownActionsBtn = ButtonWidget.builder(Text.translatable(DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY), (btn) -> {
+            if(!this.isActionPriorityDefault()) {
+                this.selectedPriorityManager.deleteInvalidActions();
+                this.reorderAllChildren();
+            }
+        }).position(40, this.height / 2 + 60).size(this.width / 5 + 5, 20).build();
+        this.addDrawableChild(delUnknownActionsBtn);
     }
 
     @Override
