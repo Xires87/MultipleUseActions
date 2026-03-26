@@ -1,7 +1,6 @@
 package net.fryc.frycmua.item.action;
 
 import net.fryc.frycmua.util.function.TriPredicate;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
