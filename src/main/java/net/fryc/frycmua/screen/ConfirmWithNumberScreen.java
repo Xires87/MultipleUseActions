@@ -10,11 +10,11 @@ import net.minecraft.util.Identifier;
 
 public class ConfirmWithNumberScreen extends ConfirmScreen {
 
-    public static Identifier ICON_ADD = Identifier.of(MultipleUseActions.MOD_ID, "icon/add");
-    public static Identifier ICON_REMOVE = Identifier.of(MultipleUseActions.MOD_ID, "icon/delete");
+    public static final Identifier ICON_ADD = Identifier.of(MultipleUseActions.MOD_ID, "icon/add");
+    public static final Identifier ICON_REMOVE = Identifier.of(MultipleUseActions.MOD_ID, "icon/delete");
 
-    public static String INCREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.increase_number";
-    public static String DECREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.decrease_number";
+    public static final String INCREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.increase_number";
+    public static final String DECREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.decrease_number";
 
     private int number = 1;
     private int numberY = 0;
