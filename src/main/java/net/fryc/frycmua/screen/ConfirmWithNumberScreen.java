@@ -10,6 +10,12 @@ import net.minecraft.util.Identifier;
 
 public class ConfirmWithNumberScreen extends ConfirmScreen {
 
+    public static Identifier ICON_ADD = Identifier.of(MultipleUseActions.MOD_ID, "icon/add");
+    public static Identifier ICON_REMOVE = Identifier.of(MultipleUseActions.MOD_ID, "icon/delete");
+
+    public static String INCREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.increase_number";
+    public static String DECREASE_NUMBER_TRANSLATION_KEY = "button.frycmua.decrease_number";
+
     private int number = 1;
     private int numberY = 0;
 
@@ -19,15 +25,15 @@ public class ConfirmWithNumberScreen extends ConfirmScreen {
 
     @Override
     protected void addButtons(int y) {
-        TextIconButtonWidget buttonMinus = TextIconButtonWidget.builder(Text.translatable("button.frycmua.increase_number"), btn -> {
+        TextIconButtonWidget buttonMinus = TextIconButtonWidget.builder(Text.translatable(INCREASE_NUMBER_TRANSLATION_KEY), btn -> {
             this.decreaseNumber();
-        }, true).width(20).texture(Identifier.of(MultipleUseActions.MOD_ID, "icon/delete"), 15, 15).build();
+        }, true).width(20).texture(ICON_REMOVE, 15, 15).build();
         buttonMinus.setPosition(this.width / 2 - 30, y);
         this.addButton(buttonMinus);
 
-        TextIconButtonWidget buttonPlus = TextIconButtonWidget.builder(Text.translatable("button.frycmua.decrease_number"), btn -> {
+        TextIconButtonWidget buttonPlus = TextIconButtonWidget.builder(Text.translatable(DECREASE_NUMBER_TRANSLATION_KEY), btn -> {
             this.increaseNumber();
-        }, true).width(20).texture(Identifier.of(MultipleUseActions.MOD_ID, "icon/add_new"), 15, 15).build();
+        }, true).width(20).texture(ICON_ADD, 15, 15).build();
         buttonPlus.setPosition(this.width / 2 + 9, y);
         this.addButton(buttonPlus);
 

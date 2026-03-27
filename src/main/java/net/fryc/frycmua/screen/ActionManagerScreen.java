@@ -2,7 +2,6 @@ package net.fryc.frycmua.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.client.ActionManager;
 import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
@@ -17,7 +16,6 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +29,8 @@ public class ActionManagerScreen extends Screen {
     private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
     private static final String ADD_MISSING_ACTIONS_TRANSLATION_KEY = "text.frycmua.add_missing_actions";
     private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
+    private static final String ADD_NEW_KEYBIND_TRANSLATION_KEY = "button.frycmua.add_new_keybind";
+    private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
 
     private UseActionEntryWidget widget;
     private PriorityManager selectedPriorityManager;
@@ -189,14 +189,14 @@ public class ActionManagerScreen extends Screen {
             this.keybindChoiceButtons.add(buttonWidget);
         });
 
-        TextIconButtonWidget addNewKeyBind = TextIconButtonWidget.builder(Text.translatable("button.frycmua.add_new_keybind"), btn -> this.client.setScreen(new ConfirmWithNumberScreen((bl) -> {
+        TextIconButtonWidget addNewKeyBind = TextIconButtonWidget.builder(Text.translatable(ADD_NEW_KEYBIND_TRANSLATION_KEY), btn -> this.client.setScreen(new ConfirmWithNumberScreen((bl) -> {
             if(bl && this.client.currentScreen instanceof ConfirmWithNumberScreen confirmScreen) {
                 ModKeybinds.addNewAdditionalUseKeyAndQuit(confirmScreen.getNumber());
             }
             else {
                 this.client.setScreen(this);
             }
-        }, Text.empty(), Text.translatable("text.frycmua.u_sure_u_want_new_keybind"))), true).width(20).texture(Identifier.of(MultipleUseActions.MOD_ID, "icon/add_new"), 15, 15).build();
+        }, Text.empty(), Text.translatable(U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY))), true).width(20).texture(ConfirmWithNumberScreen.ICON_ADD, 15, 15).build();
         addNewKeyBind.setPosition(5 + (this.keybindChoiceButtons.isEmpty() ? 0 : this.keybindChoiceButtons.getLast().getX() + this.keybindChoiceButtons.getLast().getWidth()), 20);
         this.addDrawableChild(addNewKeyBind);
     }
