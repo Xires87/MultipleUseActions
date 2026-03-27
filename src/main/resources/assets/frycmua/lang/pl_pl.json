@@ -9,6 +9,11 @@
   "text.frycmua.delete_unknown_actions": "Usuń nieznane akcje",
   "text.frycmua.invalid_action_tooltip": "Ta akcja nie istnieje i z tego powodu nie działa.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "To może być pozostałość po aktualizacji/usunięciu moda.",
+  "text.frycmua.u_sure_u_want_new_keybind": "Minecraft musi zostać zrestartowany aby dodać nowy klawisz. Gra zostanie zamknięta jeśli wciśniesz 'Tak'. Czy chcesz kontynuować?",
+
+  "button.frycmua.add_new_keybind": "Dodaj nowy klawisz",
+  "button.frycmua.increase_number": "Zwiększ liczbę",
+  "button.frycmua.decrease_number": "Zmniejsz liczbę",
 
   "key.category.frycmua.key_category_frycmua": "Multiple use actions",
   "key.frycmua.key_open_action_manager_screen": "Otwórz okno menadżera akcji",
@@ -22,5 +27,15 @@
   "key.frycmua.key_additional_use_key_7": "Klawisz MUA 7",
   "key.frycmua.key_additional_use_key_8": "Klawisz MUA 8",
   "key.frycmua.key_additional_use_key_9": "Klawisz MUA 9",
-  "key.frycmua.key_additional_use_key_10": "Klawisz MUA 10"
+  "key.frycmua.key_additional_use_key_10": "Klawisz MUA 10",
+  "key.frycmua.key_additional_use_key_11": "Klawisz MUA 11",
+  "key.frycmua.key_additional_use_key_12": "Klawisz MUA 12",
+  "key.frycmua.key_additional_use_key_13": "Klawisz MUA 13",
+  "key.frycmua.key_additional_use_key_14": "Klawisz MUA 14",
+  "key.frycmua.key_additional_use_key_15": "Klawisz MUA 15",
+  "key.frycmua.key_additional_use_key_16": "Klawisz MUA 16",
+  "key.frycmua.key_additional_use_key_17": "Klawisz MUA 17",
+  "key.frycmua.key_additional_use_key_18": "Klawisz MUA 18",
+  "key.frycmua.key_additional_use_key_19": "Klawisz MUA 19",
+  "key.frycmua.key_additional_use_key_20": "Klawisz MUA 20"
 }

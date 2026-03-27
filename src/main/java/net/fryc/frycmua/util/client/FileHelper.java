@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @Environment(EnvType.CLIENT)
 public class FileHelper {
@@ -26,11 +26,11 @@ public class FileHelper {
     private static final String ADDITIONAL_USE_KEYS_PATH = CONFIG_PATH + "/client/additional_use_keys.json";
     private static final String MAIN_USE_KEY_PATH = CONFIG_PATH + "/client/main_use_key.json";
 
-    public static HashMap<String, PriorityManager> getAdditionalUseKeysEntries() {
+    public static LinkedHashMap<String, PriorityManager> getAdditionalUseKeysEntries() {
         File file = new File(ADDITIONAL_USE_KEYS_PATH);
         if(file.exists()){
             try(FileReader reader = new FileReader(file)){
-                TypeToken<HashMap<String, PriorityManager>> mapToken = new TypeToken<>(){};
+                TypeToken<LinkedHashMap<String, PriorityManager>> mapToken = new TypeToken<>(){};
 
                 return GSON.fromJson(reader, mapToken);
             } catch (Exception e) {
@@ -45,10 +45,11 @@ public class FileHelper {
         File file = new File(ADDITIONAL_USE_KEYS_PATH);
         tryToMakeFile(file);
         try(FileWriter writer = new FileWriter(file)){
-            HashMap<String, PriorityManager> map = new HashMap<>();
+            LinkedHashMap<String, PriorityManager> map = new LinkedHashMap<>();
             ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
                 map.put(key.getTranslationKey(), value);
             });
+
             writer.write(GSON.toJson(map));
 
         } catch (Exception e) {
@@ -79,8 +80,8 @@ public class FileHelper {
         }
     }
 
-    public static HashMap<String, PriorityManager> getDefaultAdditionalUseKeysEntries() {
-        HashMap<String, PriorityManager> map = new HashMap<>();
+    public static LinkedHashMap<String, PriorityManager> getDefaultAdditionalUseKeysEntries() {
+        LinkedHashMap<String, PriorityManager> map = new LinkedHashMap<>();
         map.put("key.frycmua.key_additional_use_key_1", new PriorityManager(ActionPriority.MIXED));
         map.put("key.frycmua.key_additional_use_key_2", new PriorityManager(ActionPriority.MIXED));
 

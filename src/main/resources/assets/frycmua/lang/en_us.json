@@ -9,6 +9,11 @@
   "text.frycmua.delete_unknown_actions": "Delete unknown actions",
   "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
+  "text.frycmua.u_sure_u_want_new_keybind": "Minecraft needs to be restarted in order to add a keybind. The game will be closed if you press 'Yes'. Do you want to continue?",
+
+  "button.frycmua.add_new_keybind": "Add new keybinding",
+  "button.frycmua.increase_number": "Increase number",
+  "button.frycmua.decrease_number": "Decrease number",
 
   "key.category.frycmua.key_category_frycmua": "Multiple use actions",
   "key.frycmua.key_open_action_manager_screen": "Open action manager screen",
@@ -22,5 +27,15 @@
   "key.frycmua.key_additional_use_key_7": "MUA key 7",
   "key.frycmua.key_additional_use_key_8": "MUA key 8",
   "key.frycmua.key_additional_use_key_9": "MUA key 9",
-  "key.frycmua.key_additional_use_key_10": "MUA key 10"
+  "key.frycmua.key_additional_use_key_10": "MUA key 10",
+  "key.frycmua.key_additional_use_key_11": "MUA key 11",
+  "key.frycmua.key_additional_use_key_12": "MUA key 12",
+  "key.frycmua.key_additional_use_key_13": "MUA key 13",
+  "key.frycmua.key_additional_use_key_14": "MUA key 14",
+  "key.frycmua.key_additional_use_key_15": "MUA key 15",
+  "key.frycmua.key_additional_use_key_16": "MUA key 16",
+  "key.frycmua.key_additional_use_key_17": "MUA key 17",
+  "key.frycmua.key_additional_use_key_18": "MUA key 18",
+  "key.frycmua.key_additional_use_key_19": "MUA key 19",
+  "key.frycmua.key_additional_use_key_20": "MUA key 20"
 }

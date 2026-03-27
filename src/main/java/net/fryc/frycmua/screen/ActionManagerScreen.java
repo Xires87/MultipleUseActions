@@ -2,6 +2,7 @@ package net.fryc.frycmua.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.item.action.client.ActionManager;
 import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
@@ -13,8 +14,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,47 +50,10 @@ public class ActionManagerScreen extends Screen {
     @Override
     protected void init() {
         // TODO dodac scrollowanie jak sie nie mieszcza guziki na ekranie
-        // TODO dodac guzik dodajacy pozostale akcje i usuwajacy nieistniejace
         this.keybindChoiceButtons.clear();
         this.cyclingButtons.clear();
 
-        Text useKeyText = Text.literal(
-                Text.translatable(this.client.options.useKey.getTranslationKey()).getString() +
-                        " (" +
-                        this.client.options.useKey.getBoundKeyLocalizedText().getString() +
-                        ")"
-        );
-        ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {
-            this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
-            this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
-            this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
-            btn.active = false;
-            this.reorderAllChildren();
-        }).position(20, 20).size(this.textRenderer.getWidth(useKeyText) + 5, 20).build();
-        useKeyButton.active = !this.selectedPriorityManager.equals(PriorityManager.DEFAULT_PRIORITY_MANAGER);
-        this.addDrawableChild(useKeyButton);
-        this.keybindChoiceButtons.add(useKeyButton);
-        // TODO jest cos takiego jak grid widget, musze tego uzyc
-        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
-            Text text = Text.literal(
-                    Text.translatable(key.getTranslationKey()).getString() +
-                            " (" +
-                            key.getBoundKeyLocalizedText().getString() +
-                            ")"
-            );
-            int lastButtonXWithWidth = this.keybindChoiceButtons.isEmpty() ? 0 : this.keybindChoiceButtons.getLast().getX() + this.keybindChoiceButtons.getLast().getWidth();
-            ButtonWidget buttonWidget = ButtonWidget.builder(text, (btn) -> {
-                this.selectedPriorityManager = value;
-                this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
-                this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
-                btn.active = false;
-                this.reorderAllChildren();
-            }).position(15 + lastButtonXWithWidth + 5, 20).size(this.textRenderer.getWidth(text) + 5, 20).build();
-
-            buttonWidget.active = !this.selectedPriorityManager.equals(value);
-            this.addDrawableChild(buttonWidget);
-            this.keybindChoiceButtons.add(buttonWidget);
-        });
+        this.createKeybindChoiceButtons();
 
         this.widget = new UseActionEntryWidget(this.client, this, this.width / 2, (this.height / 4) * 3 - 50, this.height / 4, this.width / 2, 40);
         this.addDrawableChild(this.widget);
@@ -203,5 +169,56 @@ public class ActionManagerScreen extends Screen {
 
     private boolean isActionPriorityDefault() {
         return this.selectedPriorityManager.getActionPriority().equals(ActionPriority.DEFAULT);
+    }
+
+    private void createKeybindChoiceButtons() {
+        Text useKeyText = Text.literal(
+                Text.translatable(this.client.options.useKey.getTranslationKey()).getString() +
+                        " (" +
+                        this.client.options.useKey.getBoundKeyLocalizedText().getString() +
+                        ")"
+        );
+        ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {
+            this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
+            this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
+            this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
+            btn.active = false;
+            this.reorderAllChildren();
+        }).position(20, 20).size(this.textRenderer.getWidth(useKeyText) + 5, 20).build();
+        useKeyButton.active = !this.selectedPriorityManager.equals(PriorityManager.DEFAULT_PRIORITY_MANAGER);
+        this.addDrawableChild(useKeyButton);
+        this.keybindChoiceButtons.add(useKeyButton);
+        // TODO jest cos takiego jak grid widget, musze tego uzyc
+        ModKeybinds.MUA_ADDITIONAL_USE_KEYS.forEach((key, value) -> {
+            Text text = Text.literal(
+                    Text.translatable(key.getTranslationKey()).getString() +
+                            " (" +
+                            key.getBoundKeyLocalizedText().getString() +
+                            ")"
+            );
+            int lastButtonXWithWidth = this.keybindChoiceButtons.isEmpty() ? 0 : this.keybindChoiceButtons.getLast().getX() + this.keybindChoiceButtons.getLast().getWidth();
+            ButtonWidget buttonWidget = ButtonWidget.builder(text, (btn) -> {
+                this.selectedPriorityManager = value;
+                this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
+                this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
+                btn.active = false;
+                this.reorderAllChildren();
+            }).position(15 + lastButtonXWithWidth + 5, 20).size(this.textRenderer.getWidth(text) + 5, 20).build();
+
+            buttonWidget.active = !this.selectedPriorityManager.equals(value);
+            this.addDrawableChild(buttonWidget);
+            this.keybindChoiceButtons.add(buttonWidget);
+        });
+
+        TextIconButtonWidget addNewKeyBind = TextIconButtonWidget.builder(Text.translatable("button.frycmua.add_new_keybind"), btn -> this.client.setScreen(new ConfirmWithNumberScreen((bl) -> {
+            if(bl && this.client.currentScreen instanceof ConfirmWithNumberScreen confirmScreen) {
+                ModKeybinds.addNewAdditionalUseKeyAndQuit(confirmScreen.getNumber());
+            }
+            else {
+                this.client.setScreen(this);
+            }
+        }, Text.empty(), Text.translatable("text.frycmua.u_sure_u_want_new_keybind"))), true).width(20).texture(Identifier.of(MultipleUseActions.MOD_ID, "icon/add_new"), 15, 15).build();
+        addNewKeyBind.setPosition(5 + (this.keybindChoiceButtons.isEmpty() ? 0 : this.keybindChoiceButtons.getLast().getX() + this.keybindChoiceButtons.getLast().getWidth()), 20);
+        this.addDrawableChild(addNewKeyBind);
     }
 }
