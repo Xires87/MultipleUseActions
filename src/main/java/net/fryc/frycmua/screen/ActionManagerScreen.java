@@ -112,27 +112,6 @@ public class ActionManagerScreen extends Screen {
         else if(this.getSelectedPriorityManager().getEntries().isEmpty()) {
             context.drawTextWrapped(this.textRenderer, Text.translatable(ENTRIES_EMPTY_TRANSLATION_KEY), this.widget.getX() + this.widget.getWidth() / 6, this.height / 3, (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF);
         }
-        /*
-        ItemStack stack = this.client.player.getInventory().getStack(this.client.player.getInventory().selectedSlot);
-        if(!stack.isEmpty()){
-            context.drawItem(stack, 0, 0);
-
-        }
-
-        ((HoldsActionManager) this.client.player).getAllActionManagers().forEach(manager -> {
-            int i = 0;
-            for(Identifier id : manager.getAvailableActions()){
-                context.drawText(this.textRenderer, id.toString(), 50, 50 + i, 0xFFFFFFFF, true);
-                i += 10;
-            }
-        });
-        */
-
-        // Minecraft doesn't have a "label" widget, so we'll have to draw our own text.
-        // We'll subtract the font height from the Y position to make the text appear above the button.
-        // Subtracting an extra 10 pixels will give the text some padding.
-        // textRenderer, text, x, y, color, hasShadow
-        //context.drawText(this.textRenderer, "Special Button", 40, 40 - this.textRenderer.fontHeight - 10, 0xFFFFFFFF, true);
     }
 
     @Override
