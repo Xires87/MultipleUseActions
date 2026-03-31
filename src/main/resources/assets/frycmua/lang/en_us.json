@@ -9,7 +9,7 @@
   "text.frycmua.delete_unknown_actions": "Delete unknown actions",
   "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
-  "text.frycmua.u_sure_u_want_new_keybind": "Minecraft needs to be restarted in order to add a keybind. The game will be closed if you press 'Yes'. Do you want to continue?",
+  "text.frycmua.u_sure_u_want_new_keybind": "Minecraft needs to be restarted in order to add a keybinding. The game will be closed if you press 'Yes'. Do you want to continue?",
 
   "button.frycmua.add_new_keybind": "Add new keybinding",
   "button.frycmua.increase_number": "Increase number",
