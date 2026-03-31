@@ -108,7 +108,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     if(this.canBeHigherInList(i)){
                         if (d > (double)16.0F && e < (double)16.0F) {
                             this.parent.screen.getSelectedPriorityManager().moveUp(this.action);
-                            this.parent.screen.reorderAllChildren();
+                            this.parent.screen.reorderAllEntries();
                             this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
@@ -120,7 +120,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     if(this.canBeLowerInList(i)){
                         if (d > (double)16.0F && e > (double)16.0F) {
                             this.parent.screen.getSelectedPriorityManager().moveDown(this.action);
-                            this.parent.screen.reorderAllChildren();
+                            this.parent.screen.reorderAllEntries();
                             this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
