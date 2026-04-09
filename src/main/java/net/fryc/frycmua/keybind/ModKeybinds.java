@@ -8,6 +8,7 @@ import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.screen.ActionManagerScreen;
 import net.fryc.frycmua.util.client.FileHelper;
+import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -21,10 +22,14 @@ public class ModKeybinds {
 
     public static final String KEY_CATEGORY_FRYCMUA = "key.category.frycmua.key_category_frycmua";
     public static final String KEY_ACTION_MANAGER_SCREEN = "key.frycmua.key_open_action_manager_screen";
+    public static final String KEY_NEXT_USE_ACTION = "key.frycmua.key_next_use_action";
+    public static final String KEY_PREVIOUS_USE_ACTION = "key.frycmua.key_previous_use_action";
 
     public static final Map<KeyBinding, PriorityManager> MUA_ADDITIONAL_USE_KEYS = new LinkedHashMap<>();
 
     public static KeyBinding actionManagerScreenKey;
+    public static KeyBinding nextUseActionKey;
+    public static KeyBinding previousUseActionKey;
 
 
 
@@ -34,6 +39,14 @@ public class ModKeybinds {
             if(actionManagerScreenKey.wasPressed()){
                 client.setScreen(new ActionManagerScreen(client.currentScreen));
             }
+            else if(client.player != null){
+                if(nextUseActionKey.wasPressed()) {
+                    performActionSwitch(((HoldsActionManager) client.player), true);
+                }
+                else if(previousUseActionKey.wasPressed()) {
+                    performActionSwitch(((HoldsActionManager) client.player), false);
+                }
+            }
         });
     }
 
@@ -42,6 +55,20 @@ public class ModKeybinds {
                 KEY_ACTION_MANAGER_SCREEN,
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_APOSTROPHE,
+                KEY_CATEGORY_FRYCMUA
+        ));
+
+        nextUseActionKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                KEY_NEXT_USE_ACTION,
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
+                KEY_CATEGORY_FRYCMUA
+        ));
+
+        previousUseActionKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                KEY_PREVIOUS_USE_ACTION,
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
                 KEY_CATEGORY_FRYCMUA
         ));
 
@@ -67,5 +94,14 @@ public class ModKeybinds {
         }
 
         MinecraftClient.getInstance().scheduleStop();
+    }
+
+    private static void performActionSwitch(HoldsActionManager player, boolean forward) {
+        player.getAllActionManagers().stream().filter(actionManager -> {
+            return actionManager.getPriorityManager().isSwitchable();
+        }).forEach(actionManager -> {
+            actionManager.switchChosenAction(forward);
+            actionManager.forceUpdateAvailableActions();
+        });
     }
 }

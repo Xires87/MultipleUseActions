@@ -21,16 +21,22 @@ public class PriorityManager {
     private final ArrayList<PriorityManager.Entry> entries;
     private final HashSet<Identifier> unknownEntries;
     private ActionPriority actionPriority;
+    private boolean switchable;
 
 
     public PriorityManager(ActionPriority actionPriority) {
-        this(actionPriority, new ArrayList<>());
+        this(actionPriority, List.of());
     }
 
-    public PriorityManager(ActionPriority actionPriority, ArrayList<PriorityManager.Entry> entries) {
+    public PriorityManager(ActionPriority actionPriority, List<PriorityManager.Entry> entries) {
+        this(actionPriority, entries, false);
+    }
+
+    public PriorityManager(ActionPriority actionPriority, List<PriorityManager.Entry> entries, boolean switchable) {
         this.actionPriority = actionPriority;
         this.unknownEntries = new HashSet<>();
         this.entries = new ArrayList<>(this.actionPriority.addOtherUseActions(entries));
+        this.switchable = switchable;
     }
 
 
@@ -96,6 +102,12 @@ public class PriorityManager {
         return this.getActionPriority().getOrderedUseActions(mainHandStack, offHandStack, this.getEntries().stream().filter(this::isEntryValid).toList());
     }
 
+    public List<Identifier> getSwitchableUseActions() {
+        return this.isSwitchable() ? this.getEntries().stream().filter(entry -> {
+            return this.isEntryValid(entry) && entry.isSwitchable();
+        }).map(Entry::getActionId).toList() : List.of();
+    }
+
     public List<PriorityManager.Entry> getEntries() {
         return List.copyOf(this.entries);
     }
@@ -106,6 +118,14 @@ public class PriorityManager {
 
     public ActionPriority getActionPriority() {
         return this.actionPriority;
+    }
+
+    public boolean isSwitchable() {
+        return this.switchable;
+    }
+
+    public void setSwitchable(boolean switchable) {
+        this.switchable = switchable;
     }
 
     public void setActionPriority(ActionPriority priority){
@@ -127,20 +147,26 @@ public class PriorityManager {
 
         private boolean active;
         private boolean locked;
+        private boolean switchable;
         private final Identifier actionId;
 
-        public Entry(Identifier actionId, boolean active, boolean locked) {
+        public Entry(Identifier actionId, boolean active, boolean locked, boolean switchable) {
             this.actionId = actionId;
             this.active = active;
             this.locked = locked;
+            this.switchable = switchable;
+        }
+
+        public Entry(Identifier actionId, boolean active, boolean locked) {
+            this(actionId, active, locked, false);
         }
 
         public Entry(Identifier actionId, boolean active) {
-            this(actionId, active, false);
+            this(actionId, active, false, false);
         }
 
         public Entry(Identifier actionId) {
-            this(actionId, false, false);
+            this(actionId, false, false, false);
         }
 
         public Identifier getActionId() {
@@ -161,6 +187,14 @@ public class PriorityManager {
 
         public void setLocked(boolean locked) {
             this.locked = locked;
+        }
+
+        public boolean isSwitchable() {
+            return this.switchable;
+        }
+
+        public void setSwitchable(boolean switchable) {
+            this.switchable = switchable;
         }
     }
 }

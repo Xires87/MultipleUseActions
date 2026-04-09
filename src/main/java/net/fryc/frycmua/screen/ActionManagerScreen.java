@@ -92,7 +92,7 @@ public class ActionManagerScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        if(this.isActionPriorityDefault()) {
+        if(this.shouldShowDefault()) {
             context.drawTextWrapped(
                     this.textRenderer, Text.translatable(DEFAULT_BEHAVIOUR_TRANSLATION_KEY),
                     this.widget.getX() + this.widget.getWidth() / 6, this.widget.getY() + this.widget.getHeight() / 3,
@@ -116,7 +116,10 @@ public class ActionManagerScreen extends Screen {
     @Override
     public void close() {
         if(this.client.player != null) {
-            ((HoldsActionManager) this.client.player).getAllActionManagers().forEach(ActionManager::forceUpdateAvailableActions);
+            ((HoldsActionManager) this.client.player).getAllActionManagers().forEach(manager -> {
+                manager.resetChosenAction();
+                manager.forceUpdateAvailableActions();
+            });
         }
 
         if (this.parent != null) {
@@ -132,9 +135,9 @@ public class ActionManagerScreen extends Screen {
         this.widget.setSelected(null);
         this.addAllEntries();
     }
-// TODO switchable beda mogly byc wszystkie ale bedzie jeden keybind ktory bedzie zmienial je wszystkie (wiec bedzie mozna miec kilka zestawow do uzywania)
+// TODO dodac opcje zmieniania switchable w screenie
     public void addAllEntries() {
-        if(!this.isActionPriorityDefault() /*|| this.getSelectedPriorityManager().isSwitchable()*/) {
+        if(!this.shouldShowDefault()) {
             this.getSelectedPriorityManager().getEntries().forEach(entry -> {
                 this.widget.children().add(new UseActionEntryWidget.UseActionEntry(this.client, this.widget, entry));
             });
@@ -149,6 +152,10 @@ public class ActionManagerScreen extends Screen {
         if(index < 0) return this.navigationGrids.getFirst();
 
         return this.navigationGrids.size() > index ? this.navigationGrids.get(index) : this.navigationGrids.getLast();
+    }
+
+    private boolean shouldShowDefault() {
+        return this.isActionPriorityDefault() && !this.getSelectedPriorityManager().isSwitchable();
     }
 
     private boolean isActionPriorityDefault() {
