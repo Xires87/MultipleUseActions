@@ -30,6 +30,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier ACTIVE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active");
     private static final Identifier ACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active_highlighted");
     private static final Identifier ERROR_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/error");
+    private static final Identifier SWITCHABLE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/switchable");
 
     private static final int SMALL_TEXTURE_WIDTH = 16;
     private static final int SMALL_TEXTURE_HEIGHT = 16;
@@ -68,7 +69,11 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     }
 
     public int getEntryTextWidth() {
-        return this.getRowWidth() - TEXTURE_WIDTH - SMALL_TEXTURE_WIDTH * 2 - HORIZONTAL_SPACER * 2;
+        return this.getRowWidth() - TEXTURE_WIDTH - SMALL_TEXTURE_WIDTH * 2 - (int) (HORIZONTAL_SPACER * 2.5F);
+    }
+
+    public boolean isSwitchable() {
+        return this.screen.getSelectedPriorityManager().isSwitchable();
     }
 
 
@@ -108,6 +113,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
                 this.drawActiveTexture(context, x, y, j, k, entryWidth);
                 this.drawLockedTexture(context, x, y, j, k, entryWidth);
+                this.drawSwitchableTexture(context, x, y, j, k, entryWidth);
             }
             else {
                 if(!this.action.isActive()) {
@@ -121,6 +127,14 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     context.drawGuiTexture(
                             LOCKED_TEXTURE,
                             x + entryWidth - this.getSmallWidthWithSpacer(), y + this.getSmallHeightWithSpacer(),
+                            SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
+                    );
+                }
+
+                if(this.parent.isSwitchable() && this.action.isSwitchable()) {
+                    context.drawGuiTexture(
+                            SWITCHABLE_TEXTURE,
+                            x + entryWidth - this.getSmallWidthWithSpacer() * 2, y,
                             SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
                     );
                 }
@@ -167,7 +181,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 else {
                     d = (double)this.parent.getRowRight() - mouseX;
 
-                    if(d >= HORIZONTAL_SPACER && d <= SMALL_TEXTURE_WIDTH + HORIZONTAL_SPACER) {
+                    if(d >= HORIZONTAL_SPACER && d <= this.getSmallWidthWithSpacer()) {
                         if(e <= SMALL_TEXTURE_HEIGHT) {
                             this.action.setActive(!this.action.isActive());
 
@@ -175,6 +189,13 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                         }
                         else if(e >= SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER) {
                             this.action.setLocked(!this.action.isLocked());
+
+                            return true;
+                        }
+                    }
+                    else if(d >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && d <= this.getSmallWidthWithSpacer() * 2) {
+                        if(this.parent.isSwitchable() && e <= SMALL_TEXTURE_HEIGHT) {
+                            this.action.setSwitchable(!this.action.isSwitchable());
 
                             return true;
                         }
@@ -202,30 +223,6 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     //context.drawTextWithBackground(this.client.textRenderer, text, x, y, this.client.textRenderer.getWidth(text), 0xFFFFFFFF);
                 }
             }
-        }
-
-        public boolean canBeHigherInList(int index) {
-            return index > 0;
-        }
-
-        public boolean canBeHigherInList() {
-            return this.canBeHigherInList(this.parent.children().indexOf(this));
-        }
-
-        public boolean canBeLowerInList(int index) {
-            return index < this.parent.children().size() - 1;
-        }
-
-        public boolean canBeLowerInList() {
-            return this.canBeLowerInList(this.parent.children().indexOf(this));
-        }
-
-        private int getSmallWidthWithSpacer() {
-            return SMALL_TEXTURE_WIDTH + HORIZONTAL_SPACER;
-        }
-
-        private int getSmallHeightWithSpacer() {
-            return SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER;
         }
 
         private void drawMoveUpTexture(DrawContext context, int x, int y, int j, int k) {
@@ -290,6 +287,53 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                         SMALL_TEXTURE_HEIGHT
                 );
             }
+        }
+
+        private void drawSwitchableTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
+            if(this.parent.isSwitchable()) {
+                if (j <= this.getSmallWidthWithSpacer() * 2 && j >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && k <= SMALL_TEXTURE_HEIGHT && k > 0) {
+                    context.drawGuiTexture(
+                            this.action.isSwitchable() ? SWITCHABLE_TEXTURE : INACTIVE_TEXTURE,
+                            x + entryWidth - this.getSmallWidthWithSpacer() * 2,
+                            y,
+                            SMALL_TEXTURE_WIDTH,
+                            SMALL_TEXTURE_HEIGHT
+                    );
+                }
+                else {
+                    context.drawGuiTexture(
+                            this.action.isSwitchable() ? SWITCHABLE_TEXTURE : INACTIVE_TEXTURE,
+                            x + entryWidth - this.getSmallWidthWithSpacer() * 2,
+                            y,
+                            SMALL_TEXTURE_WIDTH,
+                            SMALL_TEXTURE_HEIGHT
+                    );
+                }
+            }
+        }
+
+        public boolean canBeHigherInList(int index) {
+            return index > 0;
+        }
+
+        public boolean canBeHigherInList() {
+            return this.canBeHigherInList(this.parent.children().indexOf(this));
+        }
+
+        public boolean canBeLowerInList(int index) {
+            return index < this.parent.children().size() - 1;
+        }
+
+        public boolean canBeLowerInList() {
+            return this.canBeLowerInList(this.parent.children().indexOf(this));
+        }
+
+        private int getSmallWidthWithSpacer() {
+            return SMALL_TEXTURE_WIDTH + HORIZONTAL_SPACER;
+        }
+
+        private int getSmallHeightWithSpacer() {
+            return SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER;
         }
     }
 }
