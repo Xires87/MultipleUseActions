@@ -35,6 +35,10 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final int SMALL_TEXTURE_HEIGHT = 16;
     private static final int TEXTURE_WIDTH = 32;
     private static final int TEXTURE_HEIGHT = 32;
+    private static final int SCROLLBAR_WIDTH = 6;
+
+    private static final int HORIZONTAL_SPACER = 4;
+    private static final int VERTICAL_SPACER = 2;
 
     private static final String INVALID_ACTION_TOOLTIP_1 = "text.frycmua.invalid_action_tooltip.does_not_exist";
     private static final String INVALID_ACTION_TOOLTIP_2 = "text.frycmua.invalid_action_tooltip.may_be_leftover";
@@ -42,8 +46,8 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private final ActionManagerScreen screen;
 
 
-    public UseActionEntryWidget(MinecraftClient client, ActionManagerScreen screen, int width, int height, int y, int x, int itemHeight) {
-        super(client, width, height, y, itemHeight);
+    public UseActionEntryWidget(MinecraftClient client, ActionManagerScreen screen, int width, int height, int y, int x, int additionalItemHeight) {
+        super(client, width, height, y, TEXTURE_HEIGHT + VERTICAL_SPACER + additionalItemHeight);
         this.setX(x);
         this.screen = screen;
     }
@@ -51,6 +55,20 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
 
+    }
+
+    @Override
+    public int getRowWidth() {
+        return (int) (this.width * 0.9F);
+    }
+
+    @Override
+    protected int getScrollbarX() {
+        return this.getX() + this.getWidth() - SCROLLBAR_WIDTH;
+    }
+
+    public int getEntryTextWidth() {
+        return this.getRowWidth() - TEXTURE_WIDTH - SMALL_TEXTURE_WIDTH * 2 - HORIZONTAL_SPACER * 2;
     }
 
 
@@ -75,7 +93,12 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
             context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             this.drawWarningIfNotValid(context, x, y, j, k);
-            context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + 34, y + 4, 0xFFFFFFFF, true);
+            context.drawTextWrapped(
+                    this.client.textRenderer, Text.of(this.action.getActionId()),
+                    x + TEXTURE_WIDTH + HORIZONTAL_SPACER / 2, y + VERTICAL_SPACER * 2,
+                    this.parent.getEntryTextWidth(), 0xFFFFFFFF
+            );
+            //context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + TEXTURE_WIDTH + 2, y + 4, 0xFFFFFFFF, true);
 
             if(this.equals(this.parent.getSelectedOrNull())){
                 this.drawMoveUpTexture(context, x, y, j, k);
@@ -88,10 +111,18 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             }
             else {
                 if(!this.action.isActive()) {
-                    context.drawGuiTexture(INACTIVE_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+                    context.drawGuiTexture(
+                            INACTIVE_TEXTURE,
+                            x + entryWidth - this.getSmallWidthWithSpacer(), y,
+                            SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
+                    );
                 }
                 else if(this.action.isLocked()) {
-                    context.drawGuiTexture(LOCKED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+                    context.drawGuiTexture(
+                            LOCKED_TEXTURE,
+                            x + entryWidth - this.getSmallWidthWithSpacer(), y + this.getSmallHeightWithSpacer(),
+                            SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
+                    );
                 }
             }
         }
@@ -104,12 +135,14 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 double d = mouseX - (double)this.parent.getRowLeft();
                 double e = mouseY - (double)this.parent.getRowTop(i);
 
-                if (d <= (double)32.0F) {
+                if (d <= TEXTURE_WIDTH) {
                     if(this.canBeHigherInList(i)){
-                        if (d > (double)16.0F && e < (double)16.0F) {
+                        if (d > SMALL_TEXTURE_WIDTH && e < SMALL_TEXTURE_HEIGHT) {
                             this.parent.screen.getSelectedPriorityManager().moveUp(this.action);
                             this.parent.screen.reorderAllEntries();
-                            this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
+                            this.parent.children().stream().filter(child -> {
+                                return child.action.getActionId().toString().equals(this.action.getActionId().toString());
+                            }).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
 
@@ -118,10 +151,12 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     }
 
                     if(this.canBeLowerInList(i)){
-                        if (d > (double)16.0F && e > (double)16.0F) {
+                        if (d > SMALL_TEXTURE_WIDTH && e > SMALL_TEXTURE_HEIGHT) {
                             this.parent.screen.getSelectedPriorityManager().moveDown(this.action);
                             this.parent.screen.reorderAllEntries();
-                            this.parent.children().stream().filter(child -> child.action.getActionId().toString().equals(this.action.getActionId().toString())).findFirst().ifPresent(action -> {
+                            this.parent.children().stream().filter(child -> {
+                                return child.action.getActionId().toString().equals(this.action.getActionId().toString());
+                            }).findFirst().ifPresent(action -> {
                                 action.parent.setSelected(action);
                             });
 
@@ -132,13 +167,13 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 else {
                     d = (double)this.parent.getRowRight() - mouseX;
 
-                    if(d >= 8 && d <= 24) {
-                        if(e < 17) {
+                    if(d >= HORIZONTAL_SPACER && d <= SMALL_TEXTURE_WIDTH + HORIZONTAL_SPACER) {
+                        if(e <= SMALL_TEXTURE_HEIGHT) {
                             this.action.setActive(!this.action.isActive());
 
                             return true;
                         }
-                        else if(e > 17) {
+                        else if(e >= SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER) {
                             this.action.setLocked(!this.action.isLocked());
 
                             return true;
@@ -159,11 +194,11 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             if(!this.parent.screen.getSelectedPriorityManager().isEntryValid(this.action)) {
                 context.drawGuiTexture(ERROR_TEXTURE, x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
-                if (j < 16 && j > 0 && k < 32 && k > 0) {
+                if (j < TEXTURE_WIDTH / 2 && j > 0 && k < TEXTURE_HEIGHT && k > 0) {
                     context.drawTooltip(this.client.textRenderer, List.of(
                             Text.translatable(INVALID_ACTION_TOOLTIP_1),
                             Text.translatable(INVALID_ACTION_TOOLTIP_2)
-                    ), x + 8 + j + this.client.textRenderer.getWidth(Text.translatable(INVALID_ACTION_TOOLTIP_1)), y + k + 24);
+                    ), x + j + this.client.textRenderer.getWidth(Text.translatable(INVALID_ACTION_TOOLTIP_1)), y + k + 28);
                     //context.drawTextWithBackground(this.client.textRenderer, text, x, y, this.client.textRenderer.getWidth(text), 0xFFFFFFFF);
                 }
             }
@@ -185,9 +220,17 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             return this.canBeLowerInList(this.parent.children().indexOf(this));
         }
 
+        private int getSmallWidthWithSpacer() {
+            return SMALL_TEXTURE_WIDTH + HORIZONTAL_SPACER;
+        }
+
+        private int getSmallHeightWithSpacer() {
+            return SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER;
+        }
+
         private void drawMoveUpTexture(DrawContext context, int x, int y, int j, int k) {
             if(this.canBeHigherInList()){
-                if (j < 32 && j > 16 && k < 16 && k > 0) {
+                if (j < TEXTURE_WIDTH && j > TEXTURE_WIDTH / 2 && k < TEXTURE_HEIGHT / 2 && k > 0) {
                     context.drawGuiTexture(MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
                 }
                 else {
@@ -198,7 +241,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         private void drawMoveDownTexture(DrawContext context, int x, int y, int j, int k) {
             if(this.canBeLowerInList()){
-                if (j < 32 && j > 16 && k > 16 && k < 32) {
+                if (j < TEXTURE_WIDTH && j > TEXTURE_WIDTH / 2 && k > TEXTURE_HEIGHT / 2 && k < TEXTURE_HEIGHT) {
                     context.drawGuiTexture(MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, TEXTURE_WIDTH, TEXTURE_HEIGHT);
                 }
                 else {
@@ -208,20 +251,44 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
         }
 
         private void drawActiveTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
-            if (j <= 24 && j >= 8 && k < 17 && k > 0) {
-                context.drawGuiTexture(this.action.isActive() ? ACTIVE_HIGHLIGHTED_TEXTURE : INACTIVE_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            if (j <= this.getSmallWidthWithSpacer() && j >= HORIZONTAL_SPACER && k <= SMALL_TEXTURE_HEIGHT && k > 0) {
+                context.drawGuiTexture(
+                        this.action.isActive() ? ACTIVE_HIGHLIGHTED_TEXTURE : INACTIVE_HIGHLIGHTED_TEXTURE,
+                        x + entryWidth - this.getSmallWidthWithSpacer(),
+                        y,
+                        SMALL_TEXTURE_WIDTH,
+                        SMALL_TEXTURE_HEIGHT
+                );
             }
             else {
-                context.drawGuiTexture(this.action.isActive() ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, x + entryWidth - 24, y, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+                context.drawGuiTexture(
+                        this.action.isActive() ? ACTIVE_TEXTURE : INACTIVE_TEXTURE,
+                        x + entryWidth - this.getSmallWidthWithSpacer(),
+                        y,
+                        SMALL_TEXTURE_WIDTH,
+                        SMALL_TEXTURE_HEIGHT
+                );
             }
         }
 
         private void drawLockedTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
-            if (j <= 24 && j >= 8 && k > 17 && k < 33) {
-                context.drawGuiTexture(this.action.isLocked() ? LOCKED_HIGHLIGHTED_TEXTURE : UNLOCKED_HIGHLIGHTED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+            if (j <= this.getSmallWidthWithSpacer() && j >= HORIZONTAL_SPACER && k >= SMALL_TEXTURE_HEIGHT && k < SMALL_TEXTURE_HEIGHT * 2 + VERTICAL_SPACER) {
+                context.drawGuiTexture(
+                        this.action.isLocked() ? LOCKED_HIGHLIGHTED_TEXTURE : UNLOCKED_HIGHLIGHTED_TEXTURE,
+                        x + entryWidth - this.getSmallWidthWithSpacer(),
+                        y + this.getSmallHeightWithSpacer(),
+                        SMALL_TEXTURE_WIDTH,
+                        SMALL_TEXTURE_HEIGHT
+                );
             }
             else {
-                context.drawGuiTexture(this.action.isLocked() ? LOCKED_TEXTURE : UNLOCKED_TEXTURE, x + entryWidth - 24, y + 18, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
+                context.drawGuiTexture(
+                        this.action.isLocked() ? LOCKED_TEXTURE : UNLOCKED_TEXTURE,
+                        x + entryWidth - this.getSmallWidthWithSpacer(),
+                        y + this.getSmallHeightWithSpacer(),
+                        SMALL_TEXTURE_WIDTH,
+                        SMALL_TEXTURE_HEIGHT
+                );
             }
         }
     }

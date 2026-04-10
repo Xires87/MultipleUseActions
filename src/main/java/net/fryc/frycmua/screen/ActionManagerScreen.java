@@ -3,7 +3,6 @@ package net.fryc.frycmua.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fryc.frycmua.MultipleUseActions;
-import net.fryc.frycmua.item.action.client.ActionManager;
 import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
@@ -76,7 +75,7 @@ public class ActionManagerScreen extends Screen {
         this.createLeftPanel();
         this.createRightPanel();
 
-        this.widget = new UseActionEntryWidget(this.client, this, this.width / 2 - PADDING_RIGHT, this.getBodyHeight(), this.getHeaderHeight(), this.width / 2, 40);
+        this.widget = new UseActionEntryWidget(this.client, this, this.width / 2 - PADDING_RIGHT, this.getBodyHeight(), this.getHeaderHeight(), this.width / 2, 6);
         this.addDrawableChild(this.widget);
         this.addAllEntries();
 
