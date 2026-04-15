@@ -31,6 +31,9 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier ACTIVE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/active_highlighted");
     private static final Identifier ERROR_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/error");
     private static final Identifier SWITCHABLE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/switchable");
+    private static final Identifier SWITCHABLE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/switchable_highlighted");
+    private static final Identifier NOT_SWITCHABLE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/not_switchable");
+    private static final Identifier NOT_SWITCHABLE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/not_switchable_highlighted");
 
     private static final int SMALL_TEXTURE_WIDTH = 16;
     private static final int SMALL_TEXTURE_HEIGHT = 16;
@@ -293,7 +296,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             if(this.parent.isSwitchable()) {
                 if (j <= this.getSmallWidthWithSpacer() * 2 && j >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && k <= SMALL_TEXTURE_HEIGHT && k > 0) {
                     context.drawGuiTexture(
-                            this.action.isSwitchable() ? SWITCHABLE_TEXTURE : INACTIVE_TEXTURE,
+                            this.action.isSwitchable() ? SWITCHABLE_HIGHLIGHTED_TEXTURE : NOT_SWITCHABLE_HIGHLIGHTED_TEXTURE,
                             x + entryWidth - this.getSmallWidthWithSpacer() * 2,
                             y,
                             SMALL_TEXTURE_WIDTH,
@@ -302,7 +305,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 }
                 else {
                     context.drawGuiTexture(
-                            this.action.isSwitchable() ? SWITCHABLE_TEXTURE : INACTIVE_TEXTURE,
+                            this.action.isSwitchable() ? SWITCHABLE_TEXTURE : NOT_SWITCHABLE_TEXTURE,
                             x + entryWidth - this.getSmallWidthWithSpacer() * 2,
                             y,
                             SMALL_TEXTURE_WIDTH,

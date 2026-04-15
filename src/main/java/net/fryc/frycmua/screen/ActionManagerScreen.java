@@ -134,7 +134,7 @@ public class ActionManagerScreen extends Screen {
         this.widget.setSelected(null);
         this.addAllEntries();
     }
-// TODO dodac opcje zmieniania switchable w screenie
+
     public void addAllEntries() {
         if(!this.shouldShowDefault()) {
             this.getSelectedPriorityManager().getEntries().forEach(entry -> {
