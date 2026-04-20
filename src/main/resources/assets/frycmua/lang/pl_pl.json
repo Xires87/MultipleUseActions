@@ -8,6 +8,8 @@
   "text.frycmua.entries_empty": "Lista jest pusta! Naciśnij 'Dodaj brakujące akcje' lub dodaj je ręcznie przez plik json",
   "text.frycmua.add_missing_actions": "Dodaj brakujące akcje",
   "text.frycmua.delete_unknown_actions": "Usuń nieznane akcje",
+  "text.frycmua.remove_use_action": "Usuń wybraną akcję",
+  "text.frycmua.text.frycmua.duplicate_use_action": "Zduplikuj wybraną akcję",
   "text.frycmua.invalid_action_tooltip": "Ta akcja nie istnieje i z tego powodu nie działa.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "To może być pozostałość po aktualizacji/usunięciu moda.",
   "text.frycmua.u_sure_u_want_new_keybind": "Minecraft musi zostać zrestartowany aby dodać nowy klawisz. Gra zostanie zamknięta jeśli wciśniesz 'Tak'. Czy chcesz kontynuować?",

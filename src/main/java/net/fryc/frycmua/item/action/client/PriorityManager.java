@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class PriorityManager {
@@ -96,6 +97,19 @@ public class PriorityManager {
     public void deleteInvalidActions() {
         this.entries.removeIf(entry -> this.unknownEntries.contains(entry.getActionId()));
         this.unknownEntries.clear();
+    }
+
+    public void addUseAction(PriorityManager.Entry entry) {
+        if(!this.entries.contains(entry)) {
+            Optional<PriorityManager.Entry> optional = this.entries.stream().filter(en2 -> en2.getActionId().equals(entry.getActionId())).findFirst();
+            this.entries.add(optional.map(this.entries::indexOf).orElse(0), entry);
+            this.validate();
+        }
+    }
+
+    public void removeUseAction(PriorityManager.Entry entry) {
+        this.entries.remove(entry);
+        this.validate();
     }
 
     public List<Identifier> getOrderedAvailableUseActions(ItemStack mainHandStack, ItemStack offHandStack) {

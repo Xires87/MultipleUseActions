@@ -31,6 +31,8 @@ public class ActionManagerScreen extends Screen {
     private static final String SWITCH_PRIORITY_TRANSLATION_KEY = "text.frycmua.switch_priority";
     private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
     private static final String ADD_MISSING_ACTIONS_TRANSLATION_KEY = "text.frycmua.add_missing_actions";
+    private static final String DUPLICATE_USE_ACTION_TRANSLATION_KEY = "text.frycmua.duplicate_use_action";
+    private static final String REMOVE_USE_ACTION_TRANSLATION_KEY = "text.frycmua.remove_use_action";
     private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
     private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
 
@@ -266,7 +268,6 @@ public class ActionManagerScreen extends Screen {
     }
 
     private void createLeftPanel() {
-        // TODO zrobic left panel
         AxisGridWidget verticalGrid = new AxisGridWidget(PADDING_LEFT, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
 
         CyclingButtonWidget<ActionPriority> actionPriorityButton =
@@ -310,10 +311,28 @@ public class ActionManagerScreen extends Screen {
             }
         }).size(verticalGrid.getWidth(), 20).build();
 
+        ButtonWidget duplicateUseAction = ButtonWidget.builder(Text.translatable(DUPLICATE_USE_ACTION_TRANSLATION_KEY), (btn) -> {
+            if(this.widget.getSelectedOrNull() != null) {
+                PriorityManager.Entry entry = new PriorityManager.Entry(this.widget.getSelectedOrNull().getAction().getActionId());
+                this.getSelectedPriorityManager().addUseAction(entry);
+                this.widget.children().add(this.widget.children().indexOf(this.widget.getSelectedOrNull()), new UseActionEntryWidget.UseActionEntry(this.client, this.widget, entry));
+            }
+        }).size(verticalGrid.getWidth(), 20).build();
+
+        ButtonWidget removeUseAction = ButtonWidget.builder(Text.translatable(REMOVE_USE_ACTION_TRANSLATION_KEY), (btn) -> {
+            if(this.widget.getSelectedOrNull() != null) {
+                this.getSelectedPriorityManager().removeUseAction(this.widget.getSelectedOrNull().getAction());
+                this.widget.children().remove(this.widget.getSelectedOrNull());
+                this.widget.setSelected(null);
+            }
+        }).size(verticalGrid.getWidth(), 20).build();
+
         verticalGrid.add(actionPriorityButton);
         verticalGrid.add(switchableButton);
         verticalGrid.add(addMissingActionsBtn);
+        verticalGrid.add(duplicateUseAction);
         verticalGrid.add(delUnknownActionsBtn);
+        verticalGrid.add(removeUseAction);
         verticalGrid.refreshPositions();
 
         verticalGrid.forEachChild(this::addDrawableChild);

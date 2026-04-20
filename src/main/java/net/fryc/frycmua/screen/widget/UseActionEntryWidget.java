@@ -331,6 +331,10 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             return this.canBeLowerInList(this.parent.children().indexOf(this));
         }
 
+        public PriorityManager.Entry getAction() {
+            return this.action;
+        }
+
         private void reselectUseActionEntry() {
             this.parent.children().stream().filter(this::isTheSameAs).findFirst().ifPresent(action -> {
                 action.parent.setSelected(action);

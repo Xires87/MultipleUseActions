@@ -8,6 +8,8 @@
   "text.frycmua.entries_empty": "The list is empty! Press 'Add missing actions' or add them manually via json file",
   "text.frycmua.add_missing_actions": "Add missing actions",
   "text.frycmua.delete_unknown_actions": "Delete unknown actions",
+  "text.frycmua.remove_use_action": "Remove selected use action",
+  "text.frycmua.text.frycmua.duplicate_use_action": "Duplicate selected use action",
   "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
   "text.frycmua.u_sure_u_want_new_keybind": "Minecraft needs to be restarted in order to add a keybind. The game will be closed if you press 'Yes'. Do you want to continue?",
