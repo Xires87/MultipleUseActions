@@ -157,11 +157,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                         if (d > SMALL_TEXTURE_WIDTH && e < SMALL_TEXTURE_HEIGHT) {
                             this.parent.screen.getSelectedPriorityManager().moveUp(this.action);
                             this.parent.screen.reorderAllEntries();
-                            this.parent.children().stream().filter(child -> {
-                                return child.action.getActionId().toString().equals(this.action.getActionId().toString());
-                            }).findFirst().ifPresent(action -> {
-                                action.parent.setSelected(action);
-                            });
+                            this.reselectUseActionEntry();
 
                             return true;
                         }
@@ -171,11 +167,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                         if (d > SMALL_TEXTURE_WIDTH && e > SMALL_TEXTURE_HEIGHT) {
                             this.parent.screen.getSelectedPriorityManager().moveDown(this.action);
                             this.parent.screen.reorderAllEntries();
-                            this.parent.children().stream().filter(child -> {
-                                return child.action.getActionId().toString().equals(this.action.getActionId().toString());
-                            }).findFirst().ifPresent(action -> {
-                                action.parent.setSelected(action);
-                            });
+                            this.reselectUseActionEntry();
 
                             return true;
                         }
@@ -315,6 +307,14 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             }
         }
 
+        public boolean isTheSameAs(UseActionEntry entry) {
+            if(this.equals(entry)) {
+                return true;
+            }
+
+            return this.action.equals(entry.action);
+        }
+
         public boolean canBeHigherInList(int index) {
             return index > 0;
         }
@@ -329,6 +329,12 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         public boolean canBeLowerInList() {
             return this.canBeLowerInList(this.parent.children().indexOf(this));
+        }
+
+        private void reselectUseActionEntry() {
+            this.parent.children().stream().filter(this::isTheSameAs).findFirst().ifPresent(action -> {
+                action.parent.setSelected(action);
+            });
         }
 
         private int getSmallWidthWithSpacer() {

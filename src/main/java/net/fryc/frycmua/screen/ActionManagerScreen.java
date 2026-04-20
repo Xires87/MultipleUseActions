@@ -296,8 +296,6 @@ public class ActionManagerScreen extends Screen {
         });
         this.cyclingButtons.add(switchableButton);
 
-        // TODO guzik do zmieniania czy switchable
-
         ButtonWidget addMissingActionsBtn = ButtonWidget.builder(Text.translatable(ADD_MISSING_ACTIONS_TRANSLATION_KEY), (btn) -> {
             if(!this.isActionPriorityDefault()) {
                 this.selectedPriorityManager.addOtherUseActions();
