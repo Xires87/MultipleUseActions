@@ -27,6 +27,7 @@ public class ActionManagerScreen extends Screen {
 
     private static final String ACTION_PRIORITY_TRANSLATION_KEY = "text.frycmua.action_priority";
     private static final String DEFAULT_BEHAVIOUR_TRANSLATION_KEY = "text.frycmua.default_behaviour";
+    private static final String SWITCHABLE_TRANSLATION_KEY = "text.frycmua.switchable";
     private static final String SWITCH_PRIORITY_TRANSLATION_KEY = "text.frycmua.switch_priority";
     private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
     private static final String ADD_MISSING_ACTIONS_TRANSLATION_KEY = "text.frycmua.add_missing_actions";
@@ -244,7 +245,7 @@ public class ActionManagerScreen extends Screen {
         }, true).width(20).texture(ConfirmWithNumberScreen.ICON_ADD, 15, 15).build();
         this.keybindChoiceButtons.add(addNewKeyBind);
 
-        this.keybindChoiceButtons.forEach(this::addButtonToLastGrid);
+        this.keybindChoiceButtons.forEach(this::addButtonToLastNavigationGrid);
         this.navigationGrids.forEach(AxisGridWidget::refreshPositions);
         this.navigationGrids.forEach(grid -> {
             grid.forEachChild(this::addDrawableChild);
@@ -252,7 +253,7 @@ public class ActionManagerScreen extends Screen {
         });
     }
 
-    private void addButtonToLastGrid(ButtonWidget widget) {
+    private void addButtonToLastNavigationGrid(ButtonWidget widget) {
         AxisGridWidget grid = this.navigationGrids.getLast();
         if(this.lastRowWidth + widget.getWidth() > this.getNavigationGridWidth()) {
             this.navigationGrids.add(new AxisGridWidget(grid.getX(), grid.getY(), grid.getWidth(), grid.getHeight(), AxisGridWidget.DisplayAxis.HORIZONTAL));
@@ -282,6 +283,19 @@ public class ActionManagerScreen extends Screen {
         });
         this.cyclingButtons.add(actionPriorityButton);
 
+        CyclingButtonWidget<Boolean> switchableButton =
+                CyclingButtonWidget.onOffBuilder()
+                        .initially(this.selectedPriorityManager.isSwitchable())
+                        .build(0, 0, verticalGrid.getWidth(), 20, Text.translatable(SWITCHABLE_TRANSLATION_KEY), (btn, value) -> {
+                            this.selectedPriorityManager.setSwitchable(value);
+                            this.reorderAllEntries();
+                        });
+
+        ((CyclingButtonWidgetAdditionalUpdate) switchableButton).setUpdateFunction(() -> {
+            switchableButton.setValue(this.selectedPriorityManager.isSwitchable());
+        });
+        this.cyclingButtons.add(switchableButton);
+
         // TODO guzik do zmieniania czy switchable
 
         ButtonWidget addMissingActionsBtn = ButtonWidget.builder(Text.translatable(ADD_MISSING_ACTIONS_TRANSLATION_KEY), (btn) -> {
@@ -299,6 +313,7 @@ public class ActionManagerScreen extends Screen {
         }).size(verticalGrid.getWidth(), 20).build();
 
         verticalGrid.add(actionPriorityButton);
+        verticalGrid.add(switchableButton);
         verticalGrid.add(addMissingActionsBtn);
         verticalGrid.add(delUnknownActionsBtn);
         verticalGrid.refreshPositions();
