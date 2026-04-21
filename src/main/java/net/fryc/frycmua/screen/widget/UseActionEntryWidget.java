@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -86,6 +87,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
         private final MinecraftClient client;
         private final UseActionEntryWidget parent;
         private final PriorityManager.Entry action;
+        private boolean highlighted = false;
 
 
         public UseActionEntry(MinecraftClient client, UseActionEntryWidget parent, PriorityManager.Entry action) {
@@ -102,11 +104,10 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             context.drawGuiTexture(this.action.getActionId(), x + 1, y + 1, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             this.drawWarningIfNotValid(context, x, y, j, k);
             context.drawTextWrapped(
-                    this.client.textRenderer, Text.of(this.action.getActionId()),
+                    this.client.textRenderer, this.getEntryText(),
                     x + TEXTURE_WIDTH + HORIZONTAL_SPACER / 2, y + VERTICAL_SPACER * 2,
                     this.parent.getEntryTextWidth(), 0xFFFFFFFF
             );
-            //context.drawText(this.client.textRenderer, this.action.getActionId().toString(), x + TEXTURE_WIDTH + 2, y + 4, 0xFFFFFFFF, true);
 
             if(this.equals(this.parent.getSelectedOrNull())){
                 this.drawMoveUpTexture(context, x, y, j, k);
@@ -307,6 +308,10 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             }
         }
 
+        private Text getEntryText() {
+            return this.isHighlighted() ? Text.literal(this.action.getActionId().toString()).formatted(Formatting.GOLD) : Text.of(this.action.getActionId());
+        }
+
         public boolean isTheSameAs(UseActionEntry entry) {
             if(this.equals(entry)) {
                 return true;
@@ -333,6 +338,14 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         public PriorityManager.Entry getAction() {
             return this.action;
+        }
+
+        public boolean isHighlighted() {
+            return this.highlighted;
+        }
+
+        public void setHighlighted(boolean highlighted) {
+            this.highlighted = highlighted;
         }
 
         private void reselectUseActionEntry() {

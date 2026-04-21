@@ -11,12 +11,10 @@ import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.fryc.frycmua.util.interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AxisGridWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.TextIconButtonWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ public class ActionManagerScreen extends Screen {
     private static final String REMOVE_USE_ACTION_TRANSLATION_KEY = "text.frycmua.remove_use_action";
     private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
     private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
+    private static final String SEARCH_BY_ID_TRANSLATION_KEY = "text.frycmua.search_by_id";
 
     private static final String ADD_NEW_KEYBIND_TRANSLATION_KEY = "button.frycmua.add_new_keybind";
     private static final String NAVIGATE_LEFT_TRANSLATION_KEY = "button.frycmua.navigate_left";
@@ -51,6 +50,7 @@ public class ActionManagerScreen extends Screen {
     private static final int TEXT_BUTTON_PADDING = 5;
 
     private UseActionEntryWidget widget;
+    private TextFieldWidget searchBar;
     private PriorityManager selectedPriorityManager;
     private int selectedGrid = 0;
     private ButtonWidget navigateLeftButton;
@@ -77,8 +77,15 @@ public class ActionManagerScreen extends Screen {
         this.cyclingButtons.clear();
         this.createLeftPanel();
         this.createRightPanel();
+        this.createFilterOptions();
 
-        this.widget = new UseActionEntryWidget(this.client, this, this.width / 2 - PADDING_RIGHT, this.getBodyHeight(), this.getHeaderHeight(), this.width / 2, 6);
+        this.widget = new UseActionEntryWidget(
+                this.client, this,
+                this.width / 2 - PADDING_RIGHT, this.getBodyHeight() - this.getSearchBarHeight(),
+                this.getHeaderHeight() + this.getSearchBarHeight(), this.width / 2,
+                6
+        );
+
         this.addDrawableChild(this.widget);
         this.addAllEntries();
 
@@ -93,23 +100,24 @@ public class ActionManagerScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+        context.drawBorder(5, this.getHeaderHeight() - PADDING_TOP - 1, this.width - 10, 1, 0xFFFFFFFF);
 
         if(this.shouldShowDefault()) {
             context.drawTextWrapped(
                     this.textRenderer, Text.translatable(DEFAULT_BEHAVIOUR_TRANSLATION_KEY),
-                    this.widget.getX() + this.widget.getWidth() / 6, this.widget.getY() + this.widget.getHeight() / 3,
+                    this.widget.getX() + this.widget.getWidth() / 10, this.widget.getY() + this.widget.getHeight() / 3,
                     (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF
             );
             context.drawTextWrapped(
                     this.textRenderer, Text.translatable(SWITCH_PRIORITY_TRANSLATION_KEY),
-                    this.widget.getX() + this.widget.getWidth() / 6, this.widget.getY() + this.widget.getHeight() / 3 + 30,
+                    this.widget.getX() + this.widget.getWidth() / 10, this.widget.getY() + this.widget.getHeight() / 3 + 30,
                     (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF
             );
         }
         else if(this.getSelectedPriorityManager().getEntries().isEmpty()) {
             context.drawTextWrapped(
                     this.textRenderer, Text.translatable(ENTRIES_EMPTY_TRANSLATION_KEY),
-                    this.widget.getX() + this.widget.getWidth() / 6, this.widget.getY() + this.widget.getHeight() / 3,
+                    this.widget.getX() + this.widget.getWidth() / 10, this.widget.getY() + this.widget.getHeight() / 3,
                     (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF
             );
         }
@@ -136,6 +144,7 @@ public class ActionManagerScreen extends Screen {
         this.widget.children().clear();
         this.widget.setSelected(null);
         this.addAllEntries();
+        this.refreshFilterOptions();
     }
 
     public void addAllEntries() {
@@ -154,6 +163,10 @@ public class ActionManagerScreen extends Screen {
         if(index < 0) return this.navigationGrids.getFirst();
 
         return this.navigationGrids.size() > index ? this.navigationGrids.get(index) : this.navigationGrids.getLast();
+    }
+
+    public void refreshFilterOptions() {
+        this.searchBar.write("");
     }
 
     private boolean shouldShowDefault() {
@@ -267,6 +280,27 @@ public class ActionManagerScreen extends Screen {
         this.lastRowWidth += widget.getWidth();
     }
 
+    private void createFilterOptions() {
+        TextFieldWidget textFieldWidget = new TextFieldWidget(
+                this.textRenderer, this.width / 2,
+                this.getHeaderHeight(), this.width / 2 - PADDING_RIGHT,
+                this.getSearchBarHeight(), Text.empty()
+        );
+
+        textFieldWidget.setPlaceholder(Text.translatable(SEARCH_BY_ID_TRANSLATION_KEY).formatted(Formatting.GRAY));
+        textFieldWidget.setChangedListener((value) -> {
+            this.widget.children().forEach(useActionEntry -> useActionEntry.setHighlighted(false));
+            if(!value.isEmpty()) {
+                this.widget.children().stream().filter(useActionEntry -> {
+                    return useActionEntry.getAction().getActionId().toString().contains(value);
+                }).forEach(action -> action.setHighlighted(true));
+            }
+        });
+
+        this.searchBar = textFieldWidget;
+        this.addDrawableChild(textFieldWidget);
+    }
+
     private void createLeftPanel() {
         AxisGridWidget verticalGrid = new AxisGridWidget(PADDING_LEFT, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
 
@@ -316,6 +350,7 @@ public class ActionManagerScreen extends Screen {
                 PriorityManager.Entry entry = new PriorityManager.Entry(this.widget.getSelectedOrNull().getAction().getActionId());
                 this.getSelectedPriorityManager().addUseAction(entry);
                 this.widget.children().add(this.widget.children().indexOf(this.widget.getSelectedOrNull()), new UseActionEntryWidget.UseActionEntry(this.client, this.widget, entry));
+                this.refreshFilterOptions();
             }
         }).size(verticalGrid.getWidth(), 20).build();
 
@@ -324,6 +359,7 @@ public class ActionManagerScreen extends Screen {
                 this.getSelectedPriorityManager().removeUseAction(this.widget.getSelectedOrNull().getAction());
                 this.widget.children().remove(this.widget.getSelectedOrNull());
                 this.widget.setSelected(null);
+                this.refreshFilterOptions();
             }
         }).size(verticalGrid.getWidth(), 20).build();
 
@@ -356,10 +392,14 @@ public class ActionManagerScreen extends Screen {
     }
 
     public int getHeaderHeight() {
-        return PADDING_TOP + 25;
+        return PADDING_TOP * 2 + 25;
     }
 
     public int getBodyHeight() {
         return this.height - this.getHeaderHeight() - this.getFooterHeight();
+    }
+
+    public int getSearchBarHeight() {
+        return 20;
     }
 }
