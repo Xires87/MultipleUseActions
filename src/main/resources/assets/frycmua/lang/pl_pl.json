@@ -11,6 +11,7 @@
   "text.frycmua.remove_use_action": "Usuń wybraną akcję",
   "text.frycmua.duplicate_use_action": "Zduplikuj wybraną akcję",
   "text.frycmua.search_by_id": "Szukaj po id",
+  "text.frycmua.action_preview": "Podgląd obecnych akcji",
   "text.frycmua.invalid_action_tooltip": "Ta akcja nie istnieje i z tego powodu nie działa.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "To może być pozostałość po aktualizacji/usunięciu moda.",
   "text.frycmua.u_sure_u_want_new_keybind": "Minecraft musi zostać zrestartowany aby dodać nowy klawisz. Gra zostanie zamknięta jeśli wciśniesz 'Tak'. Czy chcesz kontynuować?",

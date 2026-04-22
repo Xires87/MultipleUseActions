@@ -11,6 +11,7 @@ import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
 import net.fryc.frycmua.util.interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -34,6 +35,7 @@ public class ActionManagerScreen extends Screen {
     private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
     private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
     private static final String SEARCH_BY_ID_TRANSLATION_KEY = "text.frycmua.search_by_id";
+    private static final String ACTIONS_PREVIEW_TRANSLATION_KEY = "text.frycmua.action_preview";
 
     private static final String ADD_NEW_KEYBIND_TRANSLATION_KEY = "button.frycmua.add_new_keybind";
     private static final String NAVIGATE_LEFT_TRANSLATION_KEY = "button.frycmua.navigate_left";
@@ -304,6 +306,10 @@ public class ActionManagerScreen extends Screen {
     private void createLeftPanel() {
         AxisGridWidget verticalGrid = new AxisGridWidget(PADDING_LEFT, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
 
+        ButtonWidget keybinds = ButtonWidget.builder(Text.translatable("controls.keybinds"), (btn) -> {
+            this.client.setScreen(new KeybindsScreen(this, this.client.options));
+        }).size(verticalGrid.getWidth(), 20).build();
+
         CyclingButtonWidget<ActionPriority> actionPriorityButton =
                 CyclingButtonWidget.<ActionPriority>builder((actionPriority) -> Text.translatable(actionPriority.getTranslationKey()))
                         .values(ActionPriority.values())
@@ -330,6 +336,30 @@ public class ActionManagerScreen extends Screen {
             switchableButton.setValue(this.selectedPriorityManager.isSwitchable());
         });
         this.cyclingButtons.add(switchableButton);
+
+        ButtonWidget preview = ButtonWidget.builder(Text.translatable(ACTIONS_PREVIEW_TRANSLATION_KEY), (btn) -> {
+            if(this.client.player != null) {
+                this.client.setScreen(new ActionPreviewScreen(this, this.getSelectedPriorityManager(), this.client.player));
+            }
+            else {
+                btn.active = false;
+            }
+        }).size(verticalGrid.getWidth(), 20).build();
+
+        preview.active = this.client.player != null;
+
+        // TODO zrobic 4 property entriesa ktory bedzie zarzadzal lockiem - czy lock powinien dzialac na priority (tak jak teraz jest) czy na switchable (ze zawsze sie pojawia nawet jak akcja jest niedostepna dla tego itemku) czy na oba
+        verticalGrid.add(keybinds);
+        verticalGrid.add(actionPriorityButton);
+        verticalGrid.add(switchableButton);
+        verticalGrid.add(preview);
+        verticalGrid.refreshPositions();
+
+        verticalGrid.forEachChild(this::addDrawableChild);
+    }
+
+    private void createRightPanel() {
+        AxisGridWidget verticalGrid = new AxisGridWidget(this.width / 4 + 10, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
 
         ButtonWidget addMissingActionsBtn = ButtonWidget.builder(Text.translatable(ADD_MISSING_ACTIONS_TRANSLATION_KEY), (btn) -> {
             if(!this.isActionPriorityDefault()) {
@@ -363,8 +393,6 @@ public class ActionManagerScreen extends Screen {
             }
         }).size(verticalGrid.getWidth(), 20).build();
 
-        verticalGrid.add(actionPriorityButton);
-        verticalGrid.add(switchableButton);
         verticalGrid.add(addMissingActionsBtn);
         verticalGrid.add(duplicateUseAction);
         verticalGrid.add(delUnknownActionsBtn);
@@ -372,10 +400,6 @@ public class ActionManagerScreen extends Screen {
         verticalGrid.refreshPositions();
 
         verticalGrid.forEachChild(this::addDrawableChild);
-    }
-
-    private void createRightPanel() {
-        // TODO zrobic right panel (sortowanie itp)
     }
 
     public void updateNavigationButtons() {
