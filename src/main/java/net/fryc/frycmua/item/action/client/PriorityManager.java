@@ -83,6 +83,10 @@ public class PriorityManager {
         this.entries.stream().filter(entry -> !UseActionHelper.useActionExists(entry.getActionId())).forEach(entry -> {
             this.unknownEntries.add(entry.getActionId());
         });
+
+        if(!this.isSwitchable()) {
+            this.entries.forEach(entry -> entry.setLockType(LockType.ANY));
+        }
     }
 
     public void addOtherUseActions() {
@@ -234,39 +238,39 @@ public class PriorityManager {
     public enum LockType {
         ANY {
             @Override
-            boolean isSwitch() {
+            public boolean isSwitch() {
                 return true;
             }
 
             @Override
-            boolean isPriority() {
+            public boolean isPriority() {
                 return true;
             }
         },
         PRIORITY {
             @Override
-            boolean isSwitch() {
+            public boolean isSwitch() {
                 return false;
             }
 
             @Override
-            boolean isPriority() {
+            public boolean isPriority() {
                 return true;
             }
         },
         SWITCH {
             @Override
-            boolean isSwitch() {
+            public boolean isSwitch() {
                 return true;
             }
 
             @Override
-            boolean isPriority() {
+            public boolean isPriority() {
                 return false;
             }
         };
 
-        abstract boolean isSwitch();
-        abstract boolean isPriority();
+        public abstract boolean isSwitch();
+        public abstract boolean isPriority();
     }
 }

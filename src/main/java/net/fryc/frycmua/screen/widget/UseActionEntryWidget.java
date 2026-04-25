@@ -35,6 +35,12 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
     private static final Identifier SWITCHABLE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/switchable_highlighted");
     private static final Identifier NOT_SWITCHABLE_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/not_switchable");
     private static final Identifier NOT_SWITCHABLE_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/not_switchable_highlighted");
+    private static final Identifier LOCK_TYPE_ANY_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_any");
+    private static final Identifier LOCK_TYPE_SWITCH_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_switch");
+    private static final Identifier LOCK_TYPE_PRIORITY_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_priority");
+    private static final Identifier LOCK_TYPE_ANY_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_any_highlighted");
+    private static final Identifier LOCK_TYPE_SWITCH_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_switch_highlighted");
+    private static final Identifier LOCK_TYPE_PRIORITY_HIGHLIGHTED_TEXTURE = Identifier.of(MultipleUseActions.MOD_ID, "transferable_list/lock_type_priority_highlighted");
 
     private static final int SMALL_TEXTURE_WIDTH = 16;
     private static final int SMALL_TEXTURE_HEIGHT = 16;
@@ -82,7 +88,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
 
     @Environment(EnvType.CLIENT)
-    public static class UseActionEntry extends EntryListWidget.Entry<UseActionEntry> {
+    public static class UseActionEntry extends Entry<UseActionEntry> {
 
         private final MinecraftClient client;
         private final UseActionEntryWidget parent;
@@ -108,7 +114,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     x + TEXTURE_WIDTH + HORIZONTAL_SPACER / 2, y + VERTICAL_SPACER * 2,
                     this.parent.getEntryTextWidth(), 0xFFFFFFFF
             );
-
+            // TODO jak jest action priority na default to nie powinienem wyswietlac czy jest aktywne i lock typea bo to bez sensu bo i tak active nie ma wplywu
             if(this.equals(this.parent.getSelectedOrNull())){
                 this.drawMoveUpTexture(context, x, y, j, k);
                 this.drawMoveDownTexture(context, x, y, j, k);
@@ -118,6 +124,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                 this.drawActiveTexture(context, x, y, j, k, entryWidth);
                 this.drawLockedTexture(context, x, y, j, k, entryWidth);
                 this.drawSwitchableTexture(context, x, y, j, k, entryWidth);
+                this.drawLockTypeTexture(context, x, y, j, k, entryWidth);
             }
             else {
                 if(!this.action.isActive()) {
@@ -127,7 +134,8 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                             SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
                     );
                 }
-                else if(this.action.isLocked()) {
+
+                if(this.action.isLocked() && ((this.parent.isSwitchable() && this.action.isSwitchable()) || this.action.isActive())) {
                     context.drawGuiTexture(
                             LOCKED_TEXTURE,
                             x + entryWidth - this.getSmallWidthWithSpacer(), y + this.getSmallHeightWithSpacer(),
@@ -135,12 +143,22 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     );
                 }
 
-                if(this.parent.isSwitchable() && this.action.isSwitchable()) {
-                    context.drawGuiTexture(
-                            SWITCHABLE_TEXTURE,
-                            x + entryWidth - this.getSmallWidthWithSpacer() * 2, y,
-                            SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
-                    );
+                if(this.parent.isSwitchable()) {
+                    if(this.action.isSwitchable()) {
+                        context.drawGuiTexture(
+                                SWITCHABLE_TEXTURE,
+                                x + entryWidth - this.getSmallWidthWithSpacer() * 2, y,
+                                SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
+                        );
+                    }
+
+                    if(this.action.isLocked()) {
+                        context.drawGuiTexture(
+                                this.getLockTypeTexture(),
+                                x + entryWidth - this.getSmallWidthWithSpacer() * 2, y + this.getSmallHeightWithSpacer(),
+                                SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT
+                        );
+                    }
                 }
             }
         }
@@ -189,11 +207,18 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                             return true;
                         }
                     }
-                    else if(d >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && d <= this.getSmallWidthWithSpacer() * 2) {
-                        if(this.parent.isSwitchable() && e <= SMALL_TEXTURE_HEIGHT) {
-                            this.action.setSwitchable(!this.action.isSwitchable());
+                    else if(this.parent.isSwitchable()) {
+                        if(d >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && d <= this.getSmallWidthWithSpacer() * 2) {
+                            if(e <= SMALL_TEXTURE_HEIGHT) {
+                                this.action.setSwitchable(!this.action.isSwitchable());
 
-                            return true;
+                                return true;
+                            }
+                            else if(e >= SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER) {
+                                this.action.setLockType(this.getNextLockType());
+
+                                return true;
+                            }
                         }
                     }
                 }
@@ -308,6 +333,29 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
             }
         }
 
+        private void drawLockTypeTexture(DrawContext context, int x, int y, int j, int k, int entryWidth) {
+            if(this.parent.isSwitchable()) {
+                if (j <= this.getSmallWidthWithSpacer() * 2 && j >= this.getSmallWidthWithSpacer() + HORIZONTAL_SPACER && k >= SMALL_TEXTURE_HEIGHT && k < SMALL_TEXTURE_HEIGHT * 2 + VERTICAL_SPACER) {
+                    context.drawGuiTexture(
+                            this.getLockTypeHighlightedTexture(),
+                            x + entryWidth - this.getSmallWidthWithSpacer() * 2,
+                            y + this.getSmallHeightWithSpacer(),
+                            SMALL_TEXTURE_WIDTH,
+                            SMALL_TEXTURE_HEIGHT
+                    );
+                }
+                else {
+                    context.drawGuiTexture(
+                            this.getLockTypeTexture(),
+                            x + entryWidth - this.getSmallWidthWithSpacer() * 2,
+                            y + this.getSmallHeightWithSpacer(),
+                            SMALL_TEXTURE_WIDTH,
+                            SMALL_TEXTURE_HEIGHT
+                    );
+                }
+            }
+        }
+
         private Text getEntryText() {
             return this.isHighlighted() ? Text.literal(this.action.getActionId().toString()).formatted(Formatting.GOLD) : Text.of(this.action.getActionId());
         }
@@ -360,6 +408,30 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
 
         private int getSmallHeightWithSpacer() {
             return SMALL_TEXTURE_HEIGHT + VERTICAL_SPACER;
+        }
+
+        private Identifier getLockTypeTexture() {
+            return switch(this.action.getLockType()) {
+                case ANY -> LOCK_TYPE_ANY_TEXTURE;
+                case PRIORITY -> LOCK_TYPE_PRIORITY_TEXTURE;
+                case SWITCH -> LOCK_TYPE_SWITCH_TEXTURE;
+            };
+        }
+
+        private Identifier getLockTypeHighlightedTexture() {
+            return switch(this.action.getLockType()) {
+                case ANY -> LOCK_TYPE_ANY_HIGHLIGHTED_TEXTURE;
+                case PRIORITY -> LOCK_TYPE_PRIORITY_HIGHLIGHTED_TEXTURE;
+                case SWITCH -> LOCK_TYPE_SWITCH_HIGHLIGHTED_TEXTURE;
+            };
+        }
+
+        private PriorityManager.LockType getNextLockType() {
+            return switch(this.action.getLockType()) {
+                case ANY -> PriorityManager.LockType.PRIORITY;
+                case PRIORITY -> PriorityManager.LockType.SWITCH;
+                case SWITCH -> PriorityManager.LockType.ANY;
+            };
         }
     }
 }
