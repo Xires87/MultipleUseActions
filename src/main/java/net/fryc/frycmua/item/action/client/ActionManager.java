@@ -20,21 +20,30 @@ public class ActionManager {
     private final ClientPlayerEntity player;
     private final KeyBinding keybinding;
     private final PriorityManager priorityManager;
-    private @Nullable Identifier chosenAction = null;
+    private @Nullable Identifier chosenAction;
     private ItemStack mainHandStack = ItemStack.EMPTY;
     private ItemStack offHandStack = ItemStack.EMPTY;
+    private boolean isFullyInitialized = false;
 
 
-    public ActionManager(KeyBinding keybinding, PriorityManager priorityManager, ClientPlayerEntity player){
+    public ActionManager(KeyBinding keybinding, PriorityManager priorityManager, ClientPlayerEntity player) {
         this.keybinding = keybinding;
         this.priorityManager = priorityManager;
         this.player = player;
         this.priorityManager.validate();
-        this.resetChosenAction();
+        this.chosenAction = null;
+        this.switchableActions.add(null);
     }
 
-    public void updateAvailableActions(){
-        if(this.shouldUpdateAvailableActions()){
+    public void updateAvailableActions() {
+        if(!this.isFullyInitialized) {
+            this.chosenAction = null;
+            this.forceUpdateAvailableActions();
+            this.resetChosenAction();
+            this.isFullyInitialized = true;
+        }
+        else if(this.shouldUpdateAvailableActions()) {
+            this.softResetChosenAction();
             this.forceUpdateAvailableActions();
         }
     }
@@ -53,7 +62,20 @@ public class ActionManager {
         this.chosenAction = null;
         this.switchableActions.clear();
         this.switchableActions.addFirst(null);
-        this.switchableActions.addAll(this.getPriorityManager().getSwitchableUseActions());
+        this.switchableActions.addAll(this.getAvailableSwitchableActions());
+    }
+
+    public void softResetChosenAction() {
+        Identifier id = this.chosenAction;
+        if(id != null) {
+            this.mainHandStack = this.player.getMainHandStack();
+            this.offHandStack = this.player.getOffHandStack();
+            this.resetChosenAction();
+
+            while(this.switchableActions.contains(id) && this.chosenAction != id) {
+                this.switchChosenAction(true);
+            }
+        }
     }
 
     public void switchChosenAction(boolean forward) {
@@ -81,6 +103,10 @@ public class ActionManager {
         }
 
         return this.chosenAction != null ? List.of(this.chosenAction) : this.getPriorityManager().getOrderedAvailableUseActions(this.mainHandStack, this.offHandStack);
+    }
+
+    public List<Identifier> getAvailableSwitchableActions() {
+        return this.priorityManager.getSwitchableUseActions(this.mainHandStack, this.offHandStack);
     }
 
     public boolean shouldUseVanillaSystem(){

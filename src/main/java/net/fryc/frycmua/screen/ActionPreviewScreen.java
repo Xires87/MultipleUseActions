@@ -43,7 +43,7 @@ public class ActionPreviewScreen extends Screen {
                 this.client,
                 this.leftWidget.getX() + this.leftWidget.getWidth() + PADDING_LEFT, this.height / 5,
                 this.width / 3, this.height / 2,
-                this.manager.getSwitchableUseActions()// TODO musze zrobic te lockowanie na switchablu bo na razie wszystkie switchable sa zlockowane
+                this.manager.getSwitchableUseActions(this.player.getMainHandStack(), this.player.getOffHandStack())
         );
 
         this.addDrawableChild(this.leftWidget);

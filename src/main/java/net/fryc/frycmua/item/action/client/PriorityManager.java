@@ -5,14 +5,12 @@ import net.fabricmc.api.Environment;
 import net.fryc.frycmua.MultipleUseActions;
 import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.client.FileHelper;
+import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class PriorityManager {
@@ -116,10 +114,16 @@ public class PriorityManager {
         return this.getActionPriority().getOrderedUseActions(mainHandStack, offHandStack, this.getEntries().stream().filter(this::isEntryValid).toList());
     }
 
-    public List<Identifier> getSwitchableUseActions() {
-        return this.isSwitchable() ? this.getEntries().stream().filter(entry -> {
+    public List<Identifier> getSwitchableUseActions(ItemStack mainHandStack, ItemStack offHandStack) {
+        if(!this.isSwitchable()) return List.of();
+
+        Set<Identifier> set = UseActionHelperClient.getAllUseActionsForItems(mainHandStack, offHandStack);
+
+        return this.getEntries().stream().filter(entry -> {
             return this.isEntryValid(entry) && entry.isSwitchable();
-        }).map(Entry::getActionId).toList() : List.of();
+        }).filter(entry -> {
+            return set.contains(entry.getActionId()) || (entry.isLocked() && entry.getLockType().isSwitch());
+        }).map(Entry::getActionId).toList();
     }
 
     public List<PriorityManager.Entry> getEntries() {
@@ -162,25 +166,31 @@ public class PriorityManager {
         private boolean active;
         private boolean locked;
         private boolean switchable;
+        private LockType lockType;
         private final Identifier actionId;
 
-        public Entry(Identifier actionId, boolean active, boolean locked, boolean switchable) {
+        public Entry(Identifier actionId, boolean active, boolean locked, boolean switchable, LockType lockType) {
             this.actionId = actionId;
             this.active = active;
             this.locked = locked;
             this.switchable = switchable;
+            this.lockType = lockType;
+        }
+
+        public Entry(Identifier actionId, boolean active, boolean locked, boolean switchable) {
+            this(actionId, active, locked, switchable, LockType.ANY);
         }
 
         public Entry(Identifier actionId, boolean active, boolean locked) {
-            this(actionId, active, locked, false);
+            this(actionId, active, locked, false, LockType.ANY);
         }
 
         public Entry(Identifier actionId, boolean active) {
-            this(actionId, active, false, false);
+            this(actionId, active, false, false, LockType.ANY);
         }
 
         public Entry(Identifier actionId) {
-            this(actionId, false, false, false);
+            this(actionId, false, false, false, LockType.ANY);
         }
 
         public Identifier getActionId() {
@@ -210,5 +220,53 @@ public class PriorityManager {
         public void setSwitchable(boolean switchable) {
             this.switchable = switchable;
         }
+
+        public LockType getLockType() {
+            return this.lockType;
+        }
+
+        public void setLockType(LockType lockType) {
+            this.lockType = lockType;
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public enum LockType {
+        ANY {
+            @Override
+            boolean isSwitch() {
+                return true;
+            }
+
+            @Override
+            boolean isPriority() {
+                return true;
+            }
+        },
+        PRIORITY {
+            @Override
+            boolean isSwitch() {
+                return false;
+            }
+
+            @Override
+            boolean isPriority() {
+                return true;
+            }
+        },
+        SWITCH {
+            @Override
+            boolean isSwitch() {
+                return true;
+            }
+
+            @Override
+            boolean isPriority() {
+                return false;
+            }
+        };
+
+        abstract boolean isSwitch();
+        abstract boolean isPriority();
     }
 }

@@ -121,7 +121,6 @@ abstract class MinecraftClientMixin {
             for(Identifier id : ((HoldsActionManager) this.player).getCurrentActionManager().getAvailableActions()){
 
                 for(Hand hand : Hand.values()) {
-                    // TODO wybieranie priorytetowej reki
                     ItemStack stack = this.player.getStackInHand(hand);
 
                     if (!canUseItem(stack, this.world, id)) {
@@ -249,7 +248,7 @@ abstract class MinecraftClientMixin {
 
             return true;
         }
-        // TODO nie mam pewnosci co do faila czy powinno puszczac czy moze zablokowac
+        // TODO nie mam pewnosci co do faila czy powinno puszczac czy moze zablokowac (chyba bede puszczal dalej, fail ma dzialac tylko dla vanilla use key a dla mojego bedzie lockowanie)
         return actionResult2 == ActionResult.FAIL;
     }
 

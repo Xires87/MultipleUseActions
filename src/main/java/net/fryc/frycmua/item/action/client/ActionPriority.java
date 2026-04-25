@@ -4,13 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fryc.frycmua.item.action.DefaultUseActions;
 import net.fryc.frycmua.item.action.registry.UseActionRegistries;
-import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
+import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public enum ActionPriority {
@@ -39,13 +39,7 @@ public enum ActionPriority {
     MIXED {
         @Override
         public List<Identifier> getOrderedUseActions(ItemStack mainStack, ItemStack offStack, List<PriorityManager.Entry> managerActions) {
-            HashSet<Identifier> set = new HashSet<>();
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseActionIds());
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnEntityActionIds());
-            set.addAll(((HoldsUseActions) mainStack.getItem()).getAllUseOnBlockActionIds());
-            set.addAll(((HoldsUseActions) offStack.getItem()).getAllUseOnBlockActionIds());
+            Set<Identifier> set = UseActionHelperClient.getAllUseActionsForItems(mainStack, offStack);
 
             List<PriorityManager.Entry> list = managerActions.stream().filter(PriorityManager.Entry::isActive).filter(entry -> {
                 return set.contains(entry.getActionId());
@@ -54,7 +48,7 @@ public enum ActionPriority {
             List<Identifier> finalList = new ArrayList<>();
             for(PriorityManager.Entry entry : list) {
                 finalList.add(entry.getActionId());
-                if(entry.isLocked()) break;
+                if(entry.isLocked() && entry.getLockType().isPriority()) break;
             }
 
             return List.copyOf(finalList);
@@ -63,12 +57,12 @@ public enum ActionPriority {
         @Override
         public List<Identifier> getAllPartiallyOrderedUseActions() {
             ArrayList<Identifier> list = new ArrayList<>();
-            list.add(DefaultUseActions.USE_DEFAULT);
             list.add(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
             list.add(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
-            list.addAll(UseActionRegistries.REGISTERED_USE_ACTIONS.keySet());
+            list.add(DefaultUseActions.USE_DEFAULT);
             list.addAll(UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.keySet());
             list.addAll(UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.keySet());
+            list.addAll(UseActionRegistries.REGISTERED_USE_ACTIONS.keySet());
 
             return List.copyOf(list);
         }
