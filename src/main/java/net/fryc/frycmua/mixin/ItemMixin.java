@@ -91,24 +91,6 @@ abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUs
         return this.useOnEntity(stack, user, entity, hand);
     }
 
-    /*
-    @Override
-    public ItemUseInstance getItemUseActionInstance(Identifier id) {
-        return this.availableItemUseActions.get(id);
-    }
-
-    @Override
-    public ItemUseOnBlockInstance getItemUseOnBlockActionInstance(Identifier id) {
-        return this.availableItemUseOnBlockActions.get(id);
-    }
-
-    @Override
-    public ItemUseOnEntityInstance getItemUseOnEntityActionInstance(Identifier id) {
-        return this.availableItemUseOnEntityActions.get(id);
-    }
-
-     */
-
     @Override
     @Nullable
     public UseInstance getUseInstance(Identifier id) {

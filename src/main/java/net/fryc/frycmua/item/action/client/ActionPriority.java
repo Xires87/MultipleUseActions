@@ -60,9 +60,9 @@ public enum ActionPriority {
             list.add(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
             list.add(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
             list.add(DefaultUseActions.USE_DEFAULT);
-            list.addAll(UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.keySet());
-            list.addAll(UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.keySet());
-            list.addAll(UseActionRegistries.REGISTERED_USE_ACTIONS.keySet());
+            list.addAll(UseActionRegistries.getRegisteredUseOnEntityActions().keySet());
+            list.addAll(UseActionRegistries.getRegisteredUseOnBlockActions().keySet());
+            list.addAll(UseActionRegistries.getRegisteredUseActions().keySet());
 
             return List.copyOf(list);
         }

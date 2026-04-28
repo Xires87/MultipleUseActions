@@ -14,8 +14,8 @@ public class UseActionHelper {
         if(useAction == null) return false;
 
         return DefaultUseActions.DEFAULT_IDS.contains(useAction) ||
-                UseActionRegistries.REGISTERED_USE_ACTIONS.containsKey(useAction) ||
-                UseActionRegistries.REGISTERED_USE_ON_BLOCK_ACTIONS.containsKey(useAction) ||
-                UseActionRegistries.REGISTERED_USE_ON_ENTITY_ACTIONS.containsKey(useAction);
+                UseActionRegistries.getRegisteredUseActions().containsKey(useAction) ||
+                UseActionRegistries.getRegisteredUseOnBlockActions().containsKey(useAction) ||
+                UseActionRegistries.getRegisteredUseOnEntityActions().containsKey(useAction);
     }
 }
