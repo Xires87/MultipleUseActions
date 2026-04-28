@@ -84,7 +84,7 @@ public class PriorityManager {
             this.unknownEntries.add(entry.getActionId());
         });
 
-        if(!this.isSwitchable()) {
+        if(!this.isSwitchable() || this.actionPriority.equals(ActionPriority.DEFAULT)) {
             this.entries.forEach(entry -> entry.setLockType(LockType.ANY));
         }
     }
