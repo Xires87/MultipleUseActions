@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.player.client;
+package net.fryc.frycmua.util.mixin_interfaces.player.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.registry;
+package net.fryc.frycmua.util.mixin_interfaces.registry;
 
 public interface FrozenCheckable {
 

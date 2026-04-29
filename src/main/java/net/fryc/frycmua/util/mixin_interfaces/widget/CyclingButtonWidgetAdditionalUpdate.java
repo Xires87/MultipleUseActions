@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.widget;
+package net.fryc.frycmua.util.mixin_interfaces.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

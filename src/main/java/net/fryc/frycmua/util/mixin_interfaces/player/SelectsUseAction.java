@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.player;
+package net.fryc.frycmua.util.mixin_interfaces.player;
 
 import net.fryc.frycmua.item.action.UseInstance;
 import net.minecraft.util.Identifier;

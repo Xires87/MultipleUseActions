@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.item;
+package net.fryc.frycmua.util.mixin_interfaces.item;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

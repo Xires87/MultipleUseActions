@@ -1,4 +1,4 @@
-package net.fryc.frycmua.util.interfaces.item;
+package net.fryc.frycmua.util.mixin_interfaces.item;
 
 import net.fryc.frycmua.item.action.ItemUseInstance;
 import net.fryc.frycmua.item.action.ItemUseOnBlockInstance;
