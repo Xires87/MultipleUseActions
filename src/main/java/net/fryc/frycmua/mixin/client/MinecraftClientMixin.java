@@ -2,7 +2,7 @@ package net.fryc.frycmua.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.fryc.frycmua.MultipleUseActions;
-import net.fryc.frycmua.item.action.*;
+import net.fryc.frycmua.action.*;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.util.mixin_interfaces.item.HoldsUseActions;
 import net.fryc.frycmua.util.mixin_interfaces.player.SelectsUseAction;

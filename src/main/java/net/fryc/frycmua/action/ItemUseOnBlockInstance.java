@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action;
+package net.fryc.frycmua.action;
 
 import net.fryc.frycmua.util.function.TriPredicate;
 import net.minecraft.entity.player.PlayerEntity;

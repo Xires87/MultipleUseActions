@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action.client;
+package net.fryc.frycmua.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

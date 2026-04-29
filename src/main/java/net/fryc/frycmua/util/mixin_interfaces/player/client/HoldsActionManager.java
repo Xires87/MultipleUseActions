@@ -2,7 +2,7 @@ package net.fryc.frycmua.util.mixin_interfaces.player.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.item.action.client.ActionManager;
+import net.fryc.frycmua.action.client.ActionManager;
 import net.minecraft.client.option.KeyBinding;
 
 import java.util.List;

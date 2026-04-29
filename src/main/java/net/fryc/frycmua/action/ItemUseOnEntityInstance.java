@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action;
+package net.fryc.frycmua.action;
 
 import net.fryc.frycmua.util.function.QuadPredicate;
 import net.minecraft.entity.Entity;

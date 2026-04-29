@@ -2,7 +2,7 @@ package net.fryc.frycmua.mixin;
 
 import com.google.common.collect.ImmutableSet;
 import net.fryc.frycmua.MultipleUseActions;
-import net.fryc.frycmua.item.action.*;
+import net.fryc.frycmua.action.*;
 import net.fryc.frycmua.util.mixin_interfaces.item.UseActionRegistry;
 import net.fryc.frycmua.util.UseActionHelper;
 import net.fryc.frycmua.util.mixin_interfaces.item.HoldsUseActions;

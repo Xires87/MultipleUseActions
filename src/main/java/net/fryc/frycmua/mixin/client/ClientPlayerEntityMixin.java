@@ -1,8 +1,8 @@
 package net.fryc.frycmua.mixin.client;
 
 import com.mojang.authlib.GameProfile;
-import net.fryc.frycmua.item.action.client.ActionManager;
-import net.fryc.frycmua.item.action.client.PriorityManager;
+import net.fryc.frycmua.action.client.ActionManager;
+import net.fryc.frycmua.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;

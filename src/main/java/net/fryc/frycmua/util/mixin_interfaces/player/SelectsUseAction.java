@@ -1,6 +1,6 @@
 package net.fryc.frycmua.util.mixin_interfaces.player;
 
-import net.fryc.frycmua.item.action.UseInstance;
+import net.fryc.frycmua.action.UseInstance;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 

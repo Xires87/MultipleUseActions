@@ -1,8 +1,8 @@
 package net.fryc.frycmua;
 
 import net.fabricmc.api.ModInitializer;
-import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.fryc.frycmua.action.DefaultUseActions;
+import net.fryc.frycmua.action.registry.UseActionRegistries;
 import net.fryc.frycmua.network.ModPackets;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;

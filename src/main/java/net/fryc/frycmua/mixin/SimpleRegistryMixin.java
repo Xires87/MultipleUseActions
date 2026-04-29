@@ -1,6 +1,6 @@
 package net.fryc.frycmua.mixin;
 
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.fryc.frycmua.action.registry.UseActionRegistries;
 import net.fryc.frycmua.util.mixin_interfaces.item.UseActionRegistry;
 import net.fryc.frycmua.util.mixin_interfaces.registry.FrozenCheckable;
 import net.minecraft.registry.Registries;

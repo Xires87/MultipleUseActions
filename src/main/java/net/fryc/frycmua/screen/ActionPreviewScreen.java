@@ -2,7 +2,7 @@ package net.fryc.frycmua.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.item.action.client.PriorityManager;
+import net.fryc.frycmua.action.client.PriorityManager;
 import net.fryc.frycmua.screen.widget.UseActionPreviewWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;

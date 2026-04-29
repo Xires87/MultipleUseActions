@@ -1,8 +1,8 @@
 package net.fryc.frycmua.util.mixin_interfaces.item;
 
-import net.fryc.frycmua.item.action.ItemUseInstance;
-import net.fryc.frycmua.item.action.ItemUseOnBlockInstance;
-import net.fryc.frycmua.item.action.ItemUseOnEntityInstance;
+import net.fryc.frycmua.action.ItemUseInstance;
+import net.fryc.frycmua.action.ItemUseOnBlockInstance;
+import net.fryc.frycmua.action.ItemUseOnEntityInstance;
 import net.minecraft.util.Identifier;
 
 // for Item

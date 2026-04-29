@@ -2,8 +2,8 @@ package net.fryc.frycmua.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.item.action.UseInstance;
+import net.fryc.frycmua.action.DefaultUseActions;
+import net.fryc.frycmua.action.UseInstance;
 import net.fryc.frycmua.util.mixin_interfaces.item.HoldsUseActions;
 import net.fryc.frycmua.util.mixin_interfaces.player.SelectsUseAction;
 import net.minecraft.entity.LivingEntity;

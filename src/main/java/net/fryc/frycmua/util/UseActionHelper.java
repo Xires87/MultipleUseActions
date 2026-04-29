@@ -1,7 +1,7 @@
 package net.fryc.frycmua.util;
 
-import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.fryc.frycmua.action.DefaultUseActions;
+import net.fryc.frycmua.action.registry.UseActionRegistries;
 import net.minecraft.util.Identifier;
 
 public class UseActionHelper {

@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action;
+package net.fryc.frycmua.action;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;

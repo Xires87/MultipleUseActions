@@ -1,9 +1,9 @@
-package net.fryc.frycmua.item.action.client;
+package net.fryc.frycmua.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.item.action.DefaultUseActions;
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.fryc.frycmua.action.DefaultUseActions;
+import net.fryc.frycmua.action.registry.UseActionRegistries;
 import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;

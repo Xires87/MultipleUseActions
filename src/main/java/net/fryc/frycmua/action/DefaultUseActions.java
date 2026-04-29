@@ -1,4 +1,4 @@
-package net.fryc.frycmua.item.action;
+package net.fryc.frycmua.action;
 
 import com.google.common.collect.BiMap;
 import net.fryc.frycmua.MultipleUseActions;

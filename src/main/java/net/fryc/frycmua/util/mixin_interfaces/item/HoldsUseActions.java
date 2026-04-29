@@ -1,6 +1,6 @@
 package net.fryc.frycmua.util.mixin_interfaces.item;
 
-import net.fryc.frycmua.item.action.UseInstance;
+import net.fryc.frycmua.action.UseInstance;
 import net.minecraft.util.Identifier;
 
 import java.util.Set;
