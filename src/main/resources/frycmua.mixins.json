@@ -6,7 +6,8 @@
 		"ItemMixin",
 		"ItemStackMixin",
 		"SimpleRegistryMixin",
-		"LivingEntityMixin"
+		"LivingEntityMixin",
+		"AxeItemMixin"
 	],
 	"client": [
 		"client/MinecraftClientMixin",

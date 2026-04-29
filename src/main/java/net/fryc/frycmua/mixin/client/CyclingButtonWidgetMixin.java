@@ -1,6 +1,6 @@
 package net.fryc.frycmua.mixin.client;
 
-import net.fryc.frycmua.util.interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
+import net.fryc.frycmua.util.mixin_interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import org.spongepowered.asm.mixin.Mixin;
 

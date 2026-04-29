@@ -8,7 +8,7 @@ import net.fryc.frycmua.item.action.client.ActionPriority;
 import net.fryc.frycmua.item.action.client.PriorityManager;
 import net.fryc.frycmua.screen.ActionManagerScreen;
 import net.fryc.frycmua.util.client.FileHelper;
-import net.fryc.frycmua.util.interfaces.player.client.HoldsActionManager;
+import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;

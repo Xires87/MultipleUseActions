@@ -2,7 +2,7 @@ package net.fryc.frycmua.util.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
+import net.fryc.frycmua.util.mixin_interfaces.item.HoldsUseActions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 

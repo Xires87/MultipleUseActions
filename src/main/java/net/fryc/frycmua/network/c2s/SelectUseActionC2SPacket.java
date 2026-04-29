@@ -1,7 +1,7 @@
 package net.fryc.frycmua.network.c2s;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
+import net.fryc.frycmua.util.mixin_interfaces.player.SelectsUseAction;
 import net.fryc.frycmua.network.payload.SelectUseActionPayload;
 
 public class SelectUseActionC2SPacket {

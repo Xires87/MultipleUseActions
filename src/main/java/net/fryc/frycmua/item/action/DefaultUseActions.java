@@ -1,16 +1,24 @@
 package net.fryc.frycmua.item.action;
 
+import com.google.common.collect.BiMap;
+import net.fryc.frycmua.MultipleUseActions;
+import net.fryc.frycmua.util.mixin_interfaces.item.AxeItemAccessor;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Oxidizable;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class DefaultUseActions {
@@ -21,6 +29,58 @@ public class DefaultUseActions {
     public static final Identifier USE_ON_ENTITY_DEFAULT = Identifier.ofVanilla("use_on_entity_default");
 
     public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT);
+
+    // TODO pewnie bede musial getMethod podmienic na intermediary
+    public static final ItemUseOnBlockInstance BLOCK_STRIP = new ItemUseOnBlockInstance(
+            AxeItem.class,
+            true,
+            context -> {
+                try {
+                    if(context.getStack().getItem().getClass().getMethod("useOnBlock", ItemUsageContext.class).getDeclaringClass().equals(AxeItem.class)) {
+                        World world = context.getWorld();
+                        BlockPos blockPos = context.getBlockPos();
+                        PlayerEntity playerEntity = context.getPlayer();
+                        Optional<BlockState> optional = ((AxeItemAccessor) context.getStack().getItem()).frycmua$tryStrip(world, blockPos, playerEntity, world.getBlockState(blockPos));
+                        if (optional.isEmpty()) {
+                            return ActionResult.PASS;
+                        } else {
+                            ItemStack itemStack = context.getStack();
+                            if (playerEntity instanceof ServerPlayerEntity) {
+                                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+                            }
+
+                            world.setBlockState(blockPos, (BlockState)optional.get(), 11);
+                            world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, (BlockState)optional.get()));
+                            if (playerEntity != null) {
+                                itemStack.damage(1, playerEntity, LivingEntity.getSlotForHand(context.getHand()));
+                            }
+
+                            return ActionResult.success(world.isClient);
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    MultipleUseActions.LOGGER.error("Failed to get useOnBlock method", e);
+                }
+
+                return DefaultUseActions.defaultUseOnBlock(context);
+            },
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, blockHitResult, hand) -> {
+                if(!(player.getStackInHand(hand).getItem() instanceof AxeItem)) return false;
+
+                BlockState state = player.getWorld().getBlockState(blockHitResult.getBlockPos());
+                boolean isLog = ((AxeItemAccessor) player.getStackInHand(hand).getItem()).frycmua$getStrippedLogsMap().containsKey(state.getBlock());
+
+                return isLog || Oxidizable.getDecreasedOxidationState(state).isPresent() || Optional.ofNullable(
+                        (Block)((BiMap<?, ?>)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(state.getBlock())
+                ).map((block) -> block.getStateWithProperties(state)).isPresent();
+            }
+    );
 
     public static final ItemUseInstance BOW_PULL = new ItemUseInstance(
             BowItem.class,
@@ -117,6 +177,10 @@ public class DefaultUseActions {
 
     private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
         return item.use(world, user, hand);
+    }
+
+    private static ActionResult defaultUseOnBlock(ItemUsageContext context) {
+        return context.getStack().getItem().useOnBlock(context);
     }
 
     private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {

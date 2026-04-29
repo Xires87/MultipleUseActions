@@ -4,7 +4,7 @@ import net.fryc.frycmua.item.action.ItemUseInstance;
 import net.fryc.frycmua.item.action.ItemUseOnBlockInstance;
 import net.fryc.frycmua.item.action.ItemUseOnEntityInstance;
 import net.fryc.frycmua.item.action.UseInstance;
-import net.fryc.frycmua.util.interfaces.registry.FrozenCheckable;
+import net.fryc.frycmua.util.mixin_interfaces.registry.FrozenCheckable;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
