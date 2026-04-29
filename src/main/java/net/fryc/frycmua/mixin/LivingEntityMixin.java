@@ -7,28 +7,21 @@ import net.fryc.frycmua.item.action.UseInstance;
 import net.fryc.frycmua.util.interfaces.item.HoldsUseActions;
 import net.fryc.frycmua.util.interfaces.player.SelectsUseAction;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.UseAction;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
+@Mixin(value = LivingEntity.class, priority = 500)
 abstract class LivingEntityMixin implements SelectsUseAction {
 
     private Identifier selectedUseAction = DefaultUseActions.DEFAULT;
 
     @Nullable
     private UseInstance activeUseInstance = null;
-
-    @Shadow
-    protected ItemStack activeItemStack;
-
-
 
 
     @WrapOperation(
@@ -42,18 +35,21 @@ abstract class LivingEntityMixin implements SelectsUseAction {
         return original.call(instance, user);
     }
 
-    /*
-
-    @Inject(method = "setCurrentHand(Lnet/minecraft/util/Hand;)V", at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/item/ItemStack;getMaxUseTime(Lnet/minecraft/entity/LivingEntity;)V",
-            shift = At.Shift.BEFORE
-    ))
-    private void saveUseInstanceOnLivingEntity(LivingEntity user, CallbackInfo info) {
-        UseInstance useInstance = ((HoldsUseActions) this.activeItemStack.getItem()).getUseInstance(((SelectsUseAction) user).getSelectedUseAction());
-        ((SelectsUseAction) user).setActiveUseInstance(useInstance);
+    @WrapOperation(
+            method = "isBlocking()Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;getUseAction(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/util/UseAction;")
+    )
+    private UseAction replaceItemGetUseActionWithStackGetUseAction_isBlocking(Item instance, ItemStack stack, Operation<UseAction> original) {
+        return stack.getUseAction();
     }
- */
+
+    @WrapOperation(
+            method = "isBlocking()Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/Item;getMaxUseTime(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;)I")
+    )
+    private int replaceItemGetMaxUseTimeWithStackGetMaxUseTime_isBlocking(Item instance, ItemStack stack, LivingEntity user, Operation<Integer> original) {
+        return stack.getMaxUseTime(user);
+    }
 
     @Override
     public Identifier getSelectedUseAction() {

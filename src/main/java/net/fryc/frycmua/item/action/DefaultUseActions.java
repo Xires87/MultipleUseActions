@@ -1,5 +1,9 @@
 package net.fryc.frycmua.item.action;
 
+import net.fryc.frycmua.MultipleUseActions;
+import net.fryc.frycmua.item.action.registry.UseActionRegistries;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
@@ -64,6 +68,22 @@ public class DefaultUseActions {
             (player, hand) -> CrossbowItem.isCharged(player.getStackInHand(hand))
     );
 
+    public static final ItemUseInstance FOOD_EAT = new ItemUseInstance(
+            Item.class,
+            true,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, hand) -> {
+                FoodComponent foodComponent = player.getStackInHand(hand).get(DataComponentTypes.FOOD);
+                return foodComponent != null && player.canConsume(foodComponent.canAlwaysEat());
+            }
+    );
+
     private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
         return item.use(world, user, hand);
     }
@@ -81,12 +101,12 @@ public class DefaultUseActions {
     }
 
     private static int defaultGetMaxItemUseTime(ItemStack stack, LivingEntity user) {
+        // TODO przestawic action package do gory (zeby nie bylo item bo to mylace tak jakby itemy dodawal moj mod)
         return stack.getItem().getMaxUseTime(stack, user);// TODO posprawdzac loggerami czy wszystko jest zsynchronizowane
     }
 
     private static UseAction defaultGetItemUseAction(ItemStack stack) {
-        //return stack.getItem().getUseAction(stack);
-        return UseAction.BRUSH;// TODO nie dziala to
+        return stack.getItem().getUseAction(stack);
     }
 
     private static boolean defaultIsUsedOnRelease(ItemStack stack) {

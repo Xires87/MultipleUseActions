@@ -348,7 +348,6 @@ public class ActionManagerScreen extends Screen {
 
         preview.active = this.client.player != null;
 
-        // TODO zrobic 4 property entriesa ktory bedzie zarzadzal lockiem - czy lock powinien dzialac na priority (tak jak teraz jest) czy na switchable (ze zawsze sie pojawia nawet jak akcja jest niedostepna dla tego itemku) czy na oba
         verticalGrid.add(keybinds);
         verticalGrid.add(actionPriorityButton);
         verticalGrid.add(switchableButton);

@@ -32,9 +32,8 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
     @Shadow
     public abstract Item getItem();
 
-    @Shadow
     @Nullable
-    private Entity holder;
+    private Entity muaHolder = null;
 
 
     @Inject(method = "use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;", at = @At("RETURN"), cancellable = true)
@@ -118,8 +117,9 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Inject(method = "getUseAction()Lnet/minecraft/util/UseAction;", at = @At("RETURN"), cancellable = true)
     private void replaceVanillaGetUseActionWithMuaGetUseAction_ItemStack(CallbackInfoReturnable<UseAction> ret) {
-        if(this.holder != null){
-            if(this.holder instanceof LivingEntity user) {
+        // TODO holder jest null, musze albo ustawiac ownera na itemstackach albo podmienic metode zeby co innego sie odpalalo (chyba podmienie metode)
+        if(this.muaHolder != null){
+            if(this.muaHolder instanceof LivingEntity user) {
                 if(((SelectsUseAction) user).getActiveUseInstance() != null){
                     ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getUseAction().getItemUseAction(((ItemStack)(Object) this)));
                 }
@@ -129,12 +129,18 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Inject(method = "isUsedOnRelease()Z", at = @At("RETURN"), cancellable = true)
     private void replaceVanillaIsUsedOnReleaseWithMuaIsUsedOnRelease_ItemStack(CallbackInfoReturnable<Boolean> ret) {
-        if(this.holder != null){
-            if(this.holder instanceof LivingEntity user) {
+        // TODO holder jest null, musze albo ustawiac ownera na itemstackach albo podmienic metode zeby co innego sie odpalalo (chyba podmienie metode)
+        if(this.muaHolder != null){
+            if(this.muaHolder instanceof LivingEntity user) {
                 if(((SelectsUseAction) user).getActiveUseInstance() != null){
                     ret.setReturnValue(((SelectsUseAction) user).getActiveUseInstance().getUseOnRelease().isItemUsedOnRelease(((ItemStack)(Object) this)));
                 }
             }
         }
+    }
+
+    @Inject(method = "inventoryTick(Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;IZ)V", at = @At("TAIL"))
+    private void saveEntityThatIsHoldingStack(World world, Entity entity, int slot, boolean selected, CallbackInfo info) {
+        this.muaHolder = entity;
     }
 }

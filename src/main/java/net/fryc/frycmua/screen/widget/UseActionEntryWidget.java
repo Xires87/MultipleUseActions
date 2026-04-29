@@ -119,7 +119,7 @@ public class UseActionEntryWidget extends EntryListWidget<UseActionEntryWidget.U
                     x + TEXTURE_WIDTH + HORIZONTAL_SPACER / 2, y + VERTICAL_SPACER * 2,
                     this.parent.getEntryTextWidth(), 0xFFFFFFFF
             );
-            // TODO jak jest action priority na default to nie powinienem wyswietlac czy jest aktywne i lock typea bo to bez sensu bo i tak active nie ma wplywu
+
             if(this.equals(this.parent.getSelectedOrNull())){
                 this.drawMoveUpTexture(context, x, y, j, k);
                 this.drawMoveDownTexture(context, x, y, j, k);
