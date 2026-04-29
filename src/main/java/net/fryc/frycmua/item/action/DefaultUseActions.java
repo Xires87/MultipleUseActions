@@ -1,15 +1,10 @@
 package net.fryc.frycmua.item.action;
 
-import net.fryc.frycmua.MultipleUseActions;
-import net.fryc.frycmua.item.action.registry.UseActionRegistries;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -83,6 +78,42 @@ public class DefaultUseActions {
                 return foodComponent != null && player.canConsume(foodComponent.canAlwaysEat());
             }
     );
+
+    public static final ItemUseInstance BLOCK = new ItemUseInstance(
+            ShieldItem.class,
+            true,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, hand) -> player.getStackInHand(hand).getItem() instanceof ShieldItem
+    );
+
+    /*
+    public static final ItemUseInstance TEST = new ItemUseInstance(
+            Item.class,
+            true,
+            (item, world, user, hand) -> {
+                ItemStack itemStack = user.getStackInHand(hand);
+                user.setCurrentHand(hand);
+                return TypedActionResult.consume(itemStack);
+            },
+            DefaultUseActions::defaultItemUsageTick,
+            (stack, world, user, remainingUseTicks) -> {
+                if(user instanceof PlayerEntity player) {
+                    player.getItemCooldownManager().set(stack.getItem(), 20);
+                }
+            },
+            DefaultUseActions::defaultFinishUsingItem,
+            (stack, user) -> 7200,
+            stack -> UseAction.BLOCK,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, hand) -> true
+    );
+     */
 
     private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
         return item.use(world, user, hand);
