@@ -2,10 +2,22 @@ package net.fryc.frycmua;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fryc.frycmua.action.client.ActionManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.util.client.FileHelper;
+import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.Identifier;
+
+import java.util.Optional;
 
 public class MultipleUseActionsClient implements ClientModInitializer {
+
+	private static final Identifier HOTBAR_OFFHAND_LEFT_TEXTURE = Identifier.ofVanilla("hud/hotbar_offhand_left");
+	private static final int HOTBAR_TEXTURE_WIDTH = 29;
+	private static final int HOTBAR_TEXTURE_HEIGHT = 24;
 
 	@Override
 	public void onInitializeClient() {
@@ -14,6 +26,25 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
 			FileHelper.saveAdditionalUseKeysEntries();
 			FileHelper.saveMainPriorityManager();
+		});
+
+		HudRenderCallback.EVENT.register((context, tickDelta) -> {
+			MinecraftClient client = MinecraftClient.getInstance();
+			ClientPlayerEntity player = client.player;
+			if(player != null){
+				int x = (int) (context.getScaledWindowWidth() * 0.8F);
+				int y = context.getScaledWindowHeight() - 22;
+
+				for(ActionManager manager : ((HoldsActionManager) player).getAllActionManagers()) {
+					context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, x, y, HOTBAR_TEXTURE_WIDTH, HOTBAR_TEXTURE_HEIGHT);
+					Optional<Identifier> optional = manager.getAvailableActions(true).stream().findFirst();
+					if(optional.isPresent()) {
+						context.drawGuiTexture(optional.get(), x + 3, y + 4, 16, 16);
+					}
+					// TODO switchable jest zbugowane kiedy nie jest zlockowane (jak sie zmienia item w lapie i sie resetuje wybrana akcja to potem juz sie nie da jej wybrac
+					x += HOTBAR_TEXTURE_WIDTH;
+				}
+			}
 		});
 	}
 }

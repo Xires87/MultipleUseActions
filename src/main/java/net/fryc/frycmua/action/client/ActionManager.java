@@ -2,6 +2,7 @@ package net.fryc.frycmua.action.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.MultipleUseActions;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.item.ItemStack;
@@ -42,14 +43,14 @@ public class ActionManager {
             this.isFullyInitialized = true;
         }
         else if(this.shouldUpdateAvailableActions()) {
+            this.updateItemsInHands();
             this.softResetChosenAction();
             this.forceUpdateAvailableActions();
         }
     }
 
     public void forceUpdateAvailableActions() {
-        this.mainHandStack = this.player.getMainHandStack();
-        this.offHandStack = this.player.getOffHandStack();
+        this.updateItemsInHands();
         this.availableActions = this.getAvailableActions(false);
     }
 
@@ -62,11 +63,9 @@ public class ActionManager {
 
     public void softResetChosenAction() {
         Identifier id = this.chosenAction;
-        if(id != null) {
-            this.mainHandStack = this.player.getMainHandStack();
-            this.offHandStack = this.player.getOffHandStack();
-            this.resetChosenAction();
+        this.resetChosenAction();
 
+        if(id != null) {
             while(this.switchableActions.contains(id) && this.chosenAction != id) {
                 this.switchChosenAction(true);
             }
@@ -86,6 +85,11 @@ public class ActionManager {
 
     public boolean shouldUpdateAvailableActions(){
         return this.mainHandStack != this.player.getMainHandStack() || this.offHandStack != this.player.getOffHandStack();
+    }
+
+    public void updateItemsInHands() {
+        this.mainHandStack = this.player.getMainHandStack();
+        this.offHandStack = this.player.getOffHandStack();
     }
 
     public List<Identifier> getAvailableActions(){

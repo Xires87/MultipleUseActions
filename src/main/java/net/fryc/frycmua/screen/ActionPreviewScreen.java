@@ -29,7 +29,8 @@ public class ActionPreviewScreen extends Screen {
         this.manager = manager;
         this.player = player;
     }
-
+// TODO dokonczyc ten ekran
+    // TODO dodac do hudu pokazywanie wybranej opcji
     @Override
     protected void init() {
         this.leftWidget = new UseActionPreviewWidget(
