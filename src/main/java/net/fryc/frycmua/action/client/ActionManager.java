@@ -52,10 +52,6 @@ public class ActionManager {
         this.mainHandStack = this.player.getMainHandStack();
         this.offHandStack = this.player.getOffHandStack();
         this.availableActions = this.getAvailableActions(false);
-        // TODO usunac tego loggera jak skoncze testowac
-        this.availableActions.forEach(el -> {
-            MultipleUseActions.LOGGER.warn(el.toString());
-        });
     }
 
     public void resetChosenAction() {

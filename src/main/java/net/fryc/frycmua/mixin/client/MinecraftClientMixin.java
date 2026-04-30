@@ -248,8 +248,8 @@ abstract class MinecraftClientMixin {
 
             return true;
         }
-        // TODO nie mam pewnosci co do faila czy powinno puszczac czy moze zablokowac (chyba bede puszczal dalej, fail ma dzialac tylko dla vanilla use key a dla mojego bedzie lockowanie)
-        return actionResult2 == ActionResult.FAIL;
+
+        return false;
     }
 
     private boolean performUseOnEntityAction(Identifier selectedAction, Hand hand, EntityHitResult entityHitResult, Entity entity) {

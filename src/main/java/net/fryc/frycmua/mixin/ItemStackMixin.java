@@ -117,7 +117,6 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Inject(method = "getUseAction()Lnet/minecraft/util/UseAction;", at = @At("RETURN"), cancellable = true)
     private void replaceVanillaGetUseActionWithMuaGetUseAction_ItemStack(CallbackInfoReturnable<UseAction> ret) {
-        // TODO holder jest null, musze albo ustawiac ownera na itemstackach albo podmienic metode zeby co innego sie odpalalo (chyba podmienie metode)
         if(this.muaHolder != null){
             if(this.muaHolder instanceof LivingEntity user) {
                 if(((SelectsUseAction) user).getActiveUseInstance() != null){
@@ -129,7 +128,6 @@ abstract class ItemStackMixin implements ComponentHolder, FabricItemStack {
 
     @Inject(method = "isUsedOnRelease()Z", at = @At("RETURN"), cancellable = true)
     private void replaceVanillaIsUsedOnReleaseWithMuaIsUsedOnRelease_ItemStack(CallbackInfoReturnable<Boolean> ret) {
-        // TODO holder jest null, musze albo ustawiac ownera na itemstackach albo podmienic metode zeby co innego sie odpalalo (chyba podmienie metode)
         if(this.muaHolder != null){
             if(this.muaHolder instanceof LivingEntity user) {
                 if(((SelectsUseAction) user).getActiveUseInstance() != null){

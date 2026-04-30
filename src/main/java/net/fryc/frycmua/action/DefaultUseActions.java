@@ -30,7 +30,6 @@ public class DefaultUseActions {
 
     public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT);
 
-    // TODO pewnie bede musial getMethod podmienic na intermediary
     public static final ItemUseOnBlockInstance BLOCK_STRIP = new ItemUseOnBlockInstance(
             AxeItem.class,
             true,
