@@ -111,6 +111,7 @@ public class UseActionRegistries {
         ((FrozenCheckable) Registries.ITEM).throwIfFrozen();
     }
 
+    @SuppressWarnings("unchecked")
     private static void tryToCacheMap(Map<Identifier, ? extends List<? extends UseInstance>> map) {
         if(((FrozenCheckable) Registries.ITEM).isAlreadyFrozen()) {
             map.values().stream().filter(list -> !list.isEmpty()).findAny().ifPresent(list -> {

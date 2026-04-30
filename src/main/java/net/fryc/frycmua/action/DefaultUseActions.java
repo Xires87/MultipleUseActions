@@ -36,7 +36,9 @@ public class DefaultUseActions {
             true,
             context -> {
                 try {
-                    if(context.getStack().getItem().getClass().getMethod("useOnBlock", ItemUsageContext.class).getDeclaringClass().equals(AxeItem.class)) {
+                    // useOnBlock = method_7884
+                    if(context.getStack().getItem().getClass().getMethod("method_7884", ItemUsageContext.class).getDeclaringClass().equals(AxeItem.class)) {
+                        MultipleUseActions.LOGGER.warn("dziala");
                         World world = context.getWorld();
                         BlockPos blockPos = context.getBlockPos();
                         PlayerEntity playerEntity = context.getPlayer();
@@ -196,8 +198,7 @@ public class DefaultUseActions {
     }
 
     private static int defaultGetMaxItemUseTime(ItemStack stack, LivingEntity user) {
-        // TODO przestawic action package do gory (zeby nie bylo item bo to mylace tak jakby itemy dodawal moj mod)
-        return stack.getItem().getMaxUseTime(stack, user);// TODO posprawdzac loggerami czy wszystko jest zsynchronizowane
+        return stack.getItem().getMaxUseTime(stack, user);
     }
 
     private static UseAction defaultGetItemUseAction(ItemStack stack) {
