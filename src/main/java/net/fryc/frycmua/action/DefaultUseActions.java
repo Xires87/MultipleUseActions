@@ -37,7 +37,6 @@ public class DefaultUseActions {
                 try {
                     // useOnBlock = method_7884
                     if(context.getStack().getItem().getClass().getMethod("method_7884", ItemUsageContext.class).getDeclaringClass().equals(AxeItem.class)) {
-                        MultipleUseActions.LOGGER.warn("dziala");
                         World world = context.getWorld();
                         BlockPos blockPos = context.getBlockPos();
                         PlayerEntity playerEntity = context.getPlayer();
