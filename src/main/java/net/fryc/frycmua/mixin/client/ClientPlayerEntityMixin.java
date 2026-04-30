@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import java.util.Map;
 abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implements HoldsActionManager {
 
     private ActionManager currentActionManager;
-    private final Map<KeyBinding, ActionManager> actionManagers = new HashMap<>();
+    private final Map<KeyBinding, ActionManager> actionManagers = new LinkedHashMap<>();
 
     public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile) {
         super(world, profile);

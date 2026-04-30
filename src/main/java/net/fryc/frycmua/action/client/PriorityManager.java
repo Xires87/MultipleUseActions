@@ -21,6 +21,7 @@ public class PriorityManager {
     private final HashSet<Identifier> unknownEntries;
     private ActionPriority actionPriority;
     private boolean switchable;
+    private ShowAction shouldShowCurrentAction;
 
 
     public PriorityManager(ActionPriority actionPriority) {
@@ -32,10 +33,15 @@ public class PriorityManager {
     }
 
     public PriorityManager(ActionPriority actionPriority, List<PriorityManager.Entry> entries, boolean switchable) {
+        this(actionPriority, entries, switchable, ShowAction.NONE);
+    }
+
+    public PriorityManager(ActionPriority actionPriority, List<PriorityManager.Entry> entries, boolean switchable, ShowAction shouldShowCurrentAction) {
         this.actionPriority = actionPriority;
         this.unknownEntries = new HashSet<>();
         this.entries = new ArrayList<>(this.actionPriority.addOtherUseActions(entries));
         this.switchable = switchable;
+        this.shouldShowCurrentAction = shouldShowCurrentAction;
     }
 
 
@@ -158,6 +164,15 @@ public class PriorityManager {
         return !this.unknownEntries.contains(entry.getActionId());
     }
 
+    public boolean shouldShowCurrentAction(boolean isChosenActionNull) {
+        return switch(this.shouldShowCurrentAction) {
+            case NONE -> false;
+            case ANY -> true;
+            case SWITCH -> !isChosenActionNull;
+            case PRIORITY -> isChosenActionNull;
+        };
+    }
+
     @Nullable
     public PriorityManager.Entry getEntryById(Identifier id) {
         return this.entries.stream().filter(entry -> entry.getActionId().equals(id)).findFirst().orElse(null);
@@ -272,5 +287,13 @@ public class PriorityManager {
 
         public abstract boolean isSwitch();
         public abstract boolean isPriority();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public enum ShowAction {
+        NONE,
+        ANY,
+        PRIORITY,
+        SWITCH;
     }
 }

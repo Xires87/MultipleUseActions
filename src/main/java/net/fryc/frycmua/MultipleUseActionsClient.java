@@ -16,8 +16,13 @@ import java.util.Optional;
 public class MultipleUseActionsClient implements ClientModInitializer {
 
 	private static final Identifier HOTBAR_OFFHAND_LEFT_TEXTURE = Identifier.ofVanilla("hud/hotbar_offhand_left");
+
 	private static final int HOTBAR_TEXTURE_WIDTH = 29;
 	private static final int HOTBAR_TEXTURE_HEIGHT = 24;
+	private static final int HOTBAR_TEXTURE_PADDING = 7;
+
+	private static final int SMALL_TEXTURE_WIDTH = 16;
+	private static final int SMALL_TEXTURE_HEIGHT = 16;
 
 	@Override
 	public void onInitializeClient() {
@@ -35,14 +40,14 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 				int x = (int) (context.getScaledWindowWidth() * 0.8F);
 				int y = context.getScaledWindowHeight() - 22;
 
-				for(ActionManager manager : ((HoldsActionManager) player).getAllActionManagers()) {
+				for(ActionManager manager : ((HoldsActionManager) player).getAllActionManagers().stream().filter(ActionManager::shouldShowCurrentAction).toList()) {
 					context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, x, y, HOTBAR_TEXTURE_WIDTH, HOTBAR_TEXTURE_HEIGHT);
 					Optional<Identifier> optional = manager.getAvailableActions(true).stream().findFirst();
 					if(optional.isPresent()) {
-						context.drawGuiTexture(optional.get(), x + 3, y + 4, 16, 16);
+						context.drawGuiTexture(optional.get(), x + 3, y + 4, SMALL_TEXTURE_WIDTH, SMALL_TEXTURE_HEIGHT);
 					}
-					// TODO switchable jest zbugowane kiedy nie jest zlockowane (jak sie zmienia item w lapie i sie resetuje wybrana akcja to potem juz sie nie da jej wybrac
-					x += HOTBAR_TEXTURE_WIDTH;
+
+					x += HOTBAR_TEXTURE_WIDTH - HOTBAR_TEXTURE_PADDING;
 				}
 			}
 		});

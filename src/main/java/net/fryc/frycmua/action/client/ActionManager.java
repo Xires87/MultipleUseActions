@@ -112,6 +112,10 @@ public class ActionManager {
         return this.chosenAction == null && this.getPriorityManager().getActionPriority().equals(ActionPriority.DEFAULT);
     }
 
+    public boolean shouldShowCurrentAction() {
+        return this.getPriorityManager().shouldShowCurrentAction(this.chosenAction == null);
+    }
+
     public KeyBinding getKeyBinding() {
         return this.keybinding;
     }
