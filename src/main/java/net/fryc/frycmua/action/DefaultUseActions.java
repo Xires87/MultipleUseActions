@@ -180,29 +180,6 @@ public class DefaultUseActions {
             (player, hand) -> player.getStackInHand(hand).getItem() instanceof ShieldItem
     );
 
-    /*
-    public static final ItemUseInstance TEST = new ItemUseInstance(
-            Item.class,
-            true,
-            (item, world, user, hand) -> {
-                ItemStack itemStack = user.getStackInHand(hand);
-                user.setCurrentHand(hand);
-                return TypedActionResult.consume(itemStack);
-            },
-            DefaultUseActions::defaultItemUsageTick,
-            (stack, world, user, remainingUseTicks) -> {
-                if(user instanceof PlayerEntity player) {
-                    player.getItemCooldownManager().set(stack.getItem(), 20);
-                }
-            },
-            DefaultUseActions::defaultFinishUsingItem,
-            (stack, user) -> 7200,
-            stack -> UseAction.BLOCK,
-            DefaultUseActions::defaultIsUsedOnRelease,
-            (player, hand) -> true
-    );
-     */
-
     private static TypedActionResult<ItemStack> defaultUseItem(Item item, World world, PlayerEntity user, Hand hand) {
         return item.use(world, user, hand);
     }
@@ -212,7 +189,6 @@ public class DefaultUseActions {
     }
 
     private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {
-        MultipleUseActions.LOGGER.warn("skonczylem");
         return stack.getItem().finishUsing(stack, world, user);
     }
 
