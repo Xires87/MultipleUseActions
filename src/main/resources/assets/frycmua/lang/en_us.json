@@ -15,6 +15,11 @@
   "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
   "text.frycmua.u_sure_u_want_new_keybind": "Minecraft needs to be restarted in order to add a keybind. The game will be closed if you press 'Yes'. Do you want to continue?",
+  "text.frycmua.show_action": "Show action",
+  "text.frycmua.show_action.none": "None",
+  "text.frycmua.show_action.any": "Any",
+  "text.frycmua.show_action.priority": "Priority",
+  "text.frycmua.show_action.switch": "Switch",
 
   "button.frycmua.add_new_keybind": "Add new keybind",
   "button.frycmua.increase_number": "Increase number",

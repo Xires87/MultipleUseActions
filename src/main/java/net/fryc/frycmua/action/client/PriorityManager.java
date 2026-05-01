@@ -160,6 +160,14 @@ public class PriorityManager {
         this.actionPriority = priority;
     }
 
+    public ShowAction getShowAction() {
+        return this.shouldShowCurrentAction;
+    }
+
+    public void setShowAction(ShowAction action) {
+        this.shouldShowCurrentAction = action;
+    }
+
     public boolean isEntryValid(PriorityManager.Entry entry) {
         return !this.unknownEntries.contains(entry.getActionId());
     }
@@ -291,9 +299,31 @@ public class PriorityManager {
 
     @Environment(EnvType.CLIENT)
     public enum ShowAction {
-        NONE,
-        ANY,
-        PRIORITY,
-        SWITCH;
+        NONE {
+            @Override
+            public String getTranslationKey() {
+                return "text.frycmua.show_action.none";
+            }
+        },
+        ANY {
+            @Override
+            public String getTranslationKey() {
+                return "text.frycmua.show_action.any";
+            }
+        },
+        PRIORITY {
+            @Override
+            public String getTranslationKey() {
+                return "text.frycmua.show_action.priority";
+            }
+        },
+        SWITCH {
+            @Override
+            public String getTranslationKey() {
+                return "text.frycmua.show_action.switch";
+            }
+        };
+
+        public abstract String getTranslationKey();
     }
 }

@@ -36,6 +36,7 @@ public class ActionManagerScreen extends Screen {
     private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
     private static final String SEARCH_BY_ID_TRANSLATION_KEY = "text.frycmua.search_by_id";
     private static final String ACTIONS_PREVIEW_TRANSLATION_KEY = "text.frycmua.action_preview";
+    private static final String SHOW_ACTION_TRANSLATION_KEY = "text.frycmua.show_action";
 
     private static final String ADD_NEW_KEYBIND_TRANSLATION_KEY = "button.frycmua.add_new_keybind";
     private static final String NAVIGATE_LEFT_TRANSLATION_KEY = "button.frycmua.navigate_left";
@@ -91,12 +92,7 @@ public class ActionManagerScreen extends Screen {
         this.addDrawableChild(this.widget);
         this.addAllEntries();
 
-        this.addDrawableChild(
-                ButtonWidget.builder(ScreenTexts.DONE, btn -> this.close())
-                        .position(this.width / 2 - 100, this.height - PADDING_BOTTOM)
-                        .size(200, 20)
-                        .build()
-        );
+        this.createBottomNavigationButtons();
     }
 
     @Override
@@ -123,6 +119,8 @@ public class ActionManagerScreen extends Screen {
                     (int) (this.widget.getWidth() * 0.8F), 0xFFFFFFFF
             );
         }
+
+        context.drawBorder(5, this.getHeaderHeight() + this.getBodyHeight() + 1, this.width - 10, 1, 0xFFFFFFFF);
     }
 
     @Override
@@ -304,11 +302,7 @@ public class ActionManagerScreen extends Screen {
     }
 
     private void createLeftPanel() {
-        AxisGridWidget verticalGrid = new AxisGridWidget(PADDING_LEFT, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
-
-        ButtonWidget keybinds = ButtonWidget.builder(Text.translatable("controls.keybinds"), (btn) -> {
-            this.client.setScreen(new KeybindsScreen(this, this.client.options));
-        }).size(verticalGrid.getWidth(), 20).build();
+        AxisGridWidget verticalGrid = new AxisGridWidget(PADDING_LEFT, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight() - 10, AxisGridWidget.DisplayAxis.VERTICAL);
 
         CyclingButtonWidget<ActionPriority> actionPriorityButton =
                 CyclingButtonWidget.<ActionPriority>builder((actionPriority) -> Text.translatable(actionPriority.getTranslationKey()))
@@ -337,6 +331,19 @@ public class ActionManagerScreen extends Screen {
         });
         this.cyclingButtons.add(switchableButton);
 
+        CyclingButtonWidget<PriorityManager.ShowAction> shouldShowButton =
+                CyclingButtonWidget.<PriorityManager.ShowAction>builder((showAction) -> Text.translatable(showAction.getTranslationKey()))
+                        .values(PriorityManager.ShowAction.values())
+                        .initially(this.selectedPriorityManager.getShowAction())
+                        .build(0, 0, verticalGrid.getWidth(), 20, Text.translatable(SHOW_ACTION_TRANSLATION_KEY), (btn, showAction) -> {
+                            this.selectedPriorityManager.setShowAction(showAction);
+                        });
+
+        ((CyclingButtonWidgetAdditionalUpdate) shouldShowButton).setUpdateFunction(() -> {
+            shouldShowButton.setValue(this.selectedPriorityManager.getShowAction());
+        });
+        this.cyclingButtons.add(shouldShowButton);
+
         ButtonWidget preview = ButtonWidget.builder(Text.translatable(ACTIONS_PREVIEW_TRANSLATION_KEY), (btn) -> {
             if(this.client.player != null) {
                 this.client.setScreen(new ActionPreviewScreen(this, this.getSelectedPriorityManager(), this.client.player));
@@ -348,9 +355,9 @@ public class ActionManagerScreen extends Screen {
 
         preview.active = this.client.player != null;
 
-        verticalGrid.add(keybinds);
         verticalGrid.add(actionPriorityButton);
         verticalGrid.add(switchableButton);
+        verticalGrid.add(shouldShowButton);
         verticalGrid.add(preview);
         verticalGrid.refreshPositions();
 
@@ -358,7 +365,7 @@ public class ActionManagerScreen extends Screen {
     }
 
     private void createRightPanel() {
-        AxisGridWidget verticalGrid = new AxisGridWidget(this.width / 4 + 10, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight(), AxisGridWidget.DisplayAxis.VERTICAL);
+        AxisGridWidget verticalGrid = new AxisGridWidget(this.width / 4 + 10, this.getHeaderHeight(), this.width / 4 - PADDING_LEFT, this.getBodyHeight() - 10, AxisGridWidget.DisplayAxis.VERTICAL);
 
         ButtonWidget addMissingActionsBtn = ButtonWidget.builder(Text.translatable(ADD_MISSING_ACTIONS_TRANSLATION_KEY), (btn) -> {
             if(!this.isActionPriorityDefault()) {
@@ -399,6 +406,23 @@ public class ActionManagerScreen extends Screen {
         verticalGrid.refreshPositions();
 
         verticalGrid.forEachChild(this::addDrawableChild);
+    }
+
+    private void createBottomNavigationButtons() {
+        int buttonWidth = 200;
+
+        this.addDrawableChild(
+                ButtonWidget.builder(Text.translatable("controls.keybinds"), (btn) -> {
+                    this.client.setScreen(new KeybindsScreen(this, this.client.options));
+                }).position(this.width / 2 - buttonWidth - 10, this.height - PADDING_BOTTOM).size(buttonWidth, 20).build()
+        );
+
+        this.addDrawableChild(
+                ButtonWidget.builder(ScreenTexts.DONE, btn -> this.close())
+                        .position(this.width / 2 + 10, this.height - PADDING_BOTTOM)
+                        .size(buttonWidth, 20)
+                        .build()
+        );
     }
 
     public void updateNavigationButtons() {

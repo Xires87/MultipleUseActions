@@ -15,6 +15,11 @@
   "text.frycmua.invalid_action_tooltip": "Ta akcja nie istnieje i z tego powodu nie działa.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "To może być pozostałość po aktualizacji/usunięciu moda.",
   "text.frycmua.u_sure_u_want_new_keybind": "Minecraft musi zostać zrestartowany aby dodać nowy klawisz. Gra zostanie zamknięta jeśli wciśniesz 'Tak'. Czy chcesz kontynuować?",
+  "text.frycmua.show_action": "Pokaż akcję",
+  "text.frycmua.show_action.none": "Żadną",
+  "text.frycmua.show_action.any": "Dowolną",
+  "text.frycmua.show_action.priority": "Priorytet",
+  "text.frycmua.show_action.switch": "Przełączanie",
 
   "button.frycmua.add_new_keybind": "Dodaj nowy klawisz",
   "button.frycmua.increase_number": "Zwiększ liczbę",
