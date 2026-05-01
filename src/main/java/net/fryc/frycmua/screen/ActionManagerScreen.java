@@ -24,9 +24,10 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class ActionManagerScreen extends Screen {
 
-    private static final String ACTION_PRIORITY_TRANSLATION_KEY = "text.frycmua.action_priority";
+    public static final String ACTION_PRIORITY_TRANSLATION_KEY = "text.frycmua.action_priority";
+    public static final String SWITCHABLE_TRANSLATION_KEY = "text.frycmua.switchable";
+
     private static final String DEFAULT_BEHAVIOUR_TRANSLATION_KEY = "text.frycmua.default_behaviour";
-    private static final String SWITCHABLE_TRANSLATION_KEY = "text.frycmua.switchable";
     private static final String SWITCH_PRIORITY_TRANSLATION_KEY = "text.frycmua.switch_priority";
     private static final String ENTRIES_EMPTY_TRANSLATION_KEY = "text.frycmua.entries_empty";
     private static final String ADD_MISSING_ACTIONS_TRANSLATION_KEY = "text.frycmua.add_missing_actions";
