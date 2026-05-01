@@ -32,5 +32,6 @@ public class MultipleUseActions implements ModInitializer {
 		//UseActionRegistries.registerUseAction(Identifier.ofVanilla("block"), DefaultUseActions.TEST);
 
 		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_strip"), DefaultUseActions.BLOCK_STRIP);
+		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_place"), DefaultUseActions.BLOCK_PLACE);
 	}
 }

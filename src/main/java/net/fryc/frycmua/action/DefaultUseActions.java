@@ -1,8 +1,11 @@
 package net.fryc.frycmua.action;
 
 import com.google.common.collect.BiMap;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fryc.frycmua.MultipleUseActions;
+import net.fryc.frycmua.network.payload.CancelInteractionPayload;
 import net.fryc.frycmua.util.mixin_interfaces.item.AxeItemAccessor;
+import net.fryc.frycmua.util.mixin_interfaces.player.SelectsUseAction;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -79,6 +82,31 @@ public class DefaultUseActions {
                 return isLog || Oxidizable.getDecreasedOxidationState(state).isPresent() || Optional.ofNullable(
                         (Block)((BiMap<?, ?>)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(state.getBlock())
                 ).map((block) -> block.getStateWithProperties(state)).isPresent();
+            }
+    );
+
+    public static final ItemUseOnBlockInstance BLOCK_PLACE = new ItemUseOnBlockInstance(
+            BlockItem.class,
+            true,
+            context -> {
+                ActionResult result = ((BlockItem) context.getStack().getItem()).place(new ItemPlacementContext(context));
+                ((SelectsUseAction) context.getPlayer()).setShouldBlockInteractionBeCancelled(false);
+                return result;
+            },
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, blockHitResult, hand) -> {
+                if(player != null && player.getWorld().isClient()) {
+                    ((SelectsUseAction) player).setShouldBlockInteractionBeCancelled(true);
+                    ClientPlayNetworking.send(new CancelInteractionPayload(true));
+                    return true;
+                }
+
+                return false;
             }
     );
 
@@ -184,6 +212,7 @@ public class DefaultUseActions {
     }
 
     private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {
+        MultipleUseActions.LOGGER.warn("skonczylem");
         return stack.getItem().finishUsing(stack, world, user);
     }
 

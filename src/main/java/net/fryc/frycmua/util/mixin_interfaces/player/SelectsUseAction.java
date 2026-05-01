@@ -14,4 +14,8 @@ public interface SelectsUseAction {
     @Nullable UseInstance getActiveUseInstance();
 
     void setActiveUseInstance(@Nullable UseInstance useInstance);
+
+    boolean shouldBlockInteractionBeCancelled();
+
+    void setShouldBlockInteractionBeCancelled(boolean shouldCancel);
 }

@@ -23,6 +23,8 @@ abstract class LivingEntityMixin implements SelectsUseAction {
     @Nullable
     private UseInstance activeUseInstance = null;
 
+    private boolean shouldCancelInteraction = false;
+
 
     @WrapOperation(
             method = "setCurrentHand(Lnet/minecraft/util/Hand;)V",
@@ -70,5 +72,15 @@ abstract class LivingEntityMixin implements SelectsUseAction {
     @Override
     public void setActiveUseInstance(@Nullable UseInstance useInstance) {
         this.activeUseInstance = useInstance;
+    }
+
+    @Override
+    public boolean shouldBlockInteractionBeCancelled() {
+        return this.shouldCancelInteraction;
+    }
+
+    @Override
+    public void setShouldBlockInteractionBeCancelled(boolean shouldCancel) {
+        this.shouldCancelInteraction = shouldCancel;
     }
 }
