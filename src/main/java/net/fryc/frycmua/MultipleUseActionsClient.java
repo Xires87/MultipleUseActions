@@ -9,6 +9,8 @@ import net.fryc.frycmua.util.client.FileHelper;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
@@ -41,6 +43,7 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 				int y = context.getScaledWindowHeight() - 22;
 
 				for(ActionManager manager : ((HoldsActionManager) player).getAllActionManagers().stream().filter(ActionManager::shouldShowCurrentAction).toList()) {
+					context.drawText(client.textRenderer, getShortenedKeybindName(manager.getKeyBinding()), x + 2, y - 8, 0xFFFFFFFF, true);
 					context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, x, y, HOTBAR_TEXTURE_WIDTH, HOTBAR_TEXTURE_HEIGHT);
 					Optional<Identifier> optional = manager.getAvailableActions(true).stream().findFirst();
 					if(optional.isPresent()) {
@@ -51,5 +54,18 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 				}
 			}
 		});
+	}
+
+	private static Text getShortenedKeybindName(KeyBinding key) {
+		if(key.getBoundKeyTranslationKey().contains("mouse")) {
+			return switch (key.getBoundKeyTranslationKey()) {
+				case "key.mouse.left" -> Text.of("LMB");
+				case "key.mouse.right" -> Text.of("RMB");
+				case "key.mouse.middle" -> Text.of("MMB");
+				default -> Text.of("MB");
+			};
+		}
+
+		return key.getBoundKeyLocalizedText();
 	}
 }

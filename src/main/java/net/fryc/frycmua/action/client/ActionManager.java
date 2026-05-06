@@ -112,7 +112,7 @@ public class ActionManager {
     }
 
     public boolean shouldShowCurrentAction() {
-        return this.getPriorityManager().shouldShowCurrentAction(this.chosenAction == null);
+        return !this.keybinding.isUnbound() && this.getPriorityManager().shouldShowCurrentAction(this.chosenAction == null);
     }
 
     public KeyBinding getKeyBinding() {
