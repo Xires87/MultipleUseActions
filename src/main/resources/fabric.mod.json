@@ -8,9 +8,9 @@
 		"Wookash Fryc"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/Xires87",
-		"issues": "https://github.com/Xires87"
+		"homepage": "https://legacy.curseforge.com/minecraft/mc-mods/multiple-use-actions",
+		"sources": "https://github.com/Xires87/MultipleUseActions",
+		"issues": "https://github.com/Xires87/MultipleUseActions/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/frycmua/icon.png",
