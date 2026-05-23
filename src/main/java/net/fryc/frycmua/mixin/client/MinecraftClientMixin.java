@@ -132,6 +132,7 @@ abstract class MinecraftClientMixin {
                     // checking for use
                     switch (instance) {
                         case null -> {
+                            /*
                             if(id.equals(DefaultUseActions.USE_DEFAULT)) {
                                 if(this.performUseAction(id, hand)) {
                                     return true;
@@ -160,6 +161,10 @@ abstract class MinecraftClientMixin {
                                 ((SelectsUseAction) this.player).setSelectedUseAction(DefaultUseActions.DEFAULT);
                                 return false;
                             }
+
+                             */
+                            ((SelectsUseAction) this.player).setSelectedUseAction(DefaultUseActions.DEFAULT);
+                            return false;
                         }
                         case ItemUseInstance useInstance -> {
                             if(useInstance.isAvailable().test(this.player, hand)) {

@@ -31,7 +31,47 @@ public class DefaultUseActions {
     public static final Identifier USE_ON_BLOCK_DEFAULT = Identifier.ofVanilla("use_on_block_default");
     public static final Identifier USE_ON_ENTITY_DEFAULT = Identifier.ofVanilla("use_on_entity_default");
 
-    public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT);
+    @Deprecated
+    public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT/*, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT*/);
+
+    public static final ItemUseOnEntityInstance USE_ON_ENTITY_DEFAULT_INSTANCE = new ItemUseOnEntityInstance(
+            Item.class,
+            true,
+            DefaultUseActions::defaultUseOnEntity,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, entity, entityHitResult, hand) -> true
+    );
+
+    public static final ItemUseOnBlockInstance USE_ON_BLOCK_DEFAULT_INSTANCE = new ItemUseOnBlockInstance(
+            Item.class,
+            true,
+            DefaultUseActions::defaultUseOnBlock,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, blockHitResult, hand) -> true
+    );
+
+    public static final ItemUseInstance USE_DEFAULT_INSTANCE = new ItemUseInstance(
+            Item.class,
+            true,
+            DefaultUseActions::defaultUseItem,
+            DefaultUseActions::defaultItemUsageTick,
+            DefaultUseActions::defaultOnStoppedUsingItem,
+            DefaultUseActions::defaultFinishUsingItem,
+            DefaultUseActions::defaultGetMaxItemUseTime,
+            DefaultUseActions::defaultGetItemUseAction,
+            DefaultUseActions::defaultIsUsedOnRelease,
+            (player, hand) -> true
+    );
 
     public static final ItemUseOnBlockInstance BLOCK_STRIP = new ItemUseOnBlockInstance(
             AxeItem.class,
@@ -186,6 +226,10 @@ public class DefaultUseActions {
 
     private static ActionResult defaultUseOnBlock(ItemUsageContext context) {
         return context.getStack().getItem().useOnBlock(context);
+    }
+
+    private static ActionResult defaultUseOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        return stack.getItem().useOnEntity(stack, user, entity, hand);
     }
 
     private static ItemStack defaultFinishUsingItem(ItemStack stack, World world, LivingEntity user) {

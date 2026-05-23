@@ -28,16 +28,19 @@ import java.util.Set;
 @Mixin(Item.class)
 abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUseActions, UseActionRegistry {
 
-    private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = initHashMapWithDefaultValue(DefaultUseActions.USE_DEFAULT);
-    private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = initHashMapWithDefaultValue(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
-    private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = initHashMapWithDefaultValue(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
+    private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_DEFAULT);
+    private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
+    private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
 
+    /*
     private static <T> HashMap<Identifier, T> initHashMapWithDefaultValue(Identifier id){
         HashMap<Identifier, T> map = new HashMap<>();
-        map.put(id, null);
+        //map.put(id, null);
 
         return map;
     }
+
+     */
 
     @Shadow
     public abstract TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand);

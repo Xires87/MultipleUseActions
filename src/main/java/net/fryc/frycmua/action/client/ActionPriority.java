@@ -57,9 +57,9 @@ public enum ActionPriority {
         @Override
         public List<Identifier> getAllPartiallyOrderedUseActions() {
             ArrayList<Identifier> list = new ArrayList<>();
-            list.add(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
-            list.add(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
-            list.add(DefaultUseActions.USE_DEFAULT);
+            //list.add(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
+            //list.add(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
+            //list.add(DefaultUseActions.USE_DEFAULT);
             list.addAll(UseActionRegistries.getRegisteredUseOnEntityActions().keySet());
             list.addAll(UseActionRegistries.getRegisteredUseOnBlockActions().keySet());
             list.addAll(UseActionRegistries.getRegisteredUseActions().keySet());

@@ -24,12 +24,15 @@ public class MultipleUseActions implements ModInitializer {
 
 		ModPackets.registerC2SPackets();
 
+		UseActionRegistries.registerUseOnBlockAction(DefaultUseActions.USE_ON_BLOCK_DEFAULT, DefaultUseActions.USE_ON_BLOCK_DEFAULT_INSTANCE);
+		UseActionRegistries.registerUseOnEntityAction(DefaultUseActions.USE_ON_ENTITY_DEFAULT, DefaultUseActions.USE_ON_ENTITY_DEFAULT_INSTANCE);
+		UseActionRegistries.registerUseAction(DefaultUseActions.USE_DEFAULT, DefaultUseActions.USE_DEFAULT_INSTANCE);
+
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("bow_pull"), DefaultUseActions.BOW_PULL);
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("crossbow_reload"), DefaultUseActions.CROSSBOW_RELOAD);
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("crossbow_shoot"), DefaultUseActions.CROSSBOW_SHOOT);
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("food_eat"), DefaultUseActions.FOOD_EAT);
 		UseActionRegistries.registerUseAction(Identifier.ofVanilla("block"), DefaultUseActions.BLOCK);
-		//UseActionRegistries.registerUseAction(Identifier.ofVanilla("block"), DefaultUseActions.TEST);
 
 		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_strip"), DefaultUseActions.BLOCK_STRIP);
 		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_place"), DefaultUseActions.BLOCK_PLACE);
