@@ -225,15 +225,22 @@ abstract class MinecraftClientMixin {
     }
 
     private boolean performUseAction(Identifier selectedAction, Hand hand) {
-        ((SelectsUseAction) this.player).setSelectedUseAction(selectedAction);
-        ActionResult result = this.interactionManager.interactItem(this.player, hand);
-        if (result.isAccepted()) {
-            if (result.shouldSwingHand()) {
-                this.player.swingHand(hand);
-            }
-            this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+        if(((SelectsUseAction) this.player).shouldItemUsageBeCancelled()){
+            ((SelectsUseAction) this.player).setShouldItemUsageBeCancelled(false);
 
             return true;
+        }
+        else {
+            ((SelectsUseAction) this.player).setSelectedUseAction(selectedAction);
+            ActionResult result = this.interactionManager.interactItem(this.player, hand);
+            if (result.isAccepted()) {
+                if (result.shouldSwingHand()) {
+                    this.player.swingHand(hand);
+                }
+                this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+
+                return true;
+            }
         }
 
         return false;

@@ -19,7 +19,7 @@ abstract class SimpleRegistryMixin implements FrozenCheckable {
     private boolean frozen;
 
     @Shadow
-    abstract void assertNotFrozen();
+    protected abstract void assertNotFrozen();
 
     @Inject(method = "freeze()Lnet/minecraft/registry/Registry;", at = @At("TAIL"))
     private void addRegisteredUseActionsToItems(CallbackInfoReturnable<Registry<?>> ret) {

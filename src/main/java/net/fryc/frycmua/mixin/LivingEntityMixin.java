@@ -13,17 +13,24 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = LivingEntity.class, priority = 500)
 abstract class LivingEntityMixin implements SelectsUseAction {
 
+    @Unique
     private Identifier selectedUseAction = DefaultUseActions.DEFAULT;
 
+    @Unique
     @Nullable
     private UseInstance activeUseInstance = null;
 
+    @Unique
     private boolean shouldCancelInteraction = false;
+
+    @Unique
+    private boolean shouldCancelItemUsage = false;
 
 
     @WrapOperation(
@@ -82,5 +89,15 @@ abstract class LivingEntityMixin implements SelectsUseAction {
     @Override
     public void setShouldBlockInteractionBeCancelled(boolean shouldCancel) {
         this.shouldCancelInteraction = shouldCancel;
+    }
+
+    @Override
+    public boolean shouldItemUsageBeCancelled() {
+        return this.shouldCancelItemUsage;
+    }
+
+    @Override
+    public void setShouldItemUsageBeCancelled(boolean shouldCancel) {
+        this.shouldCancelItemUsage = shouldCancel;
     }
 }

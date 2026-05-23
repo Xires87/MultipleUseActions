@@ -3,6 +3,7 @@ package net.fryc.frycmua;
 import net.fabricmc.api.ModInitializer;
 import net.fryc.frycmua.action.DefaultUseActions;
 import net.fryc.frycmua.action.registry.UseActionRegistries;
+import net.fryc.frycmua.compatibility.ItemPhysicCompatibility;
 import net.fryc.frycmua.network.ModPackets;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -36,5 +37,7 @@ public class MultipleUseActions implements ModInitializer {
 
 		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_strip"), DefaultUseActions.BLOCK_STRIP);
 		UseActionRegistries.registerUseOnBlockAction(Identifier.ofVanilla("block_place"), DefaultUseActions.BLOCK_PLACE);
+
+		ItemPhysicCompatibility.registerItemPickupAction();
 	}
 }

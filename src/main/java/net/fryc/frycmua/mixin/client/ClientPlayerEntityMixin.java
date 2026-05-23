@@ -15,6 +15,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.stat.StatHandler;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,7 +27,10 @@ import java.util.Map;
 @Mixin(ClientPlayerEntity.class)
 abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity implements HoldsActionManager {
 
+    @Unique
     private ActionManager currentActionManager;
+
+    @Unique
     private final Map<KeyBinding, ActionManager> actionManagers = new LinkedHashMap<>();
 
     public ClientPlayerEntityMixin(ClientWorld world, GameProfile profile) {

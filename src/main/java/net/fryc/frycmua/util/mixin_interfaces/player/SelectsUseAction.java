@@ -18,4 +18,8 @@ public interface SelectsUseAction {
     boolean shouldBlockInteractionBeCancelled();
 
     void setShouldBlockInteractionBeCancelled(boolean shouldCancel);
+
+    boolean shouldItemUsageBeCancelled();
+
+    void setShouldItemUsageBeCancelled(boolean shouldCancel);
 }

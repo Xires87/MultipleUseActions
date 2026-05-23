@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -31,8 +32,13 @@ import java.util.Set;
 @Mixin(Item.class)
 abstract class ItemMixin implements ItemConvertible, ExecutesUseActions, HoldsUseActions, UseActionRegistry {
 
+    @Unique
     private final HashMap<Identifier, ItemUseInstance> availableItemUseActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_DEFAULT);
+
+    @Unique
     private final HashMap<Identifier, ItemUseOnBlockInstance> availableItemUseOnBlockActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_ON_BLOCK_DEFAULT);
+
+    @Unique
     private final HashMap<Identifier, ItemUseOnEntityInstance> availableItemUseOnEntityActions = new HashMap<>();//initHashMapWithDefaultValue(DefaultUseActions.USE_ON_ENTITY_DEFAULT);
 
     /*
