@@ -31,6 +31,7 @@ public class DefaultUseActions {
     public static final Identifier USE_ON_BLOCK_DEFAULT = Identifier.ofVanilla("use_on_block_default");
     public static final Identifier USE_ON_ENTITY_DEFAULT = Identifier.ofVanilla("use_on_entity_default");
 
+    @Deprecated
     public static final Set<Identifier> DEFAULT_IDS = Set.of(DEFAULT, USE_DEFAULT, USE_ON_BLOCK_DEFAULT, USE_ON_ENTITY_DEFAULT);
 
     public static final ItemUseOnEntityInstance USE_ON_ENTITY_DEFAULT_INSTANCE = new ItemUseOnEntityInstance(
