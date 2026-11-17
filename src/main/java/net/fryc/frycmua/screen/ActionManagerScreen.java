@@ -36,6 +36,7 @@ public class ActionManagerScreen extends Screen {
     private static final String DELETE_UNKNOWN_ACTIONS_TRANSLATION_KEY = "text.frycmua.delete_unknown_actions";
     private static final String U_SURE_U_WANT_KEYBIND_TRANSLATION_KEY = "text.frycmua.u_sure_u_want_new_keybind";
     private static final String SEARCH_BY_ID_TRANSLATION_KEY = "text.frycmua.search_by_id";
+    private static final String HIGHLIGHT_BY_ID_TRANSLATION_KEY = "text.frycmua.highlight_by_id";
     private static final String ACTIONS_PREVIEW_TRANSLATION_KEY = "text.frycmua.action_preview";
     private static final String SHOW_ACTION_TRANSLATION_KEY = "text.frycmua.show_action";
 
@@ -288,7 +289,7 @@ public class ActionManagerScreen extends Screen {
                 this.getSearchBarHeight(), Text.empty()
         );
 
-        textFieldWidget.setPlaceholder(Text.translatable(SEARCH_BY_ID_TRANSLATION_KEY).formatted(Formatting.GRAY));
+        textFieldWidget.setPlaceholder(Text.translatable(HIGHLIGHT_BY_ID_TRANSLATION_KEY).formatted(Formatting.GRAY));
         textFieldWidget.setChangedListener((value) -> {
             this.widget.children().forEach(useActionEntry -> useActionEntry.setHighlighted(false));
             if(!value.isEmpty()) {

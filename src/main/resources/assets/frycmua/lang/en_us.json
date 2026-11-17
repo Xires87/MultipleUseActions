@@ -11,6 +11,7 @@
   "text.frycmua.remove_use_action": "Remove selected use action",
   "text.frycmua.duplicate_use_action": "Duplicate selected use action",
   "text.frycmua.search_by_id": "Search by id",
+  "text.frycmua.highlight_by_id": "Highlight by id",
   "text.frycmua.action_preview": "Current actions preview",
   "text.frycmua.invalid_action_tooltip.does_not_exist": "This action does not exist and therefore does not work.",
   "text.frycmua.invalid_action_tooltip.may_be_leftover": "This can be a leftover of a mod update/removal.",
