@@ -82,8 +82,8 @@ public class FileHelper {
 
     public static LinkedHashMap<String, PriorityManager> getDefaultAdditionalUseKeysEntries() {
         LinkedHashMap<String, PriorityManager> map = new LinkedHashMap<>();
-        map.put("key.frycmua.key_additional_use_key_1", new PriorityManager(ActionPriority.MIXED));
-        map.put("key.frycmua.key_additional_use_key_2", new PriorityManager(ActionPriority.MIXED));
+        map.put("key.frycmua.key_additional_use_key_1", PriorityManager.createEmptyManager());
+        map.put("key.frycmua.key_additional_use_key_2", PriorityManager.createEmptyManager());
 
         return map;
     }

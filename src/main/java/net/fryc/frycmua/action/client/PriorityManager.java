@@ -44,6 +44,18 @@ public class PriorityManager {
         this.shouldShowCurrentAction = shouldShowCurrentAction;
     }
 
+    private PriorityManager() {
+        this.actionPriority = ActionPriority.MIXED;
+        this.unknownEntries = new HashSet<>();
+        this.entries = new ArrayList<>();
+        this.switchable = false;
+        this.shouldShowCurrentAction = ShowAction.NONE;
+    }
+
+    public static PriorityManager createEmptyManager() {
+        return new PriorityManager();
+    }
+
 
     public void moveDown(PriorityManager.Entry entry) {
         if(this.canMoveDown(entry)){
