@@ -30,6 +30,9 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class QuickSetupScreen extends Screen {
 
+    private static final int PADDING_TOP = 6;
+    private static final int PADDING_LEFT = 32;
+
     private static final Identifier NULL_ID = Identifier.of(MultipleUseActions.MOD_ID, "null");
 
     private static final Text TITLE_TEXT = Text.translatable("text.frycmua.quick_setup");
@@ -113,6 +116,15 @@ public class QuickSetupScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
         if(this.chosenAction == NULL_ID) {
             context.drawText(this.textRenderer, NOTHING_TO_SHOW_TEXT, this.width / 2 - this.textRenderer.getWidth(NOTHING_TO_SHOW_TEXT) / 2, this.height / 3, 0xFFFFFFFF, true);
+        }
+        else if(!this.keybindChoiceWidgets.isEmpty()) {
+            context.drawBorder(
+                    this.layout.getX() + PADDING_LEFT,
+                    this.keybindChoiceWidgets.getFirst().getY() - PADDING_TOP,
+                    this.layout.getWidth() - PADDING_LEFT * 2,
+                    this.layout.getContentHeight() / 2,
+                    0xFF000000
+            );
         }
     }
 
@@ -287,6 +299,11 @@ public class QuickSetupScreen extends Screen {
         }).build();
 
         ButtonWidget skip = ButtonWidget.builder(SKIP_BUTTON, button -> this.updateChosenAction()).build();
+
+        adder.add(new EmptyWidget(width, 40));
+        adder.add(new EmptyWidget(width, 40));
+        adder.add(new EmptyWidget(width, 40));
+        adder.add(new EmptyWidget(width, 40));
 
         adder.add(new EmptyWidget(width, 20));
         adder.add(skip);
