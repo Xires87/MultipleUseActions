@@ -33,6 +33,7 @@ public class QuickSetupScreen extends Screen {
     private static final Identifier NULL_ID = Identifier.of(MultipleUseActions.MOD_ID, "null");
 
     private static final Text TITLE_TEXT = Text.translatable("text.frycmua.quick_setup");
+    private static final Text NOTHING_TO_SHOW_TEXT = Text.translatable("text.frycmua.nothing_to_show");
     private static final Text OPTION_PRIORITY_HIGH = Text.translatable("text.frycmua.high_priority");
     private static final Text OPTION_PRIORITY_LOW = Text.translatable("text.frycmua.low_priority");
     private static final Text OPTION_PRIORITY_SWITCH = Text.translatable("text.frycmua.switch");
@@ -55,6 +56,8 @@ public class QuickSetupScreen extends Screen {
     private KeyBinding chosenKeybind = AVAILABLE_KEYBINDS.getFirst();
     private Identifier chosenAction = NULL_ID;
     private boolean isModifiyngKeybind = false;
+    private ButtonWidget closeButton;
+    private TextWidget titleText;
 
     protected final Screen parent;
     private final Iterator<Identifier> actionsToSet;
@@ -73,8 +76,10 @@ public class QuickSetupScreen extends Screen {
 
     @Override
     protected void init() {
+        this.titleText = new TextWidget(TITLE_TEXT, this.textRenderer);
+
         DirectionalLayoutWidget directionalLayoutWidget = this.layout.addHeader(DirectionalLayoutWidget.vertical().spacing(8));
-        directionalLayoutWidget.add(new TextWidget(TITLE_TEXT, this.textRenderer), Positioner::alignHorizontalCenter);
+        directionalLayoutWidget.add(this.titleText, Positioner::alignHorizontalCenter);
 
         if(this.chosenAction != NULL_ID) {
             GridWidget gridWidget = new GridWidget();
@@ -91,7 +96,9 @@ public class QuickSetupScreen extends Screen {
             this.layout.addBody(gridWidget);
         }
 
-        this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, (button) -> this.close()).width(200).build());
+        this.closeButton = ButtonWidget.builder(ScreenTexts.DONE, (button) -> this.close()).width(200).build();
+
+        this.layout.addFooter(this.closeButton);
         this.layout.forEachChild(this::addDrawableChild);
         this.initTabNavigation();
     }
@@ -104,6 +111,9 @@ public class QuickSetupScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+        if(this.chosenAction == NULL_ID) {
+            context.drawText(this.textRenderer, NOTHING_TO_SHOW_TEXT, this.width / 2 - this.textRenderer.getWidth(NOTHING_TO_SHOW_TEXT) / 2, this.height / 3, 0xFFFFFFFF, true);
+        }
     }
 
 
@@ -273,31 +283,31 @@ public class QuickSetupScreen extends Screen {
             manager.addUseAction(entry);
             while(this.setupOption.move(manager, entry));
 
-            if(this.actionsToSet.hasNext()) {
-                this.chosenAction = this.actionsToSet.next();
-            }
-            else {
-                this.chosenAction = NULL_ID;
-            }
-
-            this.updateActionInfoRow();
+            this.updateChosenAction();
         }).build();
 
-        ButtonWidget skip = ButtonWidget.builder(SKIP_BUTTON, button -> {
-            if(this.actionsToSet.hasNext()) {
-                this.chosenAction = this.actionsToSet.next();
-            }
-            else {
-                this.chosenAction = NULL_ID;
-            }
-
-            this.updateActionInfoRow();
-        }).build();
+        ButtonWidget skip = ButtonWidget.builder(SKIP_BUTTON, button -> this.updateChosenAction()).build();
 
         adder.add(new EmptyWidget(width, 20));
         adder.add(skip);
         adder.add(confirm);
         adder.add(new EmptyWidget(width, 20));
+    }
+
+    private void updateChosenAction() {
+        if(this.actionsToSet.hasNext()) {
+            this.chosenAction = this.actionsToSet.next();
+            this.updateActionInfoRow();
+        }
+        else {
+            this.chosenAction = NULL_ID;
+            this.layout.forEachChild(child -> {
+                child.visible = false;
+            });
+
+            this.titleText.visible = true;
+            this.closeButton.visible = true;
+        }
     }
 
     private static List<KeyBinding> getAvailableKeybinds() {
