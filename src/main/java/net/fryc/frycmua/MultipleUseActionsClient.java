@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fryc.frycmua.action.client.ActionManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
-import net.fryc.frycmua.screen.QuickSetupScreen;
+import net.fryc.frycmua.screen.ActionDemandScreen;
 import net.fryc.frycmua.util.client.FileHelper;
 import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
@@ -47,18 +47,12 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 			if(screen.getClass() == TitleScreen.class) {
 				if(shouldAsk){
 					Map<Identifier, List<String>> map = UseActionHelperClient.getActionsThatRequireSetup();
-					//if(!map.isEmpty()) {
-						client.setScreen(new QuickSetupScreen(screen, List.of(Identifier.ofVanilla("block"), Identifier.ofVanilla("bow_pull"))));// TODO dac info screena zamiast quick setupa
-					//}
+					if(!map.isEmpty()) {
+						client.setScreen(new ActionDemandScreen(screen, map));
+					}
 
 					shouldAsk = false;
 				}
-			}
-		});
-
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-			if(client.currentScreen != null && client.currentScreen.getClass() == TitleScreen.class) {
-				MultipleUseActions.LOGGER.warn("jestem w menu!");// TODO usunac
 			}
 		});
 
@@ -81,6 +75,12 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 				}
 			}
 		});
+
+		/*
+		ActionDemand.demandUseAction(Identifier.ofVanilla("food_eat"), "jakismod");
+		ActionDemand.demandUseAction(Identifier.ofVanilla("food_eat"), "ktorysmod");
+		ActionDemand.demandUseAction(Identifier.ofVanilla("block_place"), "ktorysmod");
+		 */
 	}
 
 	private static Text getShortenedKeybindName(KeyBinding key) {

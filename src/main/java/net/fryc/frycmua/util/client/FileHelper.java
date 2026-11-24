@@ -93,7 +93,7 @@ public class FileHelper {
         return new PriorityManager(ActionPriority.DEFAULT);
     }
 
-    public static void saveIgnoredUseActions() {
+    public static void saveIgnoredUseActions(List<Identifier> actions) {
         // TODO
     }
 
