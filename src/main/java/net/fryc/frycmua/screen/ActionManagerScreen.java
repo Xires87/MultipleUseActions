@@ -8,10 +8,9 @@ import net.fryc.frycmua.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.screen.widget.UseActionEntryWidget;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
-import net.fryc.frycmua.util.mixin_interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
+import net.fryc.frycmua.util.mixin_interfaces.widget.UpdatableWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -224,7 +223,7 @@ public class ActionManagerScreen extends Screen {
         ButtonWidget useKeyButton = ButtonWidget.builder(useKeyText, (btn) -> {
             this.selectedPriorityManager = PriorityManager.DEFAULT_PRIORITY_MANAGER;
             this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
-            this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
+            this.cyclingButtons.forEach(btn2 -> ((UpdatableWidget) btn2).update());
             btn.active = false;
             this.reorderAllEntries();
         }).position(20, 20).size(this.textRenderer.getWidth(useKeyText) + TEXT_BUTTON_PADDING, 20).build();
@@ -241,7 +240,7 @@ public class ActionManagerScreen extends Screen {
             ButtonWidget buttonWidget = ButtonWidget.builder(text, (btn) -> {
                 this.selectedPriorityManager = value;
                 this.keybindChoiceButtons.forEach(btn2 -> btn2.active = true);
-                this.cyclingButtons.forEach(btn2 -> ((CyclingButtonWidgetAdditionalUpdate) btn2).update());
+                this.cyclingButtons.forEach(btn2 -> ((UpdatableWidget) btn2).update());
                 btn.active = false;
                 this.reorderAllEntries();
             }).size(this.textRenderer.getWidth(text) + TEXT_BUTTON_PADDING, 20).build();
@@ -315,7 +314,7 @@ public class ActionManagerScreen extends Screen {
                             this.reorderAllEntries();
                         });
 
-        ((CyclingButtonWidgetAdditionalUpdate) actionPriorityButton).setUpdateFunction(() -> {
+        ((UpdatableWidget) actionPriorityButton).setUpdateFunction(() -> {
             actionPriorityButton.setValue(this.selectedPriorityManager.getActionPriority());
         });
         this.cyclingButtons.add(actionPriorityButton);
@@ -328,7 +327,7 @@ public class ActionManagerScreen extends Screen {
                             this.reorderAllEntries();
                         });
 
-        ((CyclingButtonWidgetAdditionalUpdate) switchableButton).setUpdateFunction(() -> {
+        ((UpdatableWidget) switchableButton).setUpdateFunction(() -> {
             switchableButton.setValue(this.selectedPriorityManager.isSwitchable());
         });
         this.cyclingButtons.add(switchableButton);
@@ -341,7 +340,7 @@ public class ActionManagerScreen extends Screen {
                             this.selectedPriorityManager.setShowAction(showAction);
                         });
 
-        ((CyclingButtonWidgetAdditionalUpdate) shouldShowButton).setUpdateFunction(() -> {
+        ((UpdatableWidget) shouldShowButton).setUpdateFunction(() -> {
             shouldShowButton.setValue(this.selectedPriorityManager.getShowAction());
         });
         this.cyclingButtons.add(shouldShowButton);
@@ -414,8 +413,8 @@ public class ActionManagerScreen extends Screen {
         int buttonWidth = 200;
 
         this.addDrawableChild(
-                ButtonWidget.builder(Text.translatable("controls.keybinds"), (btn) -> {
-                    this.client.setScreen(new KeybindsScreen(this, this.client.options));
+                ButtonWidget.builder(Text.translatable("text.frycmua.quick_setup"), (btn) -> {
+                    this.client.setScreen(new QuickSetupScreen(this, List.of()));
                 }).position(this.width / 2 - buttonWidth - 10, this.height - PADDING_BOTTOM).size(buttonWidth, 20).build()
         );
 

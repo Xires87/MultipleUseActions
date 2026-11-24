@@ -14,7 +14,8 @@
 		"client/MinecraftClientMixin",
 		"client/ClientPlayerInteractionManagerMixin",
 		"client/ClientPlayerEntityMixin",
-		"client/CyclingButtonWidgetMixin"
+		"client/ClickableWidgetMixin",
+		"client/CheckboxWidgetMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

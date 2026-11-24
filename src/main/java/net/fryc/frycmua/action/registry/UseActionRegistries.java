@@ -23,6 +23,8 @@ public class UseActionRegistries {
     private static Map<Identifier, List<ItemUseOnBlockInstance>> CACHED_REGISTERED_USE_ON_BLOCK_ACTIONS = Map.of();
     private static Map<Identifier, List<ItemUseOnEntityInstance>> CACHED_REGISTERED_USE_ON_ENTITY_ACTIONS = Map.of();
 
+    private static boolean isImmutable = false;
+
     /**
      * Adds {@link ItemUseInstance} to REGISTERED_USE_ACTIONS under selected id. Many use instances can be registered under the same id, but only one of the three maps can hold this id.
      *
@@ -30,6 +32,8 @@ public class UseActionRegistries {
      * @param useInstance object holding {@link ItemUseInstance.ItemUse} implementation.
      * @throws IllegalArgumentException when given id is present in 'REGISTERED_USE_ON_BLOCK_ACTIONS' or 'REGISTERED_USE_ON_ENTITY_ACTIONS'
      * @throws IllegalStateException when item registry is frozen
+     *
+     * @see net.fryc.frycmua.action.client.ActionDemand#demandUseAction(Identifier, String) ActionDemand to inform player that some actions require setup
      */
     public static void registerUseAction(Identifier id, ItemUseInstance useInstance) throws IllegalArgumentException {
         throwIfItemRegistryFrozen();
@@ -47,6 +51,8 @@ public class UseActionRegistries {
      * @param useInstance object holding {@link ItemUseOnBlockInstance.ItemUseOnBlock} implementation.
      * @throws IllegalArgumentException when given id is present in 'REGISTERED_USE_ACTIONS' or 'REGISTERED_USE_ON_ENTITY_ACTIONS'
      * @throws IllegalStateException when item registry is frozen
+     *
+     * @see net.fryc.frycmua.action.client.ActionDemand#demandUseAction(Identifier, String) ActionDemand to inform player that some actions require setup
      */
     public static void registerUseOnBlockAction(Identifier id, ItemUseOnBlockInstance useInstance) throws IllegalArgumentException {
         throwIfItemRegistryFrozen();
@@ -64,6 +70,8 @@ public class UseActionRegistries {
      * @param useInstance object holding {@link ItemUseOnEntityInstance.ItemUseOnEntity} implementation.
      * @throws IllegalArgumentException when given id is present in 'REGISTERED_USE_ACTIONS' or 'REGISTERED_USE_ON_BLOCK_ACTIONS'
      * @throws IllegalStateException when item registry is frozen
+     *
+     * @see net.fryc.frycmua.action.client.ActionDemand#demandUseAction(Identifier, String) ActionDemand to inform player that some actions require setup
      */
     public static void registerUseOnEntityAction(Identifier id, ItemUseOnEntityInstance useInstance) throws IllegalArgumentException {
         throwIfItemRegistryFrozen();
@@ -75,6 +83,10 @@ public class UseActionRegistries {
     }
 
     public static Map<Identifier, List<ItemUseInstance>> getRegisteredUseActions() {
+        if(shouldProvideMutableMap()) {
+            return REGISTERED_USE_ACTIONS;
+        }
+
         if(CACHED_REGISTERED_USE_ACTIONS.isEmpty()) {
             Map<Identifier, List<ItemUseInstance>> map = Map.copyOf(REGISTERED_USE_ACTIONS);
             tryToCacheMap(map);
@@ -86,6 +98,10 @@ public class UseActionRegistries {
     }
 
     public static Map<Identifier, List<ItemUseOnBlockInstance>> getRegisteredUseOnBlockActions() {
+        if(shouldProvideMutableMap()) {
+            return REGISTERED_USE_ON_BLOCK_ACTIONS;
+        }
+
         if(CACHED_REGISTERED_USE_ON_BLOCK_ACTIONS.isEmpty()) {
             Map<Identifier, List<ItemUseOnBlockInstance>> map = Map.copyOf(REGISTERED_USE_ON_BLOCK_ACTIONS);
             tryToCacheMap(map);
@@ -97,6 +113,10 @@ public class UseActionRegistries {
     }
 
     public static Map<Identifier, List<ItemUseOnEntityInstance>> getRegisteredUseOnEntityActions() {
+        if(shouldProvideMutableMap()) {
+            return CACHED_REGISTERED_USE_ON_ENTITY_ACTIONS;
+        }
+
         if(CACHED_REGISTERED_USE_ON_ENTITY_ACTIONS.isEmpty()) {
             Map<Identifier, List<ItemUseOnEntityInstance>> map = Map.copyOf(REGISTERED_USE_ON_ENTITY_ACTIONS);
             tryToCacheMap(map);
@@ -111,9 +131,36 @@ public class UseActionRegistries {
         ((FrozenCheckable) Registries.ITEM).throwIfFrozen();
     }
 
+    private static boolean isItemRegistryFrozen() {
+        return ((FrozenCheckable) Registries.ITEM).isAlreadyFrozen();
+    }
+
+    private static boolean shouldProvideMutableMap() {
+        return !isImmutable && !makeImmutable();
+    }
+
+    private static boolean makeImmutable() {
+        if(isImmutable) return true;
+        if(!isItemRegistryFrozen()) return false;
+
+        REGISTERED_USE_ACTIONS.keySet().forEach(action -> {
+            REGISTERED_USE_ACTIONS.put(action, List.copyOf(REGISTERED_USE_ACTIONS.get(action)));
+        });
+        REGISTERED_USE_ON_ENTITY_ACTIONS.keySet().forEach(action -> {
+            REGISTERED_USE_ON_ENTITY_ACTIONS.put(action, List.copyOf(REGISTERED_USE_ON_ENTITY_ACTIONS.get(action)));
+        });
+        REGISTERED_USE_ON_BLOCK_ACTIONS.keySet().forEach(action -> {
+            REGISTERED_USE_ON_BLOCK_ACTIONS.put(action, List.copyOf(REGISTERED_USE_ON_BLOCK_ACTIONS.get(action)));
+        });
+
+        isImmutable = true;
+
+        return true;
+    }
+
     @SuppressWarnings("unchecked")
     private static void tryToCacheMap(Map<Identifier, ? extends List<? extends UseInstance>> map) {
-        if(((FrozenCheckable) Registries.ITEM).isAlreadyFrozen()) {
+        if(isItemRegistryFrozen()) {
             map.values().stream().filter(list -> !list.isEmpty()).findAny().ifPresent(list -> {
                 UseInstance instance = list.stream().findFirst().get();
                 switch (instance) {

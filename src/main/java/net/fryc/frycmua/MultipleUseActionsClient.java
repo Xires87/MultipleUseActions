@@ -3,16 +3,22 @@ package net.fryc.frycmua;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fryc.frycmua.action.client.ActionManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
+import net.fryc.frycmua.screen.QuickSetupScreen;
 import net.fryc.frycmua.util.client.FileHelper;
+import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class MultipleUseActionsClient implements ClientModInitializer {
@@ -26,6 +32,8 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 	private static final int SMALL_TEXTURE_WIDTH = 16;
 	private static final int SMALL_TEXTURE_HEIGHT = 16;
 
+	private static boolean shouldAsk = true;
+
 	@Override
 	public void onInitializeClient() {
 		ModKeybinds.register();
@@ -33,6 +41,25 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
 			FileHelper.saveAdditionalUseKeysEntries();
 			FileHelper.saveMainPriorityManager();
+		});
+
+		ScreenEvents.BEFORE_INIT.register((client, screen, i, j) -> {
+			if(screen.getClass() == TitleScreen.class) {
+				if(shouldAsk){
+					Map<Identifier, List<String>> map = UseActionHelperClient.getActionsThatRequireSetup();
+					//if(!map.isEmpty()) {
+						client.setScreen(new QuickSetupScreen(screen, List.of(Identifier.ofVanilla("block"), Identifier.ofVanilla("bow_pull"))));// TODO dac info screena zamiast quick setupa
+					//}
+
+					shouldAsk = false;
+				}
+			}
+		});
+
+		ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+			if(client.currentScreen != null && client.currentScreen.getClass() == TitleScreen.class) {
+				MultipleUseActions.LOGGER.warn("jestem w menu!");// TODO usunac
+			}
 		});
 
 		HudRenderCallback.EVENT.register((context, tickDelta) -> {
@@ -62,6 +89,8 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 				case "key.mouse.left" -> Text.of("LMB");
 				case "key.mouse.right" -> Text.of("RMB");
 				case "key.mouse.middle" -> Text.of("MMB");
+				case "key.mouse.4" -> Text.of("MB4");
+				case "key.mouse.5" -> Text.of("MB5");
 				default -> Text.of("MB");
 			};
 		}

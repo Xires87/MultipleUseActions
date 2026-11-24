@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class FileHelper {
@@ -90,6 +91,14 @@ public class FileHelper {
 
     public static PriorityManager getDefaultPriorityManager() {
         return new PriorityManager(ActionPriority.DEFAULT);
+    }
+
+    public static void saveIgnoredUseActions() {
+        // TODO
+    }
+
+    public static List<Identifier> getIgnoredUseActions() {
+        return List.of(); // TODO
     }
 
     private static void tryToMakeFile(File file) {

@@ -1,12 +1,12 @@
 package net.fryc.frycmua.mixin.client;
 
-import net.fryc.frycmua.util.mixin_interfaces.widget.CyclingButtonWidgetAdditionalUpdate;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.fryc.frycmua.util.mixin_interfaces.widget.UpdatableWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(CyclingButtonWidget.class)
-abstract class CyclingButtonWidgetMixin implements CyclingButtonWidgetAdditionalUpdate {
+@Mixin(ClickableWidget.class)
+abstract class ClickableWidgetMixin implements UpdatableWidget {
 
     @Unique
     private Runnable updateValue = () -> {};

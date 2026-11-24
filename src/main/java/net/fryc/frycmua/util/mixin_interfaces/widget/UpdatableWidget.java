@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 
-// for CyclingButtonWidget
+// for CyclingButtonWidget and ClickableWidget
 @Environment(EnvType.CLIENT)
-public interface CyclingButtonWidgetAdditionalUpdate {
+public interface UpdatableWidget {
 
     void update();
     void setUpdateFunction(Runnable updateFunction);
