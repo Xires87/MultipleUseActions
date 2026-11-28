@@ -23,6 +23,10 @@ public class ActionDemandScreen extends Screen {
     private static final Text BUTTON_IGNORE = Text.translatable("button.frycmua.ignore");
     private static final Text BUTTON_LATER = Text.translatable("button.frycmua.later");
 
+    private static final String ACTIONS_NEED_SETUP_KEY = "text.frycmua.some_actions_need_setup";
+    private static final String LIST_OF_ACTIONS_NEED_SETUP_KEY = "text.frycmua.list_of_actions_that_need_setup";
+    private static final String REQUIRED_BY_KEY = "text.frycmua.required_by";
+
     private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, 61, 33);
 
     protected final Screen parent;
@@ -45,9 +49,9 @@ public class ActionDemandScreen extends Screen {
                 0,
                 this.layout.getWidth(),
                 this.layout.getContentHeight() - this.layout.getFooterHeight(),
-                Text.translatable("text.frycmua.some_actions_need_setup")
+                Text.translatable(ACTIONS_NEED_SETUP_KEY)
                         .append("\n\n\n")
-                        .append(Text.translatable("text.frycmua.list_of_actions_that_need_setup"))
+                        .append(Text.translatable(LIST_OF_ACTIONS_NEED_SETUP_KEY))
                         .append("\n\n")
                         .append(this.getListOfActionsThatNeedSetup()),
                 this.textRenderer
@@ -106,7 +110,7 @@ public class ActionDemandScreen extends Screen {
         MutableText text = Text.literal("");
         for(Identifier id : this.demandedActions.keySet()) {
             text.append(Text.literal(id.toString()).formatted(Formatting.WHITE));
-            text.append(" - required by: ").formatted(Formatting.GRAY);
+            text.append(Text.translatable(REQUIRED_BY_KEY)).formatted(Formatting.GRAY);
             for(String modId : this.demandedActions.get(id)) {
                 text.append(modId).formatted(Formatting.GRAY);
                 text.append(", ").formatted(Formatting.GRAY);

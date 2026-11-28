@@ -329,7 +329,7 @@ public class QuickSetupScreen extends Screen {
 
     private void updateChosenAction() {
         ActionSetupHelper.ACTIONS_TO_SETUP.remove(this.chosenAction);
-
+// TODO poprawic ulozenie elementow i dodac nowy ekran do dodawania akcji do quick setupu albo bezposrednio do priority managera
         if(this.actionsToSet.hasNext()) {
             this.chosenAction = this.actionsToSet.next();
             this.updateActionInfoRow();
