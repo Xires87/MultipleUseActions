@@ -7,6 +7,7 @@ import net.fryc.frycmua.action.client.ActionPriority;
 import net.fryc.frycmua.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.screen.widget.UseActionEntryWidget;
+import net.fryc.frycmua.util.client.ActionSetupHelper;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.fryc.frycmua.util.mixin_interfaces.widget.UpdatableWidget;
 import net.minecraft.client.gui.DrawContext;
@@ -414,7 +415,7 @@ public class ActionManagerScreen extends Screen {
 
         this.addDrawableChild(
                 ButtonWidget.builder(Text.translatable("text.frycmua.quick_setup"), (btn) -> {
-                    this.client.setScreen(new QuickSetupScreen(this, List.of()));
+                    this.client.setScreen(new QuickSetupScreen(this, List.copyOf(ActionSetupHelper.ACTIONS_TO_SETUP)));
                 }).position(this.width / 2 - buttonWidth - 10, this.height - PADDING_BOTTOM).size(buttonWidth, 20).build()
         );
 

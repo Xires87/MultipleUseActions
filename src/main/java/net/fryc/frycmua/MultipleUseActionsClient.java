@@ -4,11 +4,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fryc.frycmua.action.client.ActionDemand;
 import net.fryc.frycmua.action.client.ActionManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.screen.ActionDemandScreen;
+import net.fryc.frycmua.util.client.ActionSetupHelper;
 import net.fryc.frycmua.util.client.FileHelper;
-import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.fryc.frycmua.util.mixin_interfaces.player.client.HoldsActionManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -46,7 +47,7 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 		ScreenEvents.BEFORE_INIT.register((client, screen, i, j) -> {
 			if(screen.getClass() == TitleScreen.class) {
 				if(shouldAsk){
-					Map<Identifier, List<String>> map = UseActionHelperClient.getActionsThatRequireSetup();
+					Map<Identifier, List<String>> map = ActionSetupHelper.getActionsThatRequireSetup();
 					if(!map.isEmpty()) {
 						client.setScreen(new ActionDemandScreen(screen, map));
 					}
@@ -76,11 +77,11 @@ public class MultipleUseActionsClient implements ClientModInitializer {
 			}
 		});
 
-		/*
+
 		ActionDemand.demandUseAction(Identifier.ofVanilla("food_eat"), "jakismod");
 		ActionDemand.demandUseAction(Identifier.ofVanilla("food_eat"), "ktorysmod");
 		ActionDemand.demandUseAction(Identifier.ofVanilla("block_place"), "ktorysmod");
-		 */
+
 	}
 
 	private static Text getShortenedKeybindName(KeyBinding key) {

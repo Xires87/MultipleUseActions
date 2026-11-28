@@ -2,13 +2,14 @@ package net.fryc.frycmua.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fryc.frycmua.util.client.ActionSetupHelper;
 import net.fryc.frycmua.util.client.FileHelper;
-import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
-import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -42,13 +43,13 @@ public class ActionDemandScreen extends Screen {
         ScrollableTextWidget text = new ScrollableTextWidget(
                 0,
                 0,
-                this.layout.getWidth() / 2,
-                this.layout.getContentHeight() / 2,
-                Text.literal(
-                        Text.translatable("text.frycmua.some_actions_need_setup").getString() + "\n" +
-                        Text.translatable("text.frycmua.list_of_actions_that_need_setup").getString() + "\n" +
-                                this.getListOfActionsThatNeedSetup()
-                ),
+                this.layout.getWidth(),
+                this.layout.getContentHeight() - this.layout.getFooterHeight(),
+                Text.translatable("text.frycmua.some_actions_need_setup")
+                        .append("\n\n\n")
+                        .append(Text.translatable("text.frycmua.list_of_actions_that_need_setup"))
+                        .append("\n\n")
+                        .append(this.getListOfActionsThatNeedSetup()),
                 this.textRenderer
         );
 
@@ -57,13 +58,16 @@ public class ActionDemandScreen extends Screen {
         GridWidget.Adder adder = gridWidget.createAdder(3);
 
         ButtonWidget quickSetupButton = ButtonWidget.builder(BUTTON_QUICK_SETUP, (button) -> {
-            this.client.setScreen(new QuickSetupScreen(this.parent, List.copyOf(this.demandedActions.keySet())));
+            List<Identifier> list = List.copyOf(this.demandedActions.keySet());
+            ActionSetupHelper.ACTIONS_TO_SETUP.addAll(list);
+            this.client.setScreen(new QuickSetupScreen(this.parent, list));
         }).width(100).build();
         ButtonWidget ignoreButton = ButtonWidget.builder(BUTTON_IGNORE, (button) -> {
             FileHelper.saveIgnoredUseActions(List.copyOf(this.demandedActions.keySet()));
             this.close();
         }).width(100).build();
         ButtonWidget laterButton = ButtonWidget.builder(BUTTON_LATER, (button) -> {
+            ActionSetupHelper.ACTIONS_TO_SETUP.addAll(List.copyOf(this.demandedActions.keySet()));
             this.close();
         }).width(100).build();
 
@@ -75,6 +79,7 @@ public class ActionDemandScreen extends Screen {
         this.layout.addFooter(gridWidget);
         this.layout.forEachChild(this::addDrawableChild);
         this.initTabNavigation();
+        this.setFocused(text);
     }
 
     @Override
@@ -97,19 +102,18 @@ public class ActionDemandScreen extends Screen {
         }
     }
 
-    private String getListOfActionsThatNeedSetup() {
-        StringBuilder builder = new StringBuilder();
-
+    private Text getListOfActionsThatNeedSetup() {
+        MutableText text = Text.literal("");
         for(Identifier id : this.demandedActions.keySet()) {
-            builder.append(id.toString());
-            builder.append(" - required by: ");
+            text.append(Text.literal(id.toString()).formatted(Formatting.WHITE));
+            text.append(" - required by: ").formatted(Formatting.GRAY);
             for(String modId : this.demandedActions.get(id)) {
-                builder.append(modId);
-                builder.append(", ");
+                text.append(modId).formatted(Formatting.GRAY);
+                text.append(", ").formatted(Formatting.GRAY);
             }
-            builder.append("\n");
+            text.append("\n");
         }
 
-        return builder.toString();
+        return text;
     }
 }

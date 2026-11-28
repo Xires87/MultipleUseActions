@@ -8,6 +8,7 @@ import net.fryc.frycmua.action.client.ActionPriority;
 import net.fryc.frycmua.action.client.PriorityManager;
 import net.fryc.frycmua.keybind.ModKeybinds;
 import net.fryc.frycmua.screen.widget.UpdatableIconWidget;
+import net.fryc.frycmua.util.client.ActionSetupHelper;
 import net.fryc.frycmua.util.client.UseActionHelperClient;
 import net.fryc.frycmua.util.mixin_interfaces.widget.CheckboxWidgetCheckSetter;
 import net.fryc.frycmua.util.mixin_interfaces.widget.UpdatableWidget;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class QuickSetupScreen extends Screen {
@@ -53,12 +55,13 @@ public class QuickSetupScreen extends Screen {
 
     private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this, 61, 33);
     private final List<ClickableWidget> keybindChoiceWidgets = new ArrayList<>();
+    private final List<ClickableWidget> switchActionKeybindChoiceWidgets = new ArrayList<>();
     private final List<ClickableWidget> actionInfoWidgets = new ArrayList<>();
 
     private SetupOption setupOption = SetupOption.HIGH;
     private KeyBinding chosenKeybind = AVAILABLE_KEYBINDS.getFirst();
     private Identifier chosenAction = NULL_ID;
-    private boolean isModifiyngKeybind = false;
+    private KeyBinding currentlyModifiedKeybind = null;
     private ButtonWidget closeButton;
     private TextWidget titleText;
 
@@ -94,6 +97,7 @@ public class QuickSetupScreen extends Screen {
             this.createActionInfoRow(adder, width);
             this.createKeybindChoiceRow(adder, width);
             this.createSetupOptionRow(adder, width);
+            this.createSwitchActionKeybindsRow(adder, width);
             this.createConfirmAndSkipButtons(adder, width);
 
             this.layout.addBody(gridWidget);
@@ -141,10 +145,11 @@ public class QuickSetupScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isModifiyngKeybind && this.client != null) {
-            this.client.options.setKeyCode(this.chosenKeybind, InputUtil.Type.MOUSE.createFromCode(button));
-            this.isModifiyngKeybind = false;
+        if (this.currentlyModifiedKeybind != null && this.client != null) {
+            this.client.options.setKeyCode(this.currentlyModifiedKeybind, InputUtil.Type.MOUSE.createFromCode(button));
+            this.currentlyModifiedKeybind = null;
             this.updateKeybindChoiceRow();
+            this.updateSwitchActionKeybindsRow();
 
             return true;
         } else {
@@ -154,15 +159,16 @@ public class QuickSetupScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.isModifiyngKeybind && this.client != null) {
+        if (this.currentlyModifiedKeybind != null && this.client != null) {
             if (keyCode == 256) {
-                this.client.options.setKeyCode(this.chosenKeybind, InputUtil.UNKNOWN_KEY);
+                this.client.options.setKeyCode(this.currentlyModifiedKeybind, InputUtil.UNKNOWN_KEY);
             } else {
-                this.client.options.setKeyCode(this.chosenKeybind, InputUtil.fromKeyCode(keyCode, scanCode));
+                this.client.options.setKeyCode(this.currentlyModifiedKeybind, InputUtil.fromKeyCode(keyCode, scanCode));
             }
 
-            this.isModifiyngKeybind = false;
+            this.currentlyModifiedKeybind = null;
             this.updateKeybindChoiceRow();
+            this.updateSwitchActionKeybindsRow();
 
             return true;
         } else {
@@ -230,23 +236,7 @@ public class QuickSetupScreen extends Screen {
             keybindInfo.setMessage(Text.translatable(this.chosenKeybind.getTranslationKey()));
         });
 
-        ButtonWidget changeBindingButton = ButtonWidget.builder(this.chosenKeybind.getBoundKeyLocalizedText(), (button) -> {
-            button.setMessage(Text.literal("> ").append(this.chosenKeybind.getBoundKeyLocalizedText().copy().formatted(Formatting.WHITE)).append(" <").formatted(Formatting.YELLOW));
-            KeyBinding.updateKeysByCode();
-            this.isModifiyngKeybind = true;
-        }).dimensions(0, 0, 75, 20).build();
-        ((UpdatableWidget) changeBindingButton).setUpdateFunction(() -> {
-            if (this.client != null) {
-                if(this.chosenKeybind.isUnbound() || Arrays.stream(this.client.options.allKeys).noneMatch(key -> {
-                    return key != this.chosenKeybind && this.chosenKeybind.equals(key);
-                })) {
-                    changeBindingButton.setMessage(this.chosenKeybind.getBoundKeyLocalizedText());
-                }
-                else {
-                    changeBindingButton.setMessage(Text.literal("[ ").append(this.chosenKeybind.getBoundKeyLocalizedText().copy().formatted(Formatting.WHITE)).append(" ]").formatted(Formatting.RED));
-                }
-            }
-        });
+        ButtonWidget changeBindingButton = createChangeBindingButton(() -> this.chosenKeybind);
 
         adder.add(navLeftButton);
         adder.add(keybindInfo);
@@ -264,6 +254,31 @@ public class QuickSetupScreen extends Screen {
         this.keybindChoiceWidgets.forEach(widget -> ((UpdatableWidget) widget).update());
     }
 
+    private void createSwitchActionKeybindsRow(GridWidget.Adder adder, int width) {
+        TextWidget firstKeybindInfo = new TextWidget(width, 20, Text.translatable(ModKeybinds.KEY_NEXT_USE_ACTION), this.textRenderer);
+        TextWidget secondKeybindInfo = new TextWidget(width, 20, Text.translatable(ModKeybinds.KEY_PREVIOUS_USE_ACTION), this.textRenderer);
+        ButtonWidget firstChangeBindingBtn = createChangeBindingButton(() -> ModKeybinds.nextUseActionKey);
+        ButtonWidget secondChangeBindingBtn = createChangeBindingButton(() -> ModKeybinds.previousUseActionKey);
+
+        this.switchActionKeybindChoiceWidgets.add(firstKeybindInfo);
+        this.switchActionKeybindChoiceWidgets.add(firstChangeBindingBtn);
+        this.switchActionKeybindChoiceWidgets.add(secondKeybindInfo);
+        this.switchActionKeybindChoiceWidgets.add(secondChangeBindingBtn);
+        
+        adder.add(firstKeybindInfo);
+        adder.add(firstChangeBindingBtn);
+        adder.add(secondKeybindInfo);
+        adder.add(secondChangeBindingBtn);
+        this.updateSwitchActionKeybindsRow();
+    }
+
+    private void updateSwitchActionKeybindsRow() {
+        this.switchActionKeybindChoiceWidgets.forEach(widget -> {
+            ((UpdatableWidget) widget).update();
+            widget.visible = this.setupOption == SetupOption.SWITCH || this.setupOption == SetupOption.SWITCH_STRICT;
+        });
+    }
+
     private CheckboxWidget createSingleChoiceCheckbox(Text text, List<CheckboxWidget> group, SetupOption option) {
         CheckboxWidget widget = CheckboxWidget.builder(text, this.textRenderer).checked(group.isEmpty()).callback((checkbox, checked) -> {
             group.stream().filter(box -> !box.equals(checkbox)).forEach(box -> {
@@ -275,6 +290,7 @@ public class QuickSetupScreen extends Screen {
             }
 
             this.setupOption = option;
+            this.updateSwitchActionKeybindsRow();
         }).build();
         group.add(widget);
 
@@ -312,6 +328,8 @@ public class QuickSetupScreen extends Screen {
     }
 
     private void updateChosenAction() {
+        ActionSetupHelper.ACTIONS_TO_SETUP.remove(this.chosenAction);
+
         if(this.actionsToSet.hasNext()) {
             this.chosenAction = this.actionsToSet.next();
             this.updateActionInfoRow();
@@ -332,6 +350,30 @@ public class QuickSetupScreen extends Screen {
         list.add(MinecraftClient.getInstance().options.useKey);
 
         return List.copyOf(list);
+    }
+    
+    private ButtonWidget createChangeBindingButton(Supplier<KeyBinding> keySupplier) {
+        ButtonWidget btn = ButtonWidget.builder(keySupplier.get().getBoundKeyLocalizedText(), (button) -> {
+            KeyBinding key = keySupplier.get();
+            button.setMessage(Text.literal("> ").append(key.getBoundKeyLocalizedText().copy().formatted(Formatting.WHITE)).append(" <").formatted(Formatting.YELLOW));
+            KeyBinding.updateKeysByCode();
+            this.currentlyModifiedKeybind = key;
+        }).dimensions(0, 0, 75, 20).build();
+        ((UpdatableWidget) btn).setUpdateFunction(() -> {
+            KeyBinding key = keySupplier.get();
+            if (this.client != null) {
+                if(key.isUnbound() || Arrays.stream(this.client.options.allKeys).noneMatch(key2 -> {
+                    return key2 != key && key.equals(key2);
+                })) {
+                    btn.setMessage(key.getBoundKeyLocalizedText());
+                }
+                else {
+                    btn.setMessage(Text.literal("[ ").append(key.getBoundKeyLocalizedText().copy().formatted(Formatting.WHITE)).append(" ]").formatted(Formatting.RED));
+                }
+            }
+        });
+        
+        return btn;
     }
 
     private enum SetupOption {
@@ -388,6 +430,7 @@ public class QuickSetupScreen extends Screen {
             @Override
             public void fixPriorityManager(PriorityManager manager) {
                 manager.setSwitchable(true);
+                manager.setShowAction(PriorityManager.ShowAction.SWITCH);
             }
         },
         SWITCH_STRICT {
@@ -399,6 +442,7 @@ public class QuickSetupScreen extends Screen {
             @Override
             public void fixPriorityManager(PriorityManager manager) {
                 manager.setSwitchable(true);
+                manager.setShowAction(PriorityManager.ShowAction.SWITCH);
             }
         };
 

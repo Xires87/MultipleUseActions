@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class FileHelper {
     private static final String CONFIG_PATH = FabricLoader.getInstance().getConfigDir().toString() + "/" + MultipleUseActions.MOD_ID;
     private static final String ADDITIONAL_USE_KEYS_PATH = CONFIG_PATH + "/client/additional_use_keys.json";
     private static final String MAIN_USE_KEY_PATH = CONFIG_PATH + "/client/main_use_key.json";
+    private static final String IGNORED_USE_ACTIONS_PATH = CONFIG_PATH + "/client/ignored_use_actions.json";
 
     public static LinkedHashMap<String, PriorityManager> getAdditionalUseKeysEntries() {
         File file = new File(ADDITIONAL_USE_KEYS_PATH);
@@ -94,11 +96,31 @@ public class FileHelper {
     }
 
     public static void saveIgnoredUseActions(List<Identifier> actions) {
-        // TODO
+        List<Identifier> list = new ArrayList<>(getIgnoredUseActions());
+        list.addAll(actions.stream().filter(id -> !list.contains(id)).toList());
+
+        File file = new File(IGNORED_USE_ACTIONS_PATH);
+        tryToMakeFile(file);
+        try(FileWriter writer = new FileWriter(file)){
+            writer.write(GSON.toJson(list));
+        } catch (Exception e) {
+            MultipleUseActions.LOGGER.error("An error occurred while writing to the following file: " + file.getPath(), e);
+        }
     }
 
     public static List<Identifier> getIgnoredUseActions() {
-        return List.of(); // TODO
+        File file = new File(IGNORED_USE_ACTIONS_PATH);
+        if(file.exists()){
+            try(FileReader reader = new FileReader(file)){
+                TypeToken<List<Identifier>> listToken = new TypeToken<>(){};
+
+                return GSON.fromJson(reader, listToken);
+            } catch (Exception e) {
+                MultipleUseActions.LOGGER.error("An error occurred while reading the following file: '" + file.getPath() + "'", e);
+            }
+        }
+
+        return List.of();
     }
 
     private static void tryToMakeFile(File file) {
